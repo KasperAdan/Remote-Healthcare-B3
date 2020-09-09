@@ -176,7 +176,6 @@ namespace FietsSimulatorGUI
                     }
 
                     // Connecting
-                    Console.WriteLine("Zijn we hier?");
                     Console.WriteLine(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
                     errorCode = errorCode = await bleBike.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
                     // __TODO__ Error check
@@ -211,29 +210,26 @@ namespace FietsSimulatorGUI
                   
                     //Sending resistance to the Bluetooth device
                     byte[] data = new byte[13];
-                    data[0] = 0xA4; // Sync byte
+                    data[0] = 0x4A; // Sync byte
                     data[1] = 0x09; // Length byte
                     data[2] = 0x4E; // Type byte
-                    data[3] = 0x05; // Channel byte
+                    data[3] = 0x05; // Channel byte 
                     data[4] = 0x30; // Data page nr
-                    data[5] = 0xff; // Not in use
-                    data[6] = 0xff; // Not in use
-                    data[7] = 0xff; // Not in use
-                    data[8] = 0xff; // Not in use
-                    data[9] = 0xff; // Not in use
-                    data[10] = 0xff; // Not in use
+                    data[5] = 0xFF; // Not in use
+                    data[6] = 0xFF; // Not in use
+                    data[7] = 0xFF; // Not in use
+                    data[8] = 0xFF; // Not in use
+                    data[9] = 0xFF; // Not in use
+                    data[10] = 0xFF; // Not in use
                     data[11] = 0x50; // Resistance percentage /2
                     data[12] = 0; // Checksum
 
                     byte previous = (byte)(data[0] ^ data[1]);
 
-
                     for (int i = 2; i < data.Length - 1; i++)
                     {
                         previous = (byte)(previous ^ data[i]);
                     }
-
-                    
 
                     Console.WriteLine($"\n\n{previous}\n\n");
                     data[12] = previous;
@@ -243,9 +239,8 @@ namespace FietsSimulatorGUI
 
                         Console.WriteLine(data[i]);
                     }
-
-
-                     await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);
+                    await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);
+                    
 
                     Console.Read();
 
@@ -270,6 +265,7 @@ namespace FietsSimulatorGUI
                 //{
                 //    Console.Write(b + " ");
                 //}
+
                 if (e.ServiceName == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e")
                 {
                     if (e.Data[4] == 16)
