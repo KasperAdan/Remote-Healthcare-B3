@@ -50,7 +50,32 @@ namespace FietsDemo
 
             bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
             await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
-             
+
+            byte[] data = new byte[13];
+            data[0] = 0xA4;
+            data[1] = 0x09;
+            data[2] = 0x4E;
+            data[3] = 0x05;
+            data[4] = 0x30;
+            data[5] = 0xff;
+            data[6] = 0xff;
+            data[7] = 0xff;
+            data[8] = 0xff;
+            data[9] = 0xff;
+            data[10] = 0xff;
+            data[11] = 0x50;
+            data[12] = 0;
+
+            byte previous = (byte)(data[0] ^ data[1]);
+            for (int i = 2; i < data.Length-1; i++)
+            {
+                previous = (byte)(previous ^ data[i]);
+            }
+
+            Console.WriteLine($"\n\n{previous}\n\n");
+            data[12] = previous;
+
+            await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);
 
             Console.Read();
         }
