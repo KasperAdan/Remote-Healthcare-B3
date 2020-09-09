@@ -26,13 +26,13 @@ namespace FietsDemo
             }
 
             // Connecting
-            errorCode = errorCode = await bleBike.OpenDevice("Tacx Flux 01249");
+            errorCode = errorCode = await bleBike.OpenDevice("Avans Bike 57E4");
             // __TODO__ Error check
 
             var services = bleBike.GetServices;
             foreach(var service in services)
             {
-                Console.WriteLine($"Service: {service.}");
+                Console.WriteLine($"Service: {service}");
             }
 
             // Set service
@@ -44,7 +44,7 @@ namespace FietsDemo
             errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 
             // Heart rate
-            errorCode =  await bleHeart.OpenDevice("Decathlon Dual HR");
+            errorCode =  await bleHeart.OpenDevice("Avans Bike 57E4");
 
             await bleHeart.SetService("HeartRate");
 
@@ -57,9 +57,24 @@ namespace FietsDemo
 
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
-                BitConverter.ToString(e.Data).Replace("-", " "),
-                Encoding.UTF8.GetString(e.Data));
+            if (e.Data[0] == 74)
+            {
+                if (e.Data[4] == 16)
+                {
+                    foreach (byte b in e.Data)
+                    {
+                        Console.Write(b + " ");
+                    }
+
+                    Console.WriteLine("Speed: " + (e.Data[9] * 256 + e.Data[8])/100.00);
+
+                    Console.WriteLine();
+                }
+            }
+
+            //Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
+            //    BitConverter.ToString(e.Data).Replace("-", " "),
+            //    Encoding.UTF8.GetString(e.Data));
         }
 
     }
