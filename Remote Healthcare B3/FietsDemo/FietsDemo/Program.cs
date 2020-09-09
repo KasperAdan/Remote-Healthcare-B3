@@ -44,7 +44,7 @@ namespace FietsDemo
             errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 
             // Heart rate
-            errorCode =  await bleHeart.OpenDevice("Avans Bike 57E4");
+            errorCode =  await bleHeart.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
 
             await bleHeart.SetService("HeartRate");
 
