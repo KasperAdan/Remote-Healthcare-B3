@@ -120,6 +120,11 @@
             // 
             this.numericUpDown1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.numericUpDown1.Location = new System.Drawing.Point(25, 179);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(120, 22);
             this.numericUpDown1.TabIndex = 9;
@@ -148,6 +153,11 @@
             // 
             this.numericUpDown3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.numericUpDown3.Location = new System.Drawing.Point(25, 379);
+            this.numericUpDown3.Maximum = new decimal(new int[] {
+            228,
+            0,
+            0,
+            0});
             this.numericUpDown3.Name = "numericUpDown3";
             this.numericUpDown3.Size = new System.Drawing.Size(120, 22);
             this.numericUpDown3.TabIndex = 11;
@@ -195,6 +205,11 @@
             // 
             this.numericUpDown4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.numericUpDown4.Location = new System.Drawing.Point(487, 369);
+            this.numericUpDown4.Maximum = new decimal(new int[] {
+            127,
+            0,
+            0,
+            0});
             this.numericUpDown4.Name = "numericUpDown4";
             this.numericUpDown4.Size = new System.Drawing.Size(120, 22);
             this.numericUpDown4.TabIndex = 16;

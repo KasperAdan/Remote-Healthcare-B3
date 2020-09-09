@@ -206,8 +206,9 @@ namespace FietsSimulatorGUI
                     bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
                     await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
 
-                    //testen
-                  
+                    int resistance = (int.Parse(numericUpDown4.Value.ToString()));
+                    Console.WriteLine($"Resistance: {resistance}");
+
                     //Sending resistance to the Bluetooth device
                     byte[] data = new byte[13];
                     data[0] = 0x4A; // Sync byte
@@ -215,13 +216,13 @@ namespace FietsSimulatorGUI
                     data[2] = 0x4E; // Type byte
                     data[3] = 0x05; // Channel byte 
                     data[4] = 0x30; // Data page nr
-                    data[5] = 0xFF; // Not in use
-                    data[6] = 0xFF; // Not in use
-                    data[7] = 0xFF; // Not in use
-                    data[8] = 0xFF; // Not in use
-                    data[9] = 0xFF; // Not in use
-                    data[10] = 0xFF; // Not in use
-                    data[11] = 0x50; // Resistance percentage /2
+                    data[5] = 0xff; // Not in use
+                    data[6] = 0xff; // Not in use
+                    data[7] = 0xff; // Not in use
+                    data[8] = 0xff; // Not in use
+                    data[9] = 0xff; // Not in use
+                    data[10] = 0xff; // Not in use
+                    data[11] = (byte)(resistance*2); // Resistance percentage /2
                     data[12] = 0; // Checksum
 
                     byte previous = (byte)(data[0] ^ data[1]);
@@ -236,11 +237,9 @@ namespace FietsSimulatorGUI
 
                     for (int i = 0; i < data.Length; i++)
                     {
-
                         Console.WriteLine(data[i]);
                     }
-                    await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);
-                    
+                    await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);    
 
                     Console.Read();
 
