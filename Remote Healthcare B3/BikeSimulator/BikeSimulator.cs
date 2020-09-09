@@ -21,7 +21,9 @@ namespace FietsSimulatorGUI
         public int ValueHeartRate { get; set; }
 
         public Boolean StartButtonClicked { get; set; }
-        public Boolean StartButtonClickedv2 { get; set; }
+
+        public Boolean AlreadySubscribed { get; set; }
+        public static Boolean StartButtonClickedv2 { get; set; }
 
         public int RandomNumber1 { get; set; }
         public int RandomNumber2 { get; set; }
@@ -34,6 +36,9 @@ namespace FietsSimulatorGUI
 
         public BikeData BikeData { get; set; }
 
+        BLE bleBike = new BLE();
+        BLE bleHeart = new BLE();
+
 
         public BikeSimulator()
         {
@@ -45,6 +50,7 @@ namespace FietsSimulatorGUI
             StartButtonClickedv2 = false;
             random = new Random();
             BikeData = new BikeData(ValueSpeed, ValueHeartRate, ValuePower, 10);
+            AlreadySubscribed = false;
 
         }
 
@@ -134,13 +140,17 @@ namespace FietsSimulatorGUI
         private void button3_Click(object sender, EventArgs e)
         {
             StartButtonClickedv2 = false;
+            Console.WriteLine("Stop butten clicked!!");
+           
+
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-
+            StartButtonClickedv2 = true;
             System.Threading.Thread thread2 = new System.Threading.Thread(new ThreadStart(WorkThreadFunction2Async));
             thread2.Start();
+
 
         }
 
@@ -149,9 +159,12 @@ namespace FietsSimulatorGUI
             try
             {
                 
+                    if (!AlreadySubscribed) {
+
+                    AlreadySubscribed = true;
+
                     int errorCode = 0;
-                    BLE bleBike = new BLE();
-                    BLE bleHeart = new BLE();
+                   
                     Thread.Sleep(1000); // We need some time to list available devices
 
                     // List available devices
@@ -163,6 +176,8 @@ namespace FietsSimulatorGUI
                     }
 
                     // Connecting
+                    Console.WriteLine("Zijn we hier?");
+                    Console.WriteLine(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
                     errorCode = errorCode = await bleBike.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
                     // __TODO__ Error check
 
@@ -170,6 +185,7 @@ namespace FietsSimulatorGUI
                     foreach (var service in services)
                     {
                         Console.WriteLine($"Service: {service}");
+                        
                     }
 
                     // Set service
@@ -179,18 +195,24 @@ namespace FietsSimulatorGUI
                     // Subscribe
                     bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
                     errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+                    
+
 
                     // Heart rate
                     errorCode = await bleHeart.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
+                    
 
                     await bleHeart.SetService("HeartRate");
 
                     bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
                     await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
 
-
                     Console.Read();
+
+               
                 }
+
+            }
 
             
             catch (Exception ex)
@@ -202,28 +224,32 @@ namespace FietsSimulatorGUI
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
 
-            //foreach (byte b in e.Data)
-            //{
-            //    Console.Write(b + " ");
-            //}
-            if (e.ServiceName == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e")
+            if (StartButtonClickedv2)
             {
-                if (e.Data[4] == 16)
+                //foreach (byte b in e.Data)
+                //{
+                //    Console.Write(b + " ");
+                //}
+                if (e.ServiceName == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e")
                 {
-                    Console.WriteLine("\n\tSpeed: " + (e.Data[9] * 256 + e.Data[8]) / 1000.00 + "m/s");
-                    //Console.WriteLine("\telapsed time: " + e.Data[6]/4.0 + " seconds");
-                    //Console.WriteLine("\telapsed distance: " + e.Data[7] + " meters\n");
+                    if (e.Data[4] == 16)
+                    {
+                        Console.WriteLine("\n\tSpeed: " + (e.Data[9] * 256 + e.Data[8]) / 1000.00 + "m/s");
 
+                        //Console.WriteLine("\telapsed time: " + e.Data[6]/4.0 + " seconds");
+                        //Console.WriteLine("\telapsed distance: " + e.Data[7] + " meters\n");
+
+                    }
                 }
-            }
-            else if (e.ServiceName == "00002a37-0000-1000-8000-00805f9b34fb")
-            {
-                Console.WriteLine($"\n\tHeartRate: {e.Data[1]}bpm");
-            }
+                else if (e.ServiceName == "00002a37-0000-1000-8000-00805f9b34fb")
+                {
+                    Console.WriteLine($"\n\tHeartRate: {e.Data[1]}bpm");
+                }
 
-            //Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
-            //    BitConverter.ToString(e.Data).Replace("-", " "),
-            //    Encoding.UTF8.GetString(e.Data));
+                //Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
+                //    BitConverter.ToString(e.Data).Replace("-", " "),
+                //    Encoding.UTF8.GetString(e.Data));
+            }
         }
     }
 }

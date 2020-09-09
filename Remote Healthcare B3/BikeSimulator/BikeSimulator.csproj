@@ -38,7 +38,7 @@
   <ItemGroup>
     <Reference Include="BLELibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\BLELibrary.dll</HintPath>
+      <HintPath>..\FietsDemo\FietsDemo\bin\Debug\BLELibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -88,7 +88,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="BikebluetoothName.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\FietsIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
