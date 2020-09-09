@@ -57,19 +57,24 @@ namespace FietsDemo
 
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            if (e.Data[0] == 74)
+
+            //foreach (byte b in e.Data)
+            //{
+            //    Console.Write(b + " ");
+            //}
+            if (e.ServiceName == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e")
             {
                 if (e.Data[4] == 16)
-                {
-                    foreach (byte b in e.Data)
-                    {
-                        Console.Write(b + " ");
-                    }
+                { 
+                    Console.WriteLine("\n\tSpeed: " + (e.Data[9] * 256 + e.Data[8]) / 100.00 + "m/s");
+                    //Console.WriteLine("\telapsed time: " + e.Data[6]/4.0 + " seconds");
+                    //Console.WriteLine("\telapsed distance: " + e.Data[7] + " meters\n");
 
-                    Console.WriteLine("Speed: " + (e.Data[9] * 256 + e.Data[8])/100.00);
-
-                    Console.WriteLine();
                 }
+            }
+            else if (e.ServiceName == "00002a37-0000-1000-8000-00805f9b34fb")
+            {
+                Console.WriteLine($"\n\tHeartRate: {e.Data[1]}bpm");
             }
 
             //Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
