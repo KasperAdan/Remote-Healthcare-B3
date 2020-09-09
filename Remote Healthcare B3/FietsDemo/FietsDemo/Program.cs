@@ -26,7 +26,7 @@ namespace FietsDemo
             }
 
             // Connecting
-            errorCode = errorCode = await bleBike.OpenDevice("Avans Bike 57E4");
+            errorCode = errorCode = await bleBike.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
             // __TODO__ Error check
 
             var services = bleBike.GetServices;
@@ -66,7 +66,7 @@ namespace FietsDemo
             {
                 if (e.Data[4] == 16)
                 { 
-                    Console.WriteLine("\n\tSpeed: " + (e.Data[9] * 256 + e.Data[8]) / 100.00 + "m/s");
+                    Console.WriteLine("\n\tSpeed: " + (e.Data[9] * 256 + e.Data[8]) / 1000.00 + "m/s");
                     //Console.WriteLine("\telapsed time: " + e.Data[6]/4.0 + " seconds");
                     //Console.WriteLine("\telapsed distance: " + e.Data[7] + " meters\n");
 
