@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{49D5F759-1C8B-4925-A11D-93B4700230E1}</ProjectGuid>
+    <ProjectGuid>{B4FE9C22-ABEB-46A0-8A6D-C80303D6914A}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>BikeSimulator</RootNamespace>
-    <AssemblyName>BikeSimulator</AssemblyName>
+    <RootNamespace>FietsSimulatorGUI</RootNamespace>
+    <AssemblyName>FietsSimulatorGUI</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -36,10 +36,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BLELibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\BLELibrary.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,9 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BikeData.cs" />
-    <Compile Include="BikeSimulator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="BikeSimulator.cs" />
     <Compile Include="BikeSimulator.Designer.cs">
       <DependentUpon>BikeSimulator.cs</DependentUpon>
     </Compile>
@@ -88,11 +82,8 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Resources\FietsIcon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <None Include="Resources\FietsIcon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
