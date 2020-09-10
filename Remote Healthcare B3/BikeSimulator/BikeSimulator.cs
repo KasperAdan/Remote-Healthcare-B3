@@ -20,19 +20,12 @@ namespace FietsSimulatorGUI
         public int ValueSpeed { get; set; }
         public int ValueHeartRate { get; set; }
 
-        public Boolean StartButtonClicked { get; set; }
+        public Boolean IsVirtualRunning { get; set; }
 
         public Boolean AlreadySubscribed { get; set; }
-        public static Boolean StartButtonClickedv2 { get; set; }
+        public static Boolean IsFysicalRunning { get; set; }
 
-        public int RandomNumber1 { get; set; }
-        public int RandomNumber2 { get; set; }
-        public int RandomNumber3 { get; set; }
-
-        public Random random { get; set; }
-
-
-        public int Stroom { get; set; }
+        public Random Random { get; set; }
 
         public BikeData BikeData { get; set; }
 
@@ -46,9 +39,9 @@ namespace FietsSimulatorGUI
             ValuePower = 10;
             ValueSpeed = 10;
             ValueHeartRate = 50;
-            StartButtonClicked = false;
-            StartButtonClickedv2 = false;
-            random = new Random();
+            IsVirtualRunning = false;
+            IsFysicalRunning = false;
+            Random = new Random();
             BikeData = new BikeData(ValueSpeed, ValueHeartRate, ValuePower, 10);
             AlreadySubscribed = false;
 
@@ -56,33 +49,33 @@ namespace FietsSimulatorGUI
 
    
 
-        private void label1_Click(object sender, EventArgs e)
+        private void Label1_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void label2_Click(object sender, EventArgs e)
+        private void Label2_Click(object sender, EventArgs e)
         {
 
         }
 
       
 
-        private void button1_Click(object sender, EventArgs e)
+        private void StartVirtual_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Start geklikt!");
             Console.WriteLine($"Waardes zijn: {ValuePower}, {ValueSpeed}, {ValueHeartRate}");
 
 
-            ValuePower = (int)numericUpDown1.Value;
-            ValueSpeed = (int)numericUpDown2.Value;
-            ValueHeartRate = (int)numericUpDown3.Value;
+            ValuePower = (int)virtualResistanceValue.Value;
+            ValueSpeed = (int)VirtualSpeedValue.Value;
+            ValueHeartRate = (int)VirtualHeartRateValue.Value;
 
             BikeData.Power = ValuePower;
             BikeData.Speed = ValueSpeed;
             BikeData.HeartRate = ValueHeartRate;
 
-            StartButtonClicked = true;
+            IsVirtualRunning = true;
             System.Threading.Thread thread = new System.Threading.Thread(new ThreadStart(WorkThreadFunction));
             thread.Start();
         }
@@ -91,7 +84,7 @@ namespace FietsSimulatorGUI
         {
             try
             {
-                while (StartButtonClicked)
+                while (IsVirtualRunning)
                 {
 
 
@@ -110,44 +103,44 @@ namespace FietsSimulatorGUI
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void StopVirtual_Click(object sender, EventArgs e)
         {
 
             Console.WriteLine("Stop geklikt!");
-            StartButtonClicked = false;
+            IsVirtualRunning = false;
         }
 
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            ValuePower = (int)numericUpDown1.Value;
-
-        }
-
-        private void numericUpDown2_ValueChanged(object sender, EventArgs e)
-        {
-            ValueSpeed = (int)numericUpDown2.Value;
+            ValuePower = (int)virtualResistanceValue.Value;
 
         }
 
-        private void numericUpDown3_ValueChanged(object sender, EventArgs e)
+        private void NumericUpDown2_ValueChanged(object sender, EventArgs e)
         {
-            ValueHeartRate = (int)numericUpDown3.Value;
+            ValueSpeed = (int)VirtualSpeedValue.Value;
+
+        }
+
+        private void NumericUpDown3_ValueChanged(object sender, EventArgs e)
+        {
+            ValueHeartRate = (int)VirtualHeartRateValue.Value;
 
         }
 
         
 
-        private void button3_Click(object sender, EventArgs e)
+        private void StopFysical_Click(object sender, EventArgs e)
         {
-            StartButtonClickedv2 = false;
+            IsFysicalRunning = false;
             Console.WriteLine("Stop butten clicked!!");
            
 
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void StartFysical_Click(object sender, EventArgs e)
         {
-            StartButtonClickedv2 = true;
+            IsFysicalRunning = true;
             System.Threading.Thread thread2 = new System.Threading.Thread(new ThreadStart(WorkThreadFunction2Async));
             thread2.Start();
 
@@ -206,7 +199,7 @@ namespace FietsSimulatorGUI
                     bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
                     await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
 
-                    int resistance = (int.Parse(numericUpDown4.Value.ToString()));
+                    int resistance = (int.Parse(fysicalResistaceValue.Value.ToString()));
                     Console.WriteLine($"Resistance: {resistance}");
 
                     //Sending resistance to the Bluetooth device
@@ -258,7 +251,7 @@ namespace FietsSimulatorGUI
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
 
-            if (StartButtonClickedv2)
+            if (IsFysicalRunning)
             {
                 //foreach (byte b in e.Data)
                 //{

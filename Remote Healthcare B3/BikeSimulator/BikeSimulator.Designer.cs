@@ -28,234 +28,249 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.labelfietssimulator = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
-            this.label4 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
+            this.titleApplication = new System.Windows.Forms.Label();
+            this.imageBiker = new System.Windows.Forms.PictureBox();
+            this.VirtualResistanceLabel = new System.Windows.Forms.Label();
+            this.virtualSpeedLabel = new System.Windows.Forms.Label();
+            this.VirtualHeartRateLabel = new System.Windows.Forms.Label();
+            this.startVirtualButton = new System.Windows.Forms.Button();
+            this.virtualResistanceValue = new System.Windows.Forms.NumericUpDown();
+            this.VirtualSpeedValue = new System.Windows.Forms.NumericUpDown();
+            this.VirtualHeartRateValue = new System.Windows.Forms.NumericUpDown();
+            this.stopVirtualButton = new System.Windows.Forms.Button();
+            this.stopFysicalButton = new System.Windows.Forms.Button();
+            this.startFysicalButton = new System.Windows.Forms.Button();
+            this.fysicalResistaceValue = new System.Windows.Forms.NumericUpDown();
+            this.fysicalResistaceLabel = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.imageBiker)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.virtualResistanceValue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VirtualSpeedValue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VirtualHeartRateValue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fysicalResistaceValue)).BeginInit();
             this.SuspendLayout();
             // 
-            // labelfietssimulator
+            // titleApplication
             // 
-            this.labelfietssimulator.AutoSize = true;
-            this.labelfietssimulator.Font = new System.Drawing.Font("Lucida Sans Unicode", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelfietssimulator.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.labelfietssimulator.Location = new System.Drawing.Point(12, 18);
-            this.labelfietssimulator.Name = "labelfietssimulator";
-            this.labelfietssimulator.Size = new System.Drawing.Size(592, 78);
-            this.labelfietssimulator.TabIndex = 0;
-            this.labelfietssimulator.Text = "Fiets Simulator B3";
+            this.titleApplication.AutoSize = true;
+            this.titleApplication.Font = new System.Drawing.Font("Lucida Sans Unicode", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.titleApplication.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.titleApplication.Location = new System.Drawing.Point(16, 22);
+            this.titleApplication.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.titleApplication.Name = "titleApplication";
+            this.titleApplication.Size = new System.Drawing.Size(741, 98);
+            this.titleApplication.TabIndex = 0;
+            this.titleApplication.Text = "Fiets Simulator B3";
             // 
-            // pictureBox1
+            // imageBiker
             // 
-            this.pictureBox1.Image = global::BikeSimulator.Properties.Resources.FietsIcon;
-            this.pictureBox1.Location = new System.Drawing.Point(646, -1);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(241, 121);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 1;
-            this.pictureBox1.TabStop = false;
+            this.imageBiker.Image = global::BikeSimulator.Properties.Resources.FietsIcon;
+            this.imageBiker.Location = new System.Drawing.Point(861, -1);
+            this.imageBiker.Margin = new System.Windows.Forms.Padding(4);
+            this.imageBiker.Name = "imageBiker";
+            this.imageBiker.Size = new System.Drawing.Size(321, 149);
+            this.imageBiker.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.imageBiker.TabIndex = 1;
+            this.imageBiker.TabStop = false;
             // 
-            // label1
+            // VirtualResistanceLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Lucida Sans Unicode", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label1.Location = new System.Drawing.Point(17, 131);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(264, 45);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Weerstand(W)";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.VirtualResistanceLabel.AutoSize = true;
+            this.VirtualResistanceLabel.Font = new System.Drawing.Font("Lucida Sans Unicode", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.VirtualResistanceLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.VirtualResistanceLabel.Location = new System.Drawing.Point(23, 161);
+            this.VirtualResistanceLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.VirtualResistanceLabel.Name = "VirtualResistanceLabel";
+            this.VirtualResistanceLabel.Size = new System.Drawing.Size(333, 57);
+            this.VirtualResistanceLabel.TabIndex = 2;
+            this.VirtualResistanceLabel.Text = "Weerstand(W)";
+            this.VirtualResistanceLabel.Click += new System.EventHandler(this.Label1_Click);
             // 
-            // label2
+            // virtualSpeedLabel
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Lucida Sans Unicode", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label2.Location = new System.Drawing.Point(17, 229);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(270, 45);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Snelheid(m/s)";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
+            this.virtualSpeedLabel.AutoSize = true;
+            this.virtualSpeedLabel.Font = new System.Drawing.Font("Lucida Sans Unicode", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.virtualSpeedLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.virtualSpeedLabel.Location = new System.Drawing.Point(23, 282);
+            this.virtualSpeedLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.virtualSpeedLabel.Name = "virtualSpeedLabel";
+            this.virtualSpeedLabel.Size = new System.Drawing.Size(341, 57);
+            this.virtualSpeedLabel.TabIndex = 3;
+            this.virtualSpeedLabel.Text = "Snelheid(m/s)";
+            this.virtualSpeedLabel.Click += new System.EventHandler(this.Label2_Click);
             // 
-            // label3
+            // VirtualHeartRateLabel
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Lucida Sans Unicode", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label3.Location = new System.Drawing.Point(17, 321);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(274, 45);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Hartslag(bpm)";
+            this.VirtualHeartRateLabel.AutoSize = true;
+            this.VirtualHeartRateLabel.Font = new System.Drawing.Font("Lucida Sans Unicode", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.VirtualHeartRateLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.VirtualHeartRateLabel.Location = new System.Drawing.Point(23, 395);
+            this.VirtualHeartRateLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.VirtualHeartRateLabel.Name = "VirtualHeartRateLabel";
+            this.VirtualHeartRateLabel.Size = new System.Drawing.Size(350, 57);
+            this.VirtualHeartRateLabel.TabIndex = 4;
+            this.VirtualHeartRateLabel.Text = "Hartslag(bpm)";
             // 
-            // button1
+            // startVirtualButton
             // 
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(215, 424);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(197, 50);
-            this.button1.TabIndex = 8;
-            this.button1.Text = "Start virtuele simulatie";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.startVirtualButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.startVirtualButton.Location = new System.Drawing.Point(287, 522);
+            this.startVirtualButton.Margin = new System.Windows.Forms.Padding(4);
+            this.startVirtualButton.Name = "startVirtualButton";
+            this.startVirtualButton.Size = new System.Drawing.Size(263, 62);
+            this.startVirtualButton.TabIndex = 8;
+            this.startVirtualButton.Text = "Start virtuele simulatie";
+            this.startVirtualButton.UseVisualStyleBackColor = true;
+            this.startVirtualButton.Click += new System.EventHandler(this.StartVirtual_Click);
             // 
-            // numericUpDown1
+            // virtualResistanceValue
             // 
-            this.numericUpDown1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericUpDown1.Location = new System.Drawing.Point(25, 179);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
+            this.virtualResistanceValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.virtualResistanceValue.Location = new System.Drawing.Point(33, 220);
+            this.virtualResistanceValue.Margin = new System.Windows.Forms.Padding(4);
+            this.virtualResistanceValue.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(120, 22);
-            this.numericUpDown1.TabIndex = 9;
-            this.numericUpDown1.Value = new decimal(new int[] {
+            this.virtualResistanceValue.Name = "virtualResistanceValue";
+            this.virtualResistanceValue.Size = new System.Drawing.Size(160, 26);
+            this.virtualResistanceValue.TabIndex = 9;
+            this.virtualResistanceValue.Value = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            this.virtualResistanceValue.ValueChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
             // 
-            // numericUpDown2
+            // VirtualSpeedValue
             // 
-            this.numericUpDown2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericUpDown2.Location = new System.Drawing.Point(25, 278);
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(120, 22);
-            this.numericUpDown2.TabIndex = 10;
-            this.numericUpDown2.Value = new decimal(new int[] {
+            this.VirtualSpeedValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.VirtualSpeedValue.Location = new System.Drawing.Point(33, 342);
+            this.VirtualSpeedValue.Margin = new System.Windows.Forms.Padding(4);
+            this.VirtualSpeedValue.Name = "VirtualSpeedValue";
+            this.VirtualSpeedValue.Size = new System.Drawing.Size(160, 26);
+            this.VirtualSpeedValue.TabIndex = 10;
+            this.VirtualSpeedValue.Value = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.numericUpDown2.ValueChanged += new System.EventHandler(this.numericUpDown2_ValueChanged);
+            this.VirtualSpeedValue.ValueChanged += new System.EventHandler(this.NumericUpDown2_ValueChanged);
             // 
-            // numericUpDown3
+            // VirtualHeartRateValue
             // 
-            this.numericUpDown3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericUpDown3.Location = new System.Drawing.Point(25, 379);
-            this.numericUpDown3.Maximum = new decimal(new int[] {
+            this.VirtualHeartRateValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.VirtualHeartRateValue.Location = new System.Drawing.Point(33, 466);
+            this.VirtualHeartRateValue.Margin = new System.Windows.Forms.Padding(4);
+            this.VirtualHeartRateValue.Maximum = new decimal(new int[] {
             228,
             0,
             0,
             0});
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(120, 22);
-            this.numericUpDown3.TabIndex = 11;
-            this.numericUpDown3.Value = new decimal(new int[] {
+            this.VirtualHeartRateValue.Name = "VirtualHeartRateValue";
+            this.VirtualHeartRateValue.Size = new System.Drawing.Size(160, 26);
+            this.VirtualHeartRateValue.TabIndex = 11;
+            this.VirtualHeartRateValue.Value = new decimal(new int[] {
             50,
             0,
             0,
             0});
-            this.numericUpDown3.ValueChanged += new System.EventHandler(this.numericUpDown3_ValueChanged);
+            this.VirtualHeartRateValue.ValueChanged += new System.EventHandler(this.NumericUpDown3_ValueChanged);
             // 
-            // button2
+            // stopVirtualButton
             // 
-            this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Location = new System.Drawing.Point(12, 424);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(197, 50);
-            this.button2.TabIndex = 12;
-            this.button2.Text = "Stop virtuele simulatie";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.stopVirtualButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.stopVirtualButton.Location = new System.Drawing.Point(16, 522);
+            this.stopVirtualButton.Margin = new System.Windows.Forms.Padding(4);
+            this.stopVirtualButton.Name = "stopVirtualButton";
+            this.stopVirtualButton.Size = new System.Drawing.Size(263, 62);
+            this.stopVirtualButton.TabIndex = 12;
+            this.stopVirtualButton.Text = "Stop virtuele simulatie";
+            this.stopVirtualButton.UseVisualStyleBackColor = true;
+            this.stopVirtualButton.Click += new System.EventHandler(this.StopVirtual_Click);
             // 
-            // button3
+            // stopFysicalButton
             // 
-            this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(477, 424);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(197, 50);
-            this.button3.TabIndex = 13;
-            this.button3.Text = "Stop fysieke simulatie";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.stopFysicalButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.stopFysicalButton.Location = new System.Drawing.Point(636, 522);
+            this.stopFysicalButton.Margin = new System.Windows.Forms.Padding(4);
+            this.stopFysicalButton.Name = "stopFysicalButton";
+            this.stopFysicalButton.Size = new System.Drawing.Size(263, 62);
+            this.stopFysicalButton.TabIndex = 13;
+            this.stopFysicalButton.Text = "Stop fysieke simulatie";
+            this.stopFysicalButton.UseVisualStyleBackColor = true;
+            this.stopFysicalButton.Click += new System.EventHandler(this.StopFysical_Click);
             // 
-            // button4
+            // startFysicalButton
             // 
-            this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(680, 424);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(197, 50);
-            this.button4.TabIndex = 14;
-            this.button4.Text = "Start fysieke simulatie";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.startFysicalButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.startFysicalButton.Location = new System.Drawing.Point(907, 522);
+            this.startFysicalButton.Margin = new System.Windows.Forms.Padding(4);
+            this.startFysicalButton.Name = "startFysicalButton";
+            this.startFysicalButton.Size = new System.Drawing.Size(263, 62);
+            this.startFysicalButton.TabIndex = 14;
+            this.startFysicalButton.Text = "Start fysieke simulatie";
+            this.startFysicalButton.UseVisualStyleBackColor = true;
+            this.startFysicalButton.Click += new System.EventHandler(this.StartFysical_Click);
             // 
-            // numericUpDown4
+            // fysicalResistaceValue
             // 
-            this.numericUpDown4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericUpDown4.Location = new System.Drawing.Point(487, 369);
-            this.numericUpDown4.Maximum = new decimal(new int[] {
+            this.fysicalResistaceValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fysicalResistaceValue.Location = new System.Drawing.Point(649, 454);
+            this.fysicalResistaceValue.Margin = new System.Windows.Forms.Padding(4);
+            this.fysicalResistaceValue.Maximum = new decimal(new int[] {
             127,
             0,
             0,
             0});
-            this.numericUpDown4.Name = "numericUpDown4";
-            this.numericUpDown4.Size = new System.Drawing.Size(120, 22);
-            this.numericUpDown4.TabIndex = 16;
-            this.numericUpDown4.Value = new decimal(new int[] {
+            this.fysicalResistaceValue.Name = "fysicalResistaceValue";
+            this.fysicalResistaceValue.Size = new System.Drawing.Size(160, 26);
+            this.fysicalResistaceValue.TabIndex = 16;
+            this.fysicalResistaceValue.Value = new decimal(new int[] {
             10,
             0,
             0,
             0});
             // 
-            // label4
+            // fysicalResistaceLabel
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Lucida Sans Unicode", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label4.Location = new System.Drawing.Point(479, 321);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(264, 45);
-            this.label4.TabIndex = 15;
-            this.label4.Text = "Weerstand(W)";
+            this.fysicalResistaceLabel.AutoSize = true;
+            this.fysicalResistaceLabel.Font = new System.Drawing.Font("Lucida Sans Unicode", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fysicalResistaceLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.fysicalResistaceLabel.Location = new System.Drawing.Point(639, 395);
+            this.fysicalResistaceLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.fysicalResistaceLabel.Name = "fysicalResistaceLabel";
+            this.fysicalResistaceLabel.Size = new System.Drawing.Size(333, 57);
+            this.fysicalResistaceLabel.TabIndex = 15;
+            this.fysicalResistaceLabel.Text = "Weerstand(W)";
             // 
             // BikeSimulator
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(899, 502);
-            this.Controls.Add(this.numericUpDown4);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.numericUpDown3);
-            this.Controls.Add(this.numericUpDown2);
-            this.Controls.Add(this.numericUpDown1);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.labelfietssimulator);
+            this.ClientSize = new System.Drawing.Size(1199, 618);
+            this.Controls.Add(this.fysicalResistaceValue);
+            this.Controls.Add(this.fysicalResistaceLabel);
+            this.Controls.Add(this.startFysicalButton);
+            this.Controls.Add(this.stopFysicalButton);
+            this.Controls.Add(this.stopVirtualButton);
+            this.Controls.Add(this.VirtualHeartRateValue);
+            this.Controls.Add(this.VirtualSpeedValue);
+            this.Controls.Add(this.virtualResistanceValue);
+            this.Controls.Add(this.startVirtualButton);
+            this.Controls.Add(this.VirtualHeartRateLabel);
+            this.Controls.Add(this.virtualSpeedLabel);
+            this.Controls.Add(this.VirtualResistanceLabel);
+            this.Controls.Add(this.imageBiker);
+            this.Controls.Add(this.titleApplication);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "BikeSimulator";
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.imageBiker)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.virtualResistanceValue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VirtualSpeedValue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VirtualHeartRateValue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fysicalResistaceValue)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -263,20 +278,20 @@
 
         #endregion
 
-        private System.Windows.Forms.Label labelfietssimulator;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.NumericUpDown numericUpDown2;
-        private System.Windows.Forms.NumericUpDown numericUpDown3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.NumericUpDown numericUpDown4;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label titleApplication;
+        private System.Windows.Forms.PictureBox imageBiker;
+        private System.Windows.Forms.Label VirtualResistanceLabel;
+        private System.Windows.Forms.Label virtualSpeedLabel;
+        private System.Windows.Forms.Label VirtualHeartRateLabel;
+        private System.Windows.Forms.Button startVirtualButton;
+        private System.Windows.Forms.NumericUpDown virtualResistanceValue;
+        private System.Windows.Forms.NumericUpDown VirtualSpeedValue;
+        private System.Windows.Forms.NumericUpDown VirtualHeartRateValue;
+        private System.Windows.Forms.Button stopVirtualButton;
+        private System.Windows.Forms.Button stopFysicalButton;
+        private System.Windows.Forms.Button startFysicalButton;
+        private System.Windows.Forms.NumericUpDown fysicalResistaceValue;
+        private System.Windows.Forms.Label fysicalResistaceLabel;
     }
 }
 

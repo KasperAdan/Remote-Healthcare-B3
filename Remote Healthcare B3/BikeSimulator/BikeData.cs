@@ -41,8 +41,8 @@ namespace FietsSimulatorGUI
         }
 
 
-
-        public string ToString()
+        
+        public override string ToString()
         {
             return $"Speed = {Speed}, HeartRate = {HeartRate}, Spread = {Spread} ";
         }
