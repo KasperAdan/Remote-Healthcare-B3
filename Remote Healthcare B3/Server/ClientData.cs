@@ -45,7 +45,7 @@ namespace Server
         {
             for (int i = 0; i < data.Count; i++)
             {
-                Console.WriteLine($"Measurement {i+1}:\tSpeed: {data[i][0]}\tHeartRate: {data[i][1]}\tPower: {data[i][2]}\tResistance: {data[i][3]}");
+                Console.WriteLine($"Measurement {i+1}:   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Power: {data[i][2]}   Resistance: {data[i][3]}");
             }
         }
     }

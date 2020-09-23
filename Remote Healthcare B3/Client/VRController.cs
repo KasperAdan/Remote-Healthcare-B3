@@ -174,7 +174,7 @@ namespace Client
                 }
                 if (name != "" && uuid != "")
                 {
-                    this.vrObject.AddVRObject(objectType, name, int.Parse(uuid));
+                    this.vrObject.AddVRObject(objectType, name, uuid);
                     Debug.WriteLine("Name: {0} \nuuid: {1}", name, uuid);
 
                     name = "";

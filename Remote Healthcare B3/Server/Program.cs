@@ -20,6 +20,11 @@ namespace Server
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
 
             Console.ReadLine();
+
+            while (true)
+            {
+
+            }
         }
 
         private static void OnConnect(IAsyncResult ar)

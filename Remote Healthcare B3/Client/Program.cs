@@ -23,22 +23,22 @@ namespace Client
 
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
-            
-            //VRController vrController = new VRController();
 
+            //VRController vrController = new VRController(); // WHY U NO WORK
+            bool sendData = false;
             while (true)
             {
-                
+
             }
         }
 
         private static void OnConnect(IAsyncResult ar)
         {
             client.EndConnect(ar);
-            Console.WriteLine("Verbonden!");
             stream = client.GetStream();
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-            write($"login\r\n{username}");
+            Write($"login\r\n{username}");
+            
         }
 
         private static void OnRead(IAsyncResult ar)
@@ -56,7 +56,7 @@ namespace Client
             }
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
-        private static void write(string data)
+        private static void Write(string data)
         {
             var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
             stream.Write(dataAsBytes, 0, dataAsBytes.Length);
@@ -72,14 +72,14 @@ namespace Client
                 case "login":
                     if (packetData[1] == "ok")
                     {
-                        Console.WriteLine("Logged in!");
+                        Console.WriteLine("Connected");
                         loggedIn = true;
                     }
                     else
                         Console.WriteLine(packetData[1]);
                     break;
-                case "chat":
-                    Console.WriteLine($"Chat ontvangen: '{packetData[1]}'");
+                case "data":
+                    Console.WriteLine(packetData[1]);
                     break;
             }
 

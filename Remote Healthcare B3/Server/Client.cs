@@ -63,11 +63,14 @@ namespace Server
                         return;
                     this.UserName = packetData[1];
                     Console.WriteLine($"User {this.UserName} is connected");
+                    Write("login\r\nok");
                     break;
-                case "data:":
+                case "data":
                     if (!assertPacketData(packetData, 5))
                         return;
                     this.clientData.AddData(packetData[1], packetData[2], packetData[3], packetData[4]);
+                    Write("data\r\nData Recieved");
+                    this.clientData.PrintData();
                     break;
             }
 
