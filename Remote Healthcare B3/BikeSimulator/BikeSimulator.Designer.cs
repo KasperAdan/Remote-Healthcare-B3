@@ -83,7 +83,6 @@
             this.VirtualResistanceLabel.Size = new System.Drawing.Size(333, 57);
             this.VirtualResistanceLabel.TabIndex = 2;
             this.VirtualResistanceLabel.Text = "Weerstand(W)";
-            this.VirtualResistanceLabel.Click += new System.EventHandler(this.Label1_Click);
             // 
             // virtualSpeedLabel
             // 
@@ -96,7 +95,6 @@
             this.virtualSpeedLabel.Size = new System.Drawing.Size(341, 57);
             this.virtualSpeedLabel.TabIndex = 3;
             this.virtualSpeedLabel.Text = "Snelheid(m/s)";
-            this.virtualSpeedLabel.Click += new System.EventHandler(this.Label2_Click);
             // 
             // VirtualHeartRateLabel
             // 

@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Avans.TI.BLE;
 
@@ -46,20 +40,6 @@ namespace FietsSimulatorGUI
             AlreadySubscribed = false;
 
         }
-
-   
-
-        private void Label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-      
 
         private void StartVirtual_Click(object sender, EventArgs e)
         {
@@ -105,9 +85,9 @@ namespace FietsSimulatorGUI
 
         private void StopVirtual_Click(object sender, EventArgs e)
         {
-
             Console.WriteLine("Stop geklikt!");
             IsVirtualRunning = false;
+
         }
 
         private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -128,14 +108,11 @@ namespace FietsSimulatorGUI
 
         }
 
-        
-
         private void StopFysical_Click(object sender, EventArgs e)
         {
             IsFysicalRunning = false;
             Console.WriteLine("Stop butten clicked!!");
            
-
         }
 
         private void StartFysical_Click(object sender, EventArgs e)
@@ -144,20 +121,20 @@ namespace FietsSimulatorGUI
             System.Threading.Thread thread2 = new System.Threading.Thread(new ThreadStart(WorkThreadFunction2Async));
             thread2.Start();
 
-
         }
 
         public async void WorkThreadFunction2Async()
         {
             try
             {
-                
-                    if (!AlreadySubscribed) {
+
+                if (!AlreadySubscribed)
+                {
 
                     AlreadySubscribed = true;
 
                     int errorCode = 0;
-                   
+
                     Thread.Sleep(1000); // We need some time to list available devices
 
                     // List available devices
@@ -177,7 +154,7 @@ namespace FietsSimulatorGUI
                     foreach (var service in services)
                     {
                         Console.WriteLine($"Service: {service}");
-                        
+
                     }
 
                     // Set service
@@ -187,12 +164,12 @@ namespace FietsSimulatorGUI
                     // Subscribe
                     bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
                     errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
-                    
+
 
 
                     // Heart rate
                     errorCode = await bleHeart.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
-                    
+
 
                     await bleHeart.SetService("HeartRate");
 
@@ -215,7 +192,7 @@ namespace FietsSimulatorGUI
                     data[8] = 0xff; // Not in use
                     data[9] = 0xff; // Not in use
                     data[10] = 0xff; // Not in use
-                    data[11] = (byte)(resistance*2); // Resistance percentage /2
+                    data[11] = (byte)(resistance * 2); // Resistance percentage /2
                     data[12] = 0; // Checksum
 
                     byte previous = (byte)(data[0] ^ data[1]);
@@ -232,16 +209,12 @@ namespace FietsSimulatorGUI
                     {
                         Console.WriteLine(data[i]);
                     }
-                    await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);    
+                    await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);
 
                     Console.Read();
 
-               
                 }
-
             }
-
-            
             catch (Exception ex)
             {
                 // log errors
@@ -250,7 +223,6 @@ namespace FietsSimulatorGUI
 
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-
             if (IsFysicalRunning)
             {
                 //foreach (byte b in e.Data)
@@ -268,8 +240,7 @@ namespace FietsSimulatorGUI
                         //Console.WriteLine("\telapsed distance: " + e.Data[7] + " meters\n");
 
                     }
-                }
-                else if (e.ServiceName == "00002a37-0000-1000-8000-00805f9b34fb")
+                }else if (e.ServiceName == "00002a37-0000-1000-8000-00805f9b34fb")
                 {
                     Console.WriteLine($"\n\tHeartRate: {e.Data[1]}bpm");
                 }
