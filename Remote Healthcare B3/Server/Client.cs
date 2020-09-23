@@ -62,6 +62,7 @@ namespace Server
                     if (!assertPacketData(packetData, 2))
                         return;
                     this.UserName = packetData[1];
+                    Console.WriteLine($"User {this.UserName} is connected");
                     break;
                 case "data:":
                     if (!assertPacketData(packetData, 5))

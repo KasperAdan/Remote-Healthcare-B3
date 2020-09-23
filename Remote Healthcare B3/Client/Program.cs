@@ -23,6 +23,7 @@ namespace Client
 
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
+            VRController vrController = new VRController();
 
             while (true)
             {
