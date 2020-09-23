@@ -229,6 +229,7 @@
             0,
             0,
             0});
+            this.fysicalResistaceValue.ValueChanged += new System.EventHandler(this.fysicalResistaceValue_ValueChanged);
             // 
             // fysicalResistaceLabel
             // 
