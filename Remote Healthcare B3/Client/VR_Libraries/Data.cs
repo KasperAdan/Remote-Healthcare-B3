@@ -8,43 +8,46 @@ namespace Client_VR
 {
     class VRObject {
 
-        public static String ObjectName { get; set; }
+        //public static String ObjectName { get; set; }
 
-        public static String ObjectType { get; set; }
-        public static int ObjectUUID { get; set; }
+        //public static String ObjectType { get; set; }
+        //public static string ObjectUUID { get; set; }
 
-        public static Dictionary<String, int> TerrainDictionary = new Dictionary<String, int>();
-        public static Dictionary<String, int> PanelDictionary = new Dictionary<String, int>();
-        public static Dictionary<String, int> RouteDictionary = new Dictionary<String, int>();
-        public static Dictionary<String, int> RoadDictionary = new Dictionary<String, int>();
-        public static Dictionary<String, int> NodeDictionary = new Dictionary<String, int>();
-        public static Dictionary<String, int> BaseDictionary = new Dictionary<String, int>();
+        public static Dictionary<string, string> TerrainDictionary = new Dictionary<string, string>();
+        public static Dictionary<string, string> PanelDictionary = new Dictionary<string, string>();
+        public static Dictionary<string, string> RouteDictionary = new Dictionary<string, string>();
+        public static Dictionary<string, string> RoadDictionary = new Dictionary<string, string>();
+        public static Dictionary<string, string> NodeDictionary = new Dictionary<string, string>();
+        public static Dictionary<string, string> BaseDictionary = new Dictionary<string, string>();
 
-        public VRObject(VRObjects objecttype, string objectName, int objectUUID)
+        public static List<Dictionary<String, string>> dictionaries = new List<Dictionary<string, string>>() { TerrainDictionary, PanelDictionary, RouteDictionary, RoadDictionary, NodeDictionary, BaseDictionary };
+
+        public VRObject()
         {
-            ObjectName = objectName;
-            ObjectUUID = objectUUID;
-            ObjectType = objecttype.ToString();
 
-            switch (ObjectType)
+        }
+
+        public void AddVRObject(VRObjects objectType, string objectName, string objectUUID)
+        {
+            switch (objectType.ToString())
             {
                 case "BASE":
-                    BaseDictionary.Add(ObjectName, ObjectUUID);
+                    BaseDictionary.Add(objectName, objectUUID);
                     break;
                 case "TERRAIN":
-                    TerrainDictionary.Add(ObjectName, ObjectUUID);
+                    TerrainDictionary.Add(objectName, objectUUID);
                     break;
                 case "PANEL":
-                    PanelDictionary.Add(ObjectName, ObjectUUID);
+                    PanelDictionary.Add(objectName, objectUUID);
                     break;
                 case "ROUTE":
-                    RouteDictionary.Add(ObjectName, ObjectUUID);
+                    RouteDictionary.Add(objectName, objectUUID);
                     break;
                 case "ROAD":
-                    RoadDictionary.Add(ObjectName, ObjectUUID);
+                    RoadDictionary.Add(objectName, objectUUID);
                     break;
                 case "NODE":
-                    NodeDictionary.Add(ObjectName, ObjectUUID);
+                    NodeDictionary.Add(objectName, objectUUID);
                     break;
                 default:
                     Console.WriteLine("Default case");
@@ -65,7 +68,7 @@ namespace Client_VR
 
             if (ObjectName.ToString().Equals(VRObjects.NODE.ToString()))
             {
-                foreach (KeyValuePair<String, int> vrobject in VRObject.NodeDictionary)
+                foreach (KeyValuePair<string, string> vrobject in VRObject.NodeDictionary)
                 {
                     Console.WriteLine("Key: {0}, Value: {1}",
                     vrobject.Key, vrobject.Value);
@@ -74,7 +77,7 @@ namespace Client_VR
 
             if (ObjectName.ToString().Equals(VRObjects.ROAD.ToString()))
             {
-                foreach (KeyValuePair<String, int> vrobject in VRObject.RoadDictionary)
+                foreach (KeyValuePair<string, string> vrobject in VRObject.RoadDictionary)
                 {
                     Console.WriteLine("Key: {0}, Value: {1}",
                     vrobject.Key, vrobject.Value);
@@ -83,7 +86,7 @@ namespace Client_VR
 
             if (ObjectName.ToString().Equals(VRObjects.ROUTE.ToString()))
             {
-                foreach (KeyValuePair<String, int> vrobject in VRObject.RouteDictionary)
+                foreach (KeyValuePair<string, string> vrobject in VRObject.RouteDictionary)
                 {
                     Console.WriteLine("Key: {0}, Value: {1}",
                     vrobject.Key, vrobject.Value);
@@ -92,7 +95,7 @@ namespace Client_VR
 
             if (ObjectName.ToString().Equals(VRObjects.PANEL.ToString()))
             {
-                foreach (KeyValuePair<String, int> vrobject in VRObject.PanelDictionary)
+                foreach (KeyValuePair<string, string> vrobject in VRObject.PanelDictionary)
                 {
                     Console.WriteLine("Key: {0}, Value: {1}",
                     vrobject.Key, vrobject.Value);
@@ -101,7 +104,7 @@ namespace Client_VR
 
             if (ObjectName.ToString().Equals(VRObjects.TERRAIN.ToString()))
             {
-                foreach (KeyValuePair<String, int> vrobject in VRObject.TerrainDictionary)
+                foreach (KeyValuePair<string, string> vrobject in VRObject.TerrainDictionary)
                 {
                     Console.WriteLine("Key: {0}, Value: {1}",
                     vrobject.Key, vrobject.Value);
@@ -111,6 +114,18 @@ namespace Client_VR
 
             return ReturnList;
 
+        }
+
+        public string getUUID(string name)
+        {
+            foreach (var item in dictionaries)
+            {
+                if (item.TryGetValue(name, out string value))
+                {
+                    return value;
+                }
+            }
+            return "";
         }
 
     }

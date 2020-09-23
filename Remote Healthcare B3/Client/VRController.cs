@@ -1,4 +1,5 @@
-﻿using Client_VR;
+﻿using Client.VR_Libraries;
+using Client_VR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -18,6 +19,7 @@ namespace Client
     {
         private static TcpClient Client;
         private static string TunnelId;
+        private VRObject vrObject;
 
         public VRController()
         {
@@ -25,11 +27,20 @@ namespace Client
             Init();
 
             WriteTextMessage(GenerateMessage(Scene.Get()));
-            SaveObjects(ReadTextMessage());
+            SaveObjects(ReadTextMessage(), VRObjects.BASE);
+
+            if (vrObject.getUUID("rightHand") != string.Empty)
+            {
+                string parentPanel = vrObject.getUUID("rightHand");
+                WriteTextMessage(GenerateMessage(Scene.Node.Add("SpeedPanel", parentPanel, new int[] { 1, 1 }, new int[] { 512, 512 }, new int[] { 1, 1, 1, 1 }, false)));
+            }
+            SaveObjects(ReadTextMessage(), VRObjects.PANEL);
+
         }
 
         private void Init()
         {
+            vrObject = new VRObject();
             WriteTextMessage("{\"id\":\"session/list\"}");
 
             JObject response = ReadTextMessage(); // stap 2 (get response)
@@ -116,7 +127,16 @@ namespace Client
             return totalMessage.ToString();
         }
 
-        public static void SaveObjects(JObject json/*, VRObjects objectType*/)
+        public void SetSpeed(int speed)
+        {
+            if (vrObject.getUUID("SpeedPanel") != string.Empty)
+            {
+                string panelUUID = vrObject.getUUID("SpeedPanel");
+                WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(panelUUID, speed.ToString(), new float[] { 100, 100 }, 32, new int[] { 0, 0, 0, 1 }, "Calibri")));
+            }
+        }
+
+        public void SaveObjects(JObject json, VRObjects objectType)
         {
             string jsonString = json.ToString();
             bool nextIsName = false;
@@ -154,8 +174,8 @@ namespace Client
                 }
                 if (name != "" && uuid != "")
                 {
-                    //TODO: save it here
-                    Console.WriteLine("Name: {0} \nuuid: {1}", name, uuid);
+                    this.vrObject.AddVRObject(objectType, name, int.Parse(uuid));
+                    Debug.WriteLine("Name: {0} \nuuid: {1}", name, uuid);
 
                     name = "";
                     uuid = "";

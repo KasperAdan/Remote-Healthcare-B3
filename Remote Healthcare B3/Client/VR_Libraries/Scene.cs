@@ -194,7 +194,7 @@ namespace Client_VR
             return add;
         }
 
-        public JObject Add(string name, int[] panelSize, int[] panelResolution, int[] background, bool castshadow)
+        public JObject Add(string name, string parent, int[] panelSize, int[] panelResolution, int[] background, bool castshadow)
         {
             JObject add =
                 new JObject(
@@ -202,6 +202,7 @@ namespace Client_VR
                     new JProperty("data",
                     new JObject(
                         new JProperty("name", name),
+                        new JProperty("parent", parent),
                         new JProperty("components",
                         new JObject(
                             new JProperty("panel",
