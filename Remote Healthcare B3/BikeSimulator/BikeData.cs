@@ -11,7 +11,7 @@ namespace FietsSimulatorGUI
         public int Speed { get; set; }
         public int HeartRate { get; set; }
 
-        public int Power { get; set; }
+        public int Resistance { get; set; }
 
         public int Spread { get; set; }
 
@@ -21,7 +21,7 @@ namespace FietsSimulatorGUI
             this.Speed = Speed;
             this.HeartRate = HeartRate;
             this.Spread = Spread;
-            this.Power = Power;
+            this.Resistance = Power;
             this.Random = new Random();
         }
 
@@ -37,7 +37,7 @@ namespace FietsSimulatorGUI
 
         public int GetPower()
         {
-            return Power + this.Random.Next(-Spread, Spread);
+            return Resistance + this.Random.Next(-Spread, Spread);
         }
 
 

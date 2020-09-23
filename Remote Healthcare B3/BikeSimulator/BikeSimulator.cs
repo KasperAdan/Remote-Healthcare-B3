@@ -51,7 +51,7 @@ namespace FietsSimulatorGUI
             ValueSpeed = (int)VirtualSpeedValue.Value;
             ValueHeartRate = (int)VirtualHeartRateValue.Value;
 
-            BikeData.Power = ValuePower;
+            BikeData.Resistance = ValuePower;
             BikeData.Speed = ValueSpeed;
             BikeData.HeartRate = ValueHeartRate;
 

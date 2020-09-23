@@ -17,6 +17,11 @@ namespace Client
 
         static void Main(string[] args)
         {
+            IBike bike = new RealBike("Avans bike 2389");
+            bike.OnSpeed += Bike_OnSpeed;
+            Console.ReadLine();
+
+
             Console.WriteLine("Welcome user!");
             Console.WriteLine("Whats your name? ");
             username = Console.ReadLine();
@@ -30,6 +35,11 @@ namespace Client
             {
 
             }
+        }
+
+        private static void Bike_OnSpeed(object sender, float e)
+        {
+            Console.WriteLine("Speed: " + e);
         }
 
         private static void OnConnect(IAsyncResult ar)
