@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace Server
@@ -12,6 +13,7 @@ namespace Server
         private NetworkStream stream;
         private byte[] buffer = new byte[1024];
         private string totalBuffer = "";
+        private ClientData clientData;
         #endregion
 
         public string UserName { get; set; }
@@ -20,6 +22,7 @@ namespace Server
         public Client(TcpClient tcpClient)
         {
             this.tcpClient = tcpClient;
+            this.clientData = new ClientData();
 
             this.stream = this.tcpClient.GetStream();
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
@@ -56,32 +59,15 @@ namespace Server
             switch (packetData[0])
             {
                 case "login":
-                    if (!assertPacketData(packetData, 3))
+                    if (!assertPacketData(packetData, 2))
                         return;
-                    if (packetData[1] == packetData[2])
-                    {
-                        Write("login\r\nok");
-                        this.UserName = packetData[1];
-                    }
-                    else
-                        Write("login\r\nerror, wrong password");
+                    this.UserName = packetData[1];
                     break;
-                case "chat":
-                    {
-                        if (!assertPacketData(packetData, 2))
-                            return;
-                        string message = $"{this.UserName} : {packetData[1]}";
-                        Program.Broadcast($"chat\r\n{message}");
-                        break;
-                    }
-                case "pm":
-                    {
-                        if (!assertPacketData(packetData, 3))
-                            return;
-                        string message = $"{this.UserName} : {packetData[2]}";
-                        Program.SendToUser(packetData[1], message);
-                        break;
-                    }
+                case "data:":
+                    if (!assertPacketData(packetData, 5))
+                        return;
+                    this.clientData.AddData(packetData[1], packetData[2], packetData[3], packetData[4]);
+                    break;
             }
 
 

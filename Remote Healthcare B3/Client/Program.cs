@@ -17,25 +17,16 @@ namespace Client
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello Client!");
-            Console.WriteLine("Wat is je gebruikersnaam? ");
+            Console.WriteLine("Welcome user!");
+            Console.WriteLine("Whats your name? ");
             username = Console.ReadLine();
-            Console.WriteLine("Wat is je wachtwoord? ");
-            password = Console.ReadLine();
 
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
-
-
             while (true)
             {
-                Console.WriteLine("Voer een chatbericht in:");
-                string newChatMessage = Console.ReadLine();
-                if (loggedIn)
-                    write($"chat\r\n{newChatMessage}");
-                else
-                    Console.WriteLine("Je bent nog niet ingelogd");
+                
             }
         }
 
@@ -45,7 +36,7 @@ namespace Client
             Console.WriteLine("Verbonden!");
             stream = client.GetStream();
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-            write($"login\r\n{username}\r\n{password}");
+            write($"login\r\n{username}");
         }
 
         private static void OnRead(IAsyncResult ar)
