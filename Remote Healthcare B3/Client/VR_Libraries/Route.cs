@@ -60,12 +60,13 @@ namespace Client_VR
             } 
         }
 
-        public static JObject Add(RouteNode[] RouteNodes)
+        public static JObject Add(int serial, RouteNode[] RouteNodes)
         {
 
             JObject Route =
                 new JObject(
                     new JProperty("id", "route/add"),
+                    new JProperty("serial", serial),
                     new JProperty("data", new JObject(
                             new JProperty("nodes", new JArray( from n in RouteNodes select new JObject(
                                  new JProperty("pos", n.pos),
@@ -78,12 +79,13 @@ namespace Client_VR
             return Route;
         }
 
-        public static JObject Update(string RouteID, RouteNode[] NewNodes)
+        public static JObject Update(int serial, string RouteID, RouteNode[] NewNodes)
         {
             //TODO check if the indexes are correct
             JObject Update =
                 new JObject(
                     new JProperty("id","route/update"),
+                    new JProperty("serial", serial),
                     new JProperty("data", new JObject(
                         new JProperty("id", RouteID),
                         new JProperty("nodes", new JArray(from n in NewNodes select new JObject(
@@ -96,11 +98,12 @@ namespace Client_VR
             return Update;
         }
 
-        public static JObject Delete(string RouteID)
+        public static JObject Delete(int serial, string RouteID)
         {
             JObject Delete =
                 new JObject(
                     new JProperty("id","route/delete"),
+                    new JProperty("serial", serial),
                     new JProperty("data", new JObject(
                         new JProperty("id", RouteID)
                         ))
@@ -108,7 +111,7 @@ namespace Client_VR
             return Delete;
         }
 
-        public static JObject Follow(string RouteId, string NodeId, double speed, double offset, Rotation rotation, double smoothing, bool followHeight, int[] rotateOffset, int[] positionOffset)
+        public static JObject Follow(int serial, string RouteId, string NodeId, double speed, double offset, Rotation rotation, double smoothing, bool followHeight, int[] rotateOffset, int[] positionOffset)
         {
             string rotationValue;
             switch (rotation)
@@ -130,6 +133,7 @@ namespace Client_VR
             JObject Follow =
                 new JObject(
                     new JProperty("id", "route/follow"),
+                    new JProperty("serial", serial),
                     new JProperty("data", new JObject(
                         new JProperty("route", RouteId),
                         new JProperty("node", NodeId),
@@ -145,11 +149,12 @@ namespace Client_VR
             return Follow;
         }
 
-        public static JObject SetFollowSpeed(string NodeId, double speed)
+        public static JObject SetFollowSpeed(int serial, string NodeId, double speed)
         {
             JObject FollowSpeed =
                 new JObject(
                     new JProperty("id", "route/follow/speed"),
+                    new JProperty("serial", serial),
                     new JProperty("data", new JObject(
                         new JProperty("node", NodeId),
                         new JProperty("speed", speed)
@@ -158,11 +163,12 @@ namespace Client_VR
             return FollowSpeed;
         }
 
-        public static JObject Show(bool isShown)
+        public static JObject Show(int serial, bool isShown)
         {
             JObject Show =
                 new JObject(
                     new JProperty("id", "route/show"),
+                    new JProperty("serial", serial),
                     new JProperty("data", new JObject(
                         new JProperty("show", isShown)
                         ))

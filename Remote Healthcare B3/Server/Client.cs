@@ -66,9 +66,9 @@ namespace Server
                     Write("login\r\nok");
                     break;
                 case "data":
-                    if (!assertPacketData(packetData, 5))
+                    if (!assertPacketData(packetData, 4))
                         return;
-                    this.clientData.AddData(packetData[1], packetData[2], packetData[3], packetData[4]);
+                    this.clientData.AddData(packetData[1], packetData[2], packetData[3]);
                     Write("data\r\nData Recieved");
                     this.clientData.PrintData();
                     break;

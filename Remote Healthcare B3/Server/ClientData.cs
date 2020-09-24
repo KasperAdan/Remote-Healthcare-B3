@@ -12,11 +12,10 @@ namespace Server
             data = new List<int?[]>();
         }
 
-        public void AddData(string speed, string heartRate, string power, string resistance)
+        public void AddData(string speed, string heartRate, string resistance)
         {
             int? speedData = null;
             int? heartRateData = null;
-            int? powerData = null;
             int? resistanceData = null;
 
             #region value casting
@@ -28,24 +27,20 @@ namespace Server
             {
                 heartRateData = int.Parse(speed);
             }
-            if (power != null || power.Trim() != string.Empty)
-            {
-                powerData = int.Parse(speed);
-            }
             if (resistance != null || resistance.Trim() != string.Empty)
             {
                 resistanceData = int.Parse(speed);
             }
             #endregion
 
-            this.data.Add(new int?[] { speedData, heartRateData, powerData, resistanceData });
+            this.data.Add(new int?[] { speedData, heartRateData, resistanceData });
         }
 
         public void PrintData()
         {
             for (int i = 0; i < data.Count; i++)
             {
-                Console.WriteLine($"Measurement {i+1}:   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Power: {data[i][2]}   Resistance: {data[i][3]}");
+                Console.WriteLine($"Measurement {i+1}:   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Resistance: {data[i][2]}");
             }
         }
     }
