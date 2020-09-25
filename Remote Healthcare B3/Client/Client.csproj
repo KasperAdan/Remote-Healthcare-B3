@@ -11,4 +11,14 @@
     <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FietsDemo\FietsDemo\FietsDemo.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BLELibrary">
+      <HintPath>..\FietsDemo\FietsDemo\BLELibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
