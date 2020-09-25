@@ -119,30 +119,56 @@ namespace Client_VR
             return add;
         }
 
+        public JObject Add(int serial, string name, string guid, float[] position, float scale, int[] rotation, int[] panelSize, int[] panelResolution, int[] background, bool castshadow)
+        {
+            JObject add =
+                new JObject(
+                    new JProperty("id", "scene/node/add"),
+                    new JProperty("serial", serial),
+                    new JProperty("data",
+                    new JObject(
+                        new JProperty("name", name),
+                        new JProperty("parent", guid),
+                        new JProperty("components",
+                        new JObject(
+                            new JProperty("transform",
+                            new JObject(
+                                new JProperty("position", position),
+                                new JProperty("scale", scale),
+                                new JProperty("rotation", rotation))),
+                            new JProperty("panel",
+                            new JObject(
+                                new JProperty("size", panelSize),
+                                new JProperty("resolution", panelResolution),
+                                new JProperty("background", background),
+                                new JProperty("castShadow", castshadow))))))));
+            return add;
+        }
+
         public JObject Add(int serial, string name,
             int[] position, float scale, int[] rotation,
              string filename, bool cullbackfaces, bool animated, string animationname)
         {
             JObject add =
-    new JObject(
-        new JProperty("id", "scene/node/add"),
-        new JProperty("serial", serial),
-        new JProperty("data",
-        new JObject(
-            new JProperty("name", name),
-            new JProperty("components",
-            new JObject(
-                new JProperty("transform",
                 new JObject(
-                    new JProperty("position", position),
-                    new JProperty("scale", scale),
-                    new JProperty("rotation", rotation))),
-                new JProperty("model",
-                new JObject(
-                    new JProperty("file", filename),
-                    new JProperty("cullbackfaces", cullbackfaces),
-                    new JProperty("animated", animated),
-                    new JProperty("animation", animationname))))))));
+                    new JProperty("id", "scene/node/add"),
+                    new JProperty("serial", serial),
+                    new JProperty("data",
+                    new JObject(
+                        new JProperty("name", name),
+                        new JProperty("components",
+                        new JObject(
+                            new JProperty("transform",
+                            new JObject(
+                                new JProperty("position", position),
+                                new JProperty("scale", scale),
+                                new JProperty("rotation", rotation))),
+                            new JProperty("model",
+                            new JObject(
+                                new JProperty("file", filename),
+                                new JProperty("cullbackfaces", cullbackfaces),
+                                new JProperty("animated", animated),
+                                new JProperty("animation", animationname))))))));
             return add;
 
         }

@@ -19,7 +19,8 @@ namespace Client
         {
             Console.WriteLine("Welcome user!");
             Console.WriteLine("Whats your name? ");
-            username = Console.ReadLine();
+            //username = Console.ReadLine();
+            username = "test";
 
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
