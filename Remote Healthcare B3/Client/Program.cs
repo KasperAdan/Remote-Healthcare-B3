@@ -24,6 +24,10 @@ namespace Client
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Welcome user!");
+            Console.WriteLine("Whats your name? ");
+            username = Console.ReadLine();
+
             IBike bike;
             if (useRealBike)
             {
@@ -35,12 +39,8 @@ namespace Client
                 bike = new SimBike();
             }
             bike.OnSpeed += Bike_OnSpeed;
+            bike.OnHeartRate += Bike_OnHeartrate;
             Console.ReadLine();
-
-
-            Console.WriteLine("Welcome user!");
-            Console.WriteLine("Whats your name? ");
-            username = Console.ReadLine();
 
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
@@ -51,7 +51,7 @@ namespace Client
             {
                 if (useRealBike)
                 {
-                    if (Console.ReadLine() == "\n")
+                    if (Console.ReadLine() == "")
                     {
                         Console.WriteLine("Input resistance: ");
                         int resistance = int.Parse(Console.ReadLine());
@@ -68,7 +68,12 @@ namespace Client
 
         private static void Bike_OnSpeed(object sender, float e)
         {
-            Console.WriteLine("Speed: " + e);
+            //Console.WriteLine("Speed: " + e);
+        }
+
+        private static void Bike_OnHeartrate(object sender, float e)
+        {
+            //Console.WriteLine("Heartrate: " + e);
         }
 
         private static void OnConnect(IAsyncResult ar)
@@ -187,8 +192,7 @@ namespace Client
                 }
 
                 // Connecting
-                Console.WriteLine(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
-                errorCode = await bleBike.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
+    
                 // __TODO__ Error check
 
                 var services = bleBike.GetServices;

@@ -64,6 +64,9 @@ namespace Client
             {
                 int errorCode;
 
+                Console.WriteLine(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
+                errorCode = await bleBike.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
+
                 // Set service
                 errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
                 // __TODO__ error check
@@ -71,17 +74,17 @@ namespace Client
                 // Subscribe
                 bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
                 errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+                Console.WriteLine("subscribed to bike:");
 
 
 
                 // Heart rate
                 errorCode = await bleHeart.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
-
-
                 await bleHeart.SetService("HeartRate");
 
                 bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
                 await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
+                Console.WriteLine("subscribed to heart");
 
                 Console.Read();
 
@@ -103,12 +106,13 @@ namespace Client
                 //}
 
                 if (e.ServiceName == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e")
+                
                 {
                     if (e.Data[4] == 16)
                     {
                     float Speed = (e.Data[9] * 256 + e.Data[8]) / 1000.00f;
-                    OnSpeed.Invoke(this, Speed);
-                        Console.WriteLine("\n\tSpeed: " + Speed + "m/s");
+                    OnSpeed?.Invoke(this, Speed);
+                        //Console.WriteLine("\n\tSpeed: " + Speed + "m/s");
 
                         //Console.WriteLine("\telapsed time: " + e.Data[6]/4.0 + " seconds");
                         //Console.WriteLine("\telapsed distance: " + e.Data[7] + " meters\n");
@@ -119,7 +123,7 @@ namespace Client
                 {
                 float HeartRate = e.Data[1];
                 OnHeartRate?.Invoke(this, HeartRate);
-                    Console.WriteLine($"\n\tHeartRate: {HeartRate}bpm");
+                    //Console.WriteLine($"\n\tHeartRate: {HeartRate}bpm");
                 }
 
                 //Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
