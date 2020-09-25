@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Client_VR
 {
@@ -28,14 +25,14 @@ namespace Client_VR
                 this.dir = new short[3] { (short)dir1, (short)dir2, (short)dir3 };
                 this.index = -1;
             }
-       
+
             public string PrintPos()
             {
                 string print = "[ ";
-                for(int i = 0; i < pos.Length; i++)
+                for (int i = 0; i < pos.Length; i++)
                 {
                     print += pos[i];
-                    if(i < pos.Length - 1)
+                    if (i < pos.Length - 1)
                     {
                         print += ", ";
                     }
@@ -57,7 +54,7 @@ namespace Client_VR
                 }
                 print += "]";
                 return print;
-            } 
+            }
         }
 
         public static JObject Add(int serial, RouteNode[] RouteNodes)
@@ -68,10 +65,11 @@ namespace Client_VR
                     new JProperty("id", "route/add"),
                     new JProperty("serial", serial),
                     new JProperty("data", new JObject(
-                            new JProperty("nodes", new JArray( from n in RouteNodes select new JObject(
-                                 new JProperty("pos", n.pos),
-                                 new JProperty("dir", n.dir)
-                                )
+                            new JProperty("nodes", new JArray(from n in RouteNodes
+                                                              select new JObject(
+           new JProperty("pos", n.pos),
+           new JProperty("dir", n.dir)
+          )
                             ))
                         )
                         )
@@ -84,15 +82,16 @@ namespace Client_VR
             //TODO check if the indexes are correct
             JObject Update =
                 new JObject(
-                    new JProperty("id","route/update"),
+                    new JProperty("id", "route/update"),
                     new JProperty("serial", serial),
                     new JProperty("data", new JObject(
                         new JProperty("id", RouteID),
-                        new JProperty("nodes", new JArray(from n in NewNodes select new JObject(
-                            new JProperty("index", n.index),
-                            new JProperty("pos", n.pos),
-                            new JProperty("dir", n.dir)
-                            )))
+                        new JProperty("nodes", new JArray(from n in NewNodes
+                                                          select new JObject(
+         new JProperty("index", n.index),
+         new JProperty("pos", n.pos),
+         new JProperty("dir", n.dir)
+         )))
                         ))
                     );
             return Update;
@@ -102,7 +101,7 @@ namespace Client_VR
         {
             JObject Delete =
                 new JObject(
-                    new JProperty("id","route/delete"),
+                    new JProperty("id", "route/delete"),
                     new JProperty("serial", serial),
                     new JProperty("data", new JObject(
                         new JProperty("id", RouteID)

@@ -38,7 +38,7 @@ namespace Client
             stream = client.GetStream();
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             Write($"login\r\n{username}");
-            
+
         }
 
         private static void OnRead(IAsyncResult ar)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Server
@@ -40,7 +39,7 @@ namespace Server
         {
             for (int i = 0; i < data.Count; i++)
             {
-                Console.WriteLine($"Measurement {i+1}:   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Resistance: {data[i][2]}");
+                Console.WriteLine($"Measurement {i + 1}:   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Resistance: {data[i][2]}");
             }
         }
     }

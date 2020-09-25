@@ -3,17 +3,12 @@ using Client_VR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace Client
 {
@@ -39,7 +34,7 @@ namespace Client
                 this.ServerResponses.Add(null);
             }
             Console.WriteLine(ServerResponses.Count);
-            while (!Connected){}
+            while (!Connected) { }
             Init();
 
             WriteTextMessage(GenerateMessage(Scene.Get(1)));
@@ -47,13 +42,23 @@ namespace Client
             Console.WriteLine(response.ToString());
             SaveObjects(response, VRObjects.BASE);
 
+            //exercise 3b: delete groundplane
+            if (vrObject.getUUID("GroundPlane") != string.Empty)
+            {
+                string planeUUID = vrObject.getUUID("GroundPlane");
+                JObject delNode = Scene.Node.Delete(5, planeUUID);
+                WriteTextMessage(GenerateMessage(delNode));
+            }
+
             if (vrObject.getUUID("RightHand") != string.Empty)
             {
                 string parentPanel = vrObject.getUUID("RightHand");
-                WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new int[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new int[] { 255, 255, 255, 1 }, false)));
+                WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new int[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 1, 1, 1, 1 }, true)));
             }
             response = GetResponse(3);
             SaveObjects(response, VRObjects.PANEL);
+
+            SetSpeed(50);
 
         }
 
@@ -89,41 +94,93 @@ namespace Client
         {
             Client.EndConnect(ar);
             Stream = Client.GetStream();
-            Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnReadTest), null);
+            Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnRead), null);
             this.Connected = true;
         }
 
         private void OnRead(IAsyncResult ar)
         {
-            Console.WriteLine("\n\n\n recieve \n\n\n");
+            Console.WriteLine("\n\n\n recieve \n");
             int receivedBytes = Stream.EndRead(ar);
+            string receivedString = Encoding.ASCII.GetString(Buffer, 0, receivedBytes);
             Console.WriteLine(Encoding.ASCII.GetString(Buffer, 0, receivedBytes));
-            if (receivedBytes == 4 && TotalBuffer.Length < 10)
+
+            if (Encoding.ASCII.GetString(new byte[] { Buffer[0] }) != "{" && this.messageLength == int.MaxValue)
             {
-                byte[] messageLength = Buffer;
-                Console.WriteLine(messageLength);
-                messageLength.Reverse();
-                int messageLengthInt = BitConverter.ToInt32(messageLength);
+                byte[] lengthBytes;
+                if (receivedString.Contains('{'))
+                {
+                    int indexBracket = receivedString.IndexOf('{');
+                    lengthBytes = new byte[indexBracket];
+                    for (int i = 0; i < indexBracket; i++)
+                    {
+                        lengthBytes[i] = Buffer[i];
+                    }
+                    TotalBuffer += receivedString.Substring(indexBracket);
+                }
+                else
+                {
+                    lengthBytes = Buffer;
+                }
+                lengthBytes.Reverse();
+                int messageLengthInt = BitConverter.ToInt32(lengthBytes);
                 this.messageLength = messageLengthInt;
                 Console.WriteLine($"\n\n\n length: {messageLengthInt} \n\n\n");
-                Console.WriteLine(TotalBuffer);
-                TotalBuffer = "";
+                if (TotalBuffer == "")
+                {
+                    Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnReadTest), null);
+                    return;
+                }
             }
             else
             {
-                string receivedText = Encoding.ASCII.GetString(Buffer, 0, receivedBytes);
-                TotalBuffer += receivedText;
+                TotalBuffer += receivedString;
             }
-
 
             if (TotalBuffer.Length >= this.messageLength)
             {
-                Console.WriteLine("\n\n\n proces \n\n\n");
+                Console.WriteLine("\n\n\n proces \n");
                 string message = TotalBuffer.Substring(0, this.messageLength);
                 JObject messageJson = JObject.Parse(message);
                 Console.WriteLine(messageJson.ToString());
                 TotalBuffer = TotalBuffer.Substring(messageLength);
-                
+
+                if (TotalBuffer.Length > 1)
+                {
+                    Console.WriteLine($"\n\n\n substring1 : {TotalBuffer}");
+                    byte[] lengthBytes;
+                    if (TotalBuffer.Contains('{'))
+                    {
+                        int indexBracket = TotalBuffer.IndexOf('{');
+                        lengthBytes = new byte[indexBracket];
+                        for (int i = 0; i < indexBracket; i++)
+                        {
+                            lengthBytes[i] = Buffer[i + messageLength];
+                        }
+                        Console.WriteLine("\n\n LengteBytes: ");
+                        foreach (var item in lengthBytes)
+                        {
+                            Console.WriteLine(item);
+                        }
+                        TotalBuffer = TotalBuffer.Substring(indexBracket);
+                        Console.WriteLine($"\n\n\n substring2 : {TotalBuffer}");
+                    }
+                    else
+                    {
+                        lengthBytes = Buffer;
+                    }
+                    lengthBytes.Reverse();
+                    int messageLengthInt = BitConverter.ToInt32(lengthBytes);
+                    this.messageLength = messageLengthInt;
+                    Console.WriteLine($"\n\n\n length: {messageLengthInt} \n\n\n");
+                }
+                else
+                {
+                    this.messageLength = int.MaxValue;
+                }
+
+
+
 
                 int serial = 0;
                 try
@@ -136,8 +193,8 @@ namespace Client
                     serial = 0;
                 }
                 this.ServerResponses[serial] = messageJson;
-
             }
+
             Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnRead), null);
         }
 
@@ -173,7 +230,8 @@ namespace Client
             if (vrObject.getUUID("SpeedPanel") != string.Empty)
             {
                 string panelUUID = vrObject.getUUID("SpeedPanel");
-                WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, speed.ToString(), new float[] { 100, 100 }, 32, new int[] { 0, 0, 0, 1 }, "Calibri")));
+                WriteTextMessage(GenerateMessage(Scene.Panel.SetClearColor(6, panelUUID, new float[] { 0, 0, 0, 1 })));
+                WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, speed + "m/s", new float[] { 10, 10 }, 32, new float[] { 1, 1, 1, 1 }, "Calibri")));
             }
         }
 
@@ -236,104 +294,6 @@ namespace Client
             }
             return null;
         }
-        private void OnReadTest(IAsyncResult ar)
-        {
-            Console.WriteLine("\n\n\n recieve \n");
-            int receivedBytes = Stream.EndRead(ar);
-            string receivedString = Encoding.ASCII.GetString(Buffer, 0, receivedBytes);
-            Console.WriteLine(Encoding.ASCII.GetString(Buffer, 0, receivedBytes));
 
-            if (Encoding.ASCII.GetString(new byte[] { Buffer[0] }) != "{" && this.messageLength == int.MaxValue)
-            {
-                byte[] lengthBytes;
-                if (receivedString.Contains('{'))
-                {
-                    int indexBracket = receivedString.IndexOf('{');
-                    lengthBytes = new byte[indexBracket];
-                    for (int i = 0; i < indexBracket; i++)
-                    {
-                        lengthBytes[i] = Buffer[i];
-                    }
-                    TotalBuffer += receivedString.Substring(indexBracket);
-                }
-                else
-                {
-                    lengthBytes = Buffer;
-                }
-                lengthBytes.Reverse();
-                int messageLengthInt = BitConverter.ToInt32(lengthBytes);
-                this.messageLength = messageLengthInt;
-                Console.WriteLine($"\n\n\n length: {messageLengthInt} \n\n\n");
-                if (TotalBuffer == "")
-                {
-                    Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnReadTest), null);
-                    return;
-                }
-            }
-            else
-            {
-                TotalBuffer += receivedString;
-            }
-
-            if (TotalBuffer.Length >= this.messageLength)
-            {
-                Console.WriteLine("\n\n\n proces \n");
-                string message = TotalBuffer.Substring(0, this.messageLength);
-                JObject messageJson = JObject.Parse(message);
-                Console.WriteLine(messageJson.ToString());
-                TotalBuffer = TotalBuffer.Substring(messageLength);
-
-                if (TotalBuffer.Length > 1)
-                {
-                    Console.WriteLine($"\n\n\n substring1 : {TotalBuffer}");
-                    byte[] lengthBytes;
-                    if (TotalBuffer.Contains('{'))
-                    {
-                        int indexBracket = TotalBuffer.IndexOf('{');
-                        lengthBytes = new byte[indexBracket];
-                        for (int i = 0; i < indexBracket; i++)
-                        {
-                            lengthBytes[i] = Buffer[i+messageLength];
-                        }
-                        Console.WriteLine("\n\n LengteBytes: ");
-                        foreach (var item in lengthBytes)
-                        {
-                            Console.WriteLine(item);
-                        }
-                        TotalBuffer = TotalBuffer.Substring(indexBracket);
-                        Console.WriteLine($"\n\n\n substring2 : {TotalBuffer}");
-                    }
-                    else
-                    {
-                        lengthBytes = Buffer;
-                    }
-                    lengthBytes.Reverse();
-                    int messageLengthInt = BitConverter.ToInt32(lengthBytes);
-                    this.messageLength = messageLengthInt;
-                    Console.WriteLine($"\n\n\n length: {messageLengthInt} \n\n\n");
-                }
-                else 
-                {
-                    this.messageLength = int.MaxValue;
-                }
-
-                
-
-
-                int serial = 0;
-                try
-                {
-                    serial = (int)messageJson["data"]["data"]["serial"];
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.StackTrace);
-                    serial = 0;
-                }
-                this.ServerResponses[serial] = messageJson;
-            }
-
-            Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnReadTest), null);
-        }
     }
 }

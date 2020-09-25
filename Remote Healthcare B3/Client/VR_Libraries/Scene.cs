@@ -1,11 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Client_VR
 {
@@ -19,7 +15,7 @@ namespace Client_VR
 
         public static JObject Get(int serial)
         {
-            JObject get = 
+            JObject get =
                 new JObject(
                     new JProperty("id", "scene/get"),
                     new JProperty("serial", serial));
@@ -28,7 +24,7 @@ namespace Client_VR
 
         public static JObject Reset(int serial)
         {
-            JObject reset = 
+            JObject reset =
                 new JObject(
                     new JProperty("id", "scene/reset"),
                     new JProperty("serial", serial));
@@ -37,20 +33,20 @@ namespace Client_VR
 
         public static JObject Save(int serial, string fileName, bool overwrite)
         {
-            JObject save = 
+            JObject save =
                 new JObject(
                     new JProperty("id", "scene/save"),
-                    new JProperty("serial", serial), 
-                    new JProperty("data", 
+                    new JProperty("serial", serial),
+                    new JProperty("data",
                     new JObject(
-                        new JProperty("filename", fileName), 
+                        new JProperty("filename", fileName),
                         new JProperty("overwrite", overwrite))));
             return save;
         }
 
         public static JObject Load(int serial, string fileName)
         {
-            JObject load = 
+            JObject load =
                 new JObject(
                     new JProperty("id", "scene/load"),
                     new JProperty("serial", serial),
@@ -68,7 +64,7 @@ namespace Client_VR
                     new JProperty("serial", serial),
                     new JProperty("data",
                     new JObject(
-                        new JProperty("start", start), 
+                        new JProperty("start", start),
                         new JProperty("direction", direction),
                         new JProperty("physics", physics))));
             return raycast;
@@ -76,7 +72,7 @@ namespace Client_VR
     }
     class Node
     {
-        public JObject Add(int serial, string name, string guid, 
+        public JObject Add(int serial, string name, string guid,
             int[] position, float scale, int[] rotation,
             string filename, bool cullbackfaces, bool animated, string animationname,
             bool smoothnormals, int[] panelSize, int[] panelResolution, int[] background, bool castshadow,
@@ -92,7 +88,7 @@ namespace Client_VR
                         new JProperty("parent", guid),
                         new JProperty("components",
                         new JObject(
-                            new JProperty("transform", 
+                            new JProperty("transform",
                             new JObject(
                                 new JProperty("position", position),
                                 new JProperty("scale", scale),
@@ -119,7 +115,7 @@ namespace Client_VR
             return add;
         }
 
-        public JObject Add(int serial, string name, string guid, float[] position, float scale, int[] rotation, int[] panelSize, int[] panelResolution, int[] background, bool castshadow)
+        public JObject Add(int serial, string name, string guid, float[] position, float scale, int[] rotation, int[] panelSize, int[] panelResolution, float[] background, bool castshadow)
         {
             JObject add =
                 new JObject(
@@ -266,7 +262,7 @@ namespace Client_VR
                             new JProperty("posotion", position),
                             new JProperty("scale", scale),
                             new JProperty("rotation", rotation)),
-                        new JProperty("animation", 
+                        new JProperty("animation",
                         new JObject(
                             new JProperty("name", name),
                             new JProperty("speed", speed)))))));
@@ -371,19 +367,19 @@ namespace Client_VR
                     new JObject()));
             return delLayer;
         }
-    } 
+    }
 
     class Terrain
     {
         public JObject Add(int serial, float[] size, float[] heights)
         {
-            JObject add = 
+            JObject add =
                 new JObject(
                     new JProperty("id", "scene/terrain/add"),
-                    new JProperty("serial", serial), 
-                    new JProperty("data", 
+                    new JProperty("serial", serial),
+                    new JProperty("data",
                     new JObject(
-                        new JProperty("size", size), 
+                        new JProperty("size", size),
                         new JProperty("heights", heights))));
             return add;
         }
@@ -416,33 +412,33 @@ namespace Client_VR
 
         public JObject Update(int serial)
         {
-            JObject update = 
+            JObject update =
                 new JObject(
                     new JProperty("id", "scene/terrain/update"),
-                    new JProperty("serial", serial), 
+                    new JProperty("serial", serial),
                     new JProperty("data"));
             return update;
         }
 
-        public JObject Delete(int serial) 
+        public JObject Delete(int serial)
         {
-            JObject delete = 
+            JObject delete =
                 new JObject(
                     new JProperty("id", "scene/terrain/delete"),
-                    new JProperty("serial", serial), 
+                    new JProperty("serial", serial),
                     new JProperty("data"));
             return delete;
         }
 
         public JObject GetHeight(int serial, float[] position, float[] positions) //Volgens mij is dit niet correct!
         {
-            JObject getheight = 
+            JObject getheight =
                 new JObject(
                     new JProperty("id", "scene/terrain/getheight"),
                     new JProperty("serial", serial),
-                    new JProperty("data", 
+                    new JProperty("data",
                     new JObject(
-                        new JProperty("position", position), 
+                        new JProperty("position", position),
                         new JProperty("positions", positions))));
             return getheight;
         }
@@ -453,11 +449,11 @@ namespace Client_VR
     {
         public JObject Clear(int serial, string id)
         {
-            JObject clear = 
+            JObject clear =
                 new JObject(
                 new JProperty("id", "scene/panel/clear"),
                     new JProperty("serial", serial),
-                new JProperty("data", 
+                new JProperty("data",
                     new JObject(
                         new JProperty("id", id)
                     )
@@ -468,7 +464,7 @@ namespace Client_VR
 
         public JObject DrawLines(int serial, string id, int width, List<int[]> lines)
         {
-            JObject drawLines = 
+            JObject drawLines =
                 new JObject(
                 new JProperty("id", "scene/panel/drawlines"),
                     new JProperty("serial", serial),
@@ -483,7 +479,7 @@ namespace Client_VR
             return drawLines;
         }
 
-        public JObject DrawText(int serial, string id, string text, float[] position, float size, int[] color, string font)
+        public JObject DrawText(int serial, string id, string text, float[] position, float size, float[] color, string font)
         {
             JObject drawText = new JObject(
                 new JProperty("id", "scene/panel/drawtext"),
@@ -519,7 +515,7 @@ namespace Client_VR
             return image;
         }
 
-        public JObject SetClearColor(int serial, string id, int[] color)
+        public JObject SetClearColor(int serial, string id, float[] color)
         {
             JObject setClearColor = new JObject(
                 new JProperty("id", "scene/panel/setclearcolor"),
@@ -552,8 +548,8 @@ namespace Client_VR
         {
             JObject settime = new JObject(
                 new JProperty("id", "scene/skybox/settime"),
-                new JProperty("serial", serial), 
-                new JProperty("data", 
+                new JProperty("serial", serial),
+                new JProperty("data",
                 new JObject(
                     new JProperty("time", time))));
             return settime;
@@ -564,10 +560,10 @@ namespace Client_VR
             JObject update = new JObject(
                 new JProperty("id", "scene/terrain/update"),
                 new JProperty("serial", serial),
-                new JProperty("data", 
+                new JProperty("data",
                 new JObject(
                     new JProperty("type", "static"),
-                    new JProperty("files", 
+                    new JProperty("files",
                     new JObject(
                         new JProperty("xpos", "data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png"),
                         new JProperty("xneg", "data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png"),
@@ -588,9 +584,9 @@ namespace Client_VR
         {
             JObject AddRoad = new JObject(
                 new JProperty("id", "scene/road/add"),
-                new JProperty("serial", serial), 
-                new JProperty("data", 
-                new JObject(new JProperty("route", routeUuid), 
+                new JProperty("serial", serial),
+                new JProperty("data",
+                new JObject(new JProperty("route", routeUuid),
                     new JProperty("diffuse", "data/NetworkEngine/textures/tarmac_diffuse.png"),
                     new JProperty("normal", "data/NetworkEngine/textures/tarmac_normale.png"),
                     new JProperty("specular", "data/NetworkEngine/textures/tarmac_specular.png"),
