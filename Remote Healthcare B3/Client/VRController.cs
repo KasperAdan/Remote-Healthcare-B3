@@ -33,32 +33,27 @@ namespace Client
             {
                 this.ServerResponses.Add(null);
             }
-            Console.WriteLine(ServerResponses.Count);
             while (!Connected) { }
             Init();
 
             WriteTextMessage(GenerateMessage(Scene.Get(1)));
             JObject response = GetResponse(1);
-            Console.WriteLine(response.ToString());
             SaveObjects(response, VRObjects.BASE);
 
             //exercise 3b: delete groundplane
-            if (vrObject.getUUID("GroundPlane") != string.Empty)
-            {
-                string planeUUID = vrObject.getUUID("GroundPlane");
-                JObject delNode = Scene.Node.Delete(5, planeUUID);
-                WriteTextMessage(GenerateMessage(delNode));
-            }
+            while (vrObject.getUUID("GroundPlane") == string.Empty){}
+            string planeUUID = vrObject.getUUID("GroundPlane");
+            JObject delNode = Scene.Node.Delete(5, planeUUID);
+            WriteTextMessage(GenerateMessage(delNode));
 
-            if (vrObject.getUUID("RightHand") != string.Empty)
-            {
-                string parentPanel = vrObject.getUUID("RightHand");
-                WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new int[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 1, 1, 1, 1 }, true)));
-            }
-            response = GetResponse(3);
-            SaveObjects(response, VRObjects.PANEL);
+            //while (vrObject.getUUID("RightHand") == string.Empty){}
+            //string parentPanel = vrObject.getUUID("RightHand");
+            //WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new int[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 1, 0, 0, 1 }, true)));
+            
+            //response = GetResponse(3);
+            //SaveObjects(response, VRObjects.PANEL);
 
-            SetSpeed(50);
+            //SetSpeed(50);
 
         }
 
@@ -66,9 +61,7 @@ namespace Client
         {
             vrObject = new VRObject();
             WriteTextMessage("{\"id\":\"session/list\",\"serial\":0}");
-            Console.WriteLine("\n\n\n send \n\n\n");
             JObject value = GetResponse(0);
-            Console.WriteLine(value.ToString());
             // stap 2 (get response)
             var properSession = value["data"].Where(e => e["clientinfo"]["user"].ToObject<string>() == Environment.UserName).Last();
             var sessionId = properSession["id"];
@@ -79,7 +72,6 @@ namespace Client
 
             Debug.WriteLine("Na tunnel create");
             JObject response = GetResponse(0);
-            Console.WriteLine(response.ToString());
             // stap 4 (get response)
             var tunnelId = response["data"]["id"];
             TunnelId = (string)tunnelId;
@@ -153,10 +145,6 @@ namespace Client
                         {
                             lengthBytes[i] = Buffer[i + messageLength];
                         }
-                        foreach (var item in lengthBytes)
-                        {
-                            Console.WriteLine(item);
-                        }
                         TotalBuffer = TotalBuffer.Substring(indexBracket);
                     }
                     else
@@ -217,12 +205,15 @@ namespace Client
 
         public void SetSpeed(int speed)
         {
-            if (vrObject.getUUID("SpeedPanel") != string.Empty)
-            {
-                string panelUUID = vrObject.getUUID("SpeedPanel");
-                WriteTextMessage(GenerateMessage(Scene.Panel.SetClearColor(6, panelUUID, new float[] { 0, 0, 0, 1 })));
-                WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, speed + "m/s", new float[] { 10, 10 }, 32, new float[] { 1, 1, 1, 1 }, "Calibri")));
-            }
+            while (vrObject.getUUID("SpeedPanel") == string.Empty) { }
+                if (vrObject.getUUID("SpeedPanel") != string.Empty)
+                {
+                    string panelUUID = vrObject.getUUID("SpeedPanel");
+                    WriteTextMessage(GenerateMessage(Scene.Panel.Swap(11, panelUUID)));
+                    WriteTextMessage(GenerateMessage(Scene.Panel.SetClearColor(6, panelUUID, new float[] { 1, 1, 1, 1 })));
+                    WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, speed + "m/s", new float[] { 10, 100 }, 100, new float[] { 0, 0, 0, 1 }, "Calibri")));
+                    WriteTextMessage(GenerateMessage(Scene.Panel.Swap(11, panelUUID)));
+                }
         }
 
         public void SaveObjects(JObject json, VRObjects objectType)

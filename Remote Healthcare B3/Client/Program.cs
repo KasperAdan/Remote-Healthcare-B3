@@ -18,7 +18,7 @@ namespace Client
         private static string username;
 
         private static bool loggedIn = false;
-        private static bool useRealBike = false;
+        private static bool useRealBike = true;
         private static BikeData data;
 
         private static BLE bleBike;
@@ -48,7 +48,7 @@ namespace Client
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
-            VRController vrController = new VRController();
+            //VRController vrController = new VRController();
             while (true)
             {
                 if (useRealBike)
@@ -142,7 +142,7 @@ namespace Client
 
         private static void handleData(string[] packetData)
         {
-            Console.WriteLine($"Packet ontvangen: {packetData[0]}");
+            //Console.WriteLine($"Packet ontvangen: {packetData[0]}");
 
             switch (packetData[0])
             {
@@ -156,7 +156,7 @@ namespace Client
                         Console.WriteLine(packetData[1]);
                     break;
                 case "data":
-                    Console.WriteLine(packetData[1]);
+                    //Console.WriteLine(packetData[1]);
                     break;
             }
 

@@ -530,7 +530,7 @@ namespace Client_VR
             return setClearColor;
         }
 
-        public JObject Swap(int serial, string id, List<int[]> lines)
+        public JObject Swap(int serial, string id)
         {
             JObject swap = new JObject(
                 new JProperty("id", "scene/panel/swap"),
