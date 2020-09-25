@@ -74,6 +74,7 @@ namespace Client
                             case "Speed":
                                 Console.WriteLine("Input Speed: ");
                                 float speed = float.Parse(Console.ReadLine());
+                                Console.WriteLine(speed.ToString());
                                 data.Speed = speed;
                                 break;
                             case "HeartRate":
@@ -245,17 +246,15 @@ namespace Client
                 int hour = now.Hour;
                 int minute = now.Minute;
                 int second = now.Second;
-                int day = now.Day;
-                int month = now.Month;
-                int year = now.Year;
-
+                int totalSeconds = hour * 60 * 60 + minute * 60 + second; 
+              
                 //TODO add logic to add '0' before one digit times
 
-                string message = "data\n+" +
-                    $"{speed}\n" +
-                    $"{heartRate}\n" +
-                    $"{resistance}\n" +
-                    $"{day}{month}{year}.{hour}{minute}{second}";
+                string message = "data\r\n" +
+                    $"{speed}\r\n" +
+                    $"{heartRate}\r\n" +
+                    $"{resistance}\r\n" +
+                    $"{totalSeconds}";
                 Write(message);
             }
 
