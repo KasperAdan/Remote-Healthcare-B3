@@ -146,8 +146,8 @@ namespace FietsSimulatorGUI
                     }
 
                     // Connecting
-                    Console.WriteLine(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
-                    errorCode = errorCode = await bleBike.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
+                    //Console.WriteLine(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
+                    errorCode = errorCode = await bleBike.OpenDevice("Avans Bike 1B44");
                     // __TODO__ Error check
 
                     var services = bleBike.GetServices;
@@ -168,7 +168,7 @@ namespace FietsSimulatorGUI
 
 
                     // Heart rate
-                    errorCode = await bleHeart.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
+                    errorCode = await bleHeart.OpenDevice(System.IO.File.ReadAllText("Avans Bike 1B44"));
 
 
                     await bleHeart.SetService("HeartRate");

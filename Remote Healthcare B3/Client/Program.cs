@@ -1,4 +1,5 @@
 ﻿using Avans.TI.BLE;
+using FietsSimulatorGUI;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -17,7 +18,8 @@ namespace Client
         private static string username;
 
         private static bool loggedIn = false;
-        private static bool useRealBike = true;
+        private static bool useRealBike = false;
+        private static BikeData data;
 
         private static BLE bleBike;
         private static BLE bleHeart;
@@ -36,7 +38,8 @@ namespace Client
             }
             else
             {
-                bike = new SimBike();
+                data = new BikeData(5, 120, 30, 5);
+                bike = new SimBike(data);
             }
             bike.OnSpeed += Bike_OnSpeed;
             bike.OnHeartRate += Bike_OnHeartrate;
@@ -61,19 +64,45 @@ namespace Client
                 }
                 else
                 {
-
+                    if (Console.ReadLine() == "")
+                    {
+                       
+                        Console.WriteLine("Input Command(Speed/HeartRate/Resistance): ");
+                        string  command= Console.ReadLine();
+                        switch (command)
+                        {
+                            case "Speed":
+                                Console.WriteLine("Input Speed: ");
+                                float speed = float.Parse(Console.ReadLine());
+                                data.Speed = speed;
+                                break;
+                            case "HeartRate":
+                                Console.WriteLine("Input HeartRAte: ");
+                                int heartRate = int.Parse(Console.ReadLine());
+                                data.HeartRate = heartRate;
+                                break;
+                            case "Resistance":
+                                Console.WriteLine("Input Resistance: ");
+                                float resistance = float.Parse(Console.ReadLine());
+                                data.Resistance = resistance;
+                                break;
+                            default:
+                                Console.WriteLine($"{command} is not a valid input!");
+                                break;
+                        }
+                    }
                 }
             }
         }
 
         private static void Bike_OnSpeed(object sender, float e)
         {
-            //Console.WriteLine("Speed: " + e);
+            Console.WriteLine("Speed: " + e);
         }
 
         private static void Bike_OnHeartrate(object sender, float e)
         {
-            //Console.WriteLine("Heartrate: " + e);
+            Console.WriteLine("Heartrate: " + e);
         }
 
         private static void OnConnect(IAsyncResult ar)

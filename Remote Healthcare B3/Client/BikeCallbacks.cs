@@ -4,8 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using Avans.TI.BLE;
-
-
+using FietsSimulatorGUI;
 
 namespace Client
 {
@@ -21,9 +20,11 @@ namespace Client
     {
         public event EventHandler<float> OnSpeed;
         public event EventHandler<float> OnHeartRate;
+        public BikeData data;
 
-        public SimBike()
+        public SimBike(BikeData data)
         {
+            this.data = data;
             System.Threading.Thread thread = new System.Threading.Thread(new ThreadStart(WorkThreadFunction));
             thread.Start();
         }
@@ -32,8 +33,8 @@ namespace Client
         {
             while (true)
             {
-                OnSpeed?.Invoke(this, 10.0f);
-                OnHeartRate?.Invoke(this, 120.0f);
+                OnSpeed?.Invoke(this, data.GetSpeed());
+                OnHeartRate?.Invoke(this, data.GetHeartRate());
                 Thread.Sleep(1000);
             }
         }
