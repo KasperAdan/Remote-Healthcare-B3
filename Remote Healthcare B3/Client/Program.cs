@@ -43,13 +43,12 @@ namespace Client
             }
             bike.OnSpeed += Bike_OnSpeed;
             bike.OnHeartRate += Bike_OnHeartrate;
-            Console.ReadLine();
 
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
             //VRController vrController = new VRController(); // WHY U NO WORK
-            bool sendData = false;
+            bool sendingData = false;
             while (true)
             {
                 if (useRealBike)
@@ -59,6 +58,7 @@ namespace Client
                         Console.WriteLine("Input resistance: ");
                         int resistance = int.Parse(Console.ReadLine());
                         sendResistance(resistance);
+                        sendData(-1, -1, resistance);
                     }
 
                 }
@@ -84,7 +84,7 @@ namespace Client
                             case "Resistance":
                                 Console.WriteLine("Input Resistance: ");
                                 float resistance = float.Parse(Console.ReadLine());
-                                data.Resistance = resistance;
+                                sendData(-1, -1, resistance);
                                 break;
                             default:
                                 Console.WriteLine($"{command} is not a valid input!");
@@ -97,12 +97,15 @@ namespace Client
 
         private static void Bike_OnSpeed(object sender, float e)
         {
-            Console.WriteLine("Speed: " + e);
+            //Console.WriteLine("Speed: " + e);
+            sendData(e, -1, -1);
+
         }
 
         private static void Bike_OnHeartrate(object sender, float e)
         {
-            Console.WriteLine("Heartrate: " + e);
+            //Console.WriteLine("Heartrate: " + e);
+            sendData(-1, e, -1);
         }
 
         private static void OnConnect(IAsyncResult ar)
@@ -232,6 +235,30 @@ namespace Client
                 }
 
             }
+        }
+
+        public static void sendData(float speed, float heartRate, float resistance)
+        {
+            if (loggedIn)
+            {
+                DateTime now = DateTime.Now;
+                int hour = now.Hour;
+                int minute = now.Minute;
+                int second = now.Second;
+                int day = now.Day;
+                int month = now.Month;
+                int year = now.Year;
+
+                //TODO add logic to add '0' before one digit times
+
+                string message = "data\n+" +
+                    $"{speed}\n" +
+                    $"{heartRate}\n" +
+                    $"{resistance}\n" +
+                    $"{day}{month}{year}.{hour}{minute}{second}";
+                Write(message);
+            }
+
         }
     }
 }

@@ -6,46 +6,46 @@ namespace Server
 {
     internal class ClientData
     {
-        private List<int?[]> data;
+        private List<float?[]> data;
         public ClientData()
         {
-            data = new List<int?[]>();
+            data = new List<float?[]>();
         }
 
-        public void AddData(string speed, string heartRate, string power, string resistance)
+        public void AddData(string speed, string heartRate, string resistance, string time)
         {
-            int? speedData = null;
-            int? heartRateData = null;
-            int? powerData = null;
-            int? resistanceData = null;
+            float? speedData = null;
+            float? heartRateData = null;
+            float? resistanceData = null;
+            float? timeData = null;
 
             #region value casting
             if (speed != null || speed.Trim() != string.Empty)
             {
-                speedData = int.Parse(speed);
+                speedData = float.Parse(speed);
             }
             if (heartRate != null || heartRate.Trim() != string.Empty)
             {
-                heartRateData = int.Parse(speed);
-            }
-            if (power != null || power.Trim() != string.Empty)
-            {
-                powerData = int.Parse(speed);
+                heartRateData = float.Parse(speed);
             }
             if (resistance != null || resistance.Trim() != string.Empty)
             {
-                resistanceData = int.Parse(speed);
+                resistanceData = float.Parse(speed);
+            }
+            if (time != null || time.Trim() != string.Empty)
+            {
+                timeData = float.Parse(time);
             }
             #endregion
 
-            this.data.Add(new int?[] { speedData, heartRateData, powerData, resistanceData });
+            this.data.Add(new float?[] { speedData, heartRateData, resistanceData, timeData });
         }
 
         public void PrintData()
         {
             for (int i = 0; i < data.Count; i++)
             {
-                Console.WriteLine($"Measurement {i+1}:   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Power: {data[i][2]}   Resistance: {data[i][3]}");
+                Console.WriteLine($"Measurement {i + 1}:   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Resistance: {data[i][2]}   Time: {data[i][3]}");
             }
         }
     }

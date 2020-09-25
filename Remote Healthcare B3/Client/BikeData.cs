@@ -35,13 +35,7 @@ namespace FietsSimulatorGUI
             return Speed +(this.Random.Next(-Spread, Spread));
         }
 
-        public float GetResistance()
-        {
-            return Resistance + this.Random.Next(-Spread, Spread);
-        }
 
-
-        
         public override string ToString()
         {
             return $"Speed = {Speed}, HeartRate = {HeartRate},Resistance = {Resistance} , Spread = {Spread} ";
