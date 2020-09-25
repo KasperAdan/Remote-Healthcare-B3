@@ -247,8 +247,6 @@ namespace Client
                 int minute = now.Minute;
                 int second = now.Second;
                 int totalSeconds = hour * 60 * 60 + minute * 60 + second; 
-              
-                //TODO add logic to add '0' before one digit times
 
                 string message = "data\r\n" +
                     $"{speed}\r\n" +
