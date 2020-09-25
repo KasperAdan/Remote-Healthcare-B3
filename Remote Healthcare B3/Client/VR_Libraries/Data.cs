@@ -2,11 +2,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Client_VR
 {
-    class VRObject {
+    class VRObject
+    {
 
         //public static String ObjectName { get; set; }
 
@@ -130,7 +130,7 @@ namespace Client_VR
 
     }
 
-    
+
 
 
 }

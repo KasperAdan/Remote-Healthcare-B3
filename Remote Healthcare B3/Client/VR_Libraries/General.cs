@@ -1,16 +1,14 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Client_VR
 {
     class General
     {
-        public static JObject Get(string head)
+        public static JObject Get(int serial, string head)
         {
             JObject Get = new JObject(
                 new JProperty("id", "get"),
+                    new JProperty("serial", serial),
                 new JProperty("data",
                 new JObject(
                     new JProperty("type", head)
@@ -18,10 +16,11 @@ namespace Client_VR
             return Get;
         }
 
-        public static JObject SetCallBack(string button, string trigger, string left)
+        public static JObject SetCallBack(int serial, string button, string trigger, string left)
         {
             JObject SetCallBack = new JObject(
                 new JProperty("id", "setcallback"),
+                    new JProperty("serial", serial),
                 new JProperty("data",
                 new JObject(
                     new JProperty("type", button),
@@ -31,19 +30,21 @@ namespace Client_VR
             return SetCallBack;
         }
 
-        public static JObject Play()
+        public static JObject Play(int serial)
         {
             JObject Play = new JObject(
                 new JProperty("id", "play"),
+                    new JProperty("serial", serial),
                 new JProperty("data"));
 
             return Play;
         }
 
-        public static JObject Pause()
+        public static JObject Pause(int serial)
         {
             JObject Pause = new JObject(
                 new JProperty("id", "pause"),
+                    new JProperty("serial", serial),
                 new JProperty("data"));
 
             return Pause;
