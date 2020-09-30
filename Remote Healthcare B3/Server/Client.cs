@@ -71,6 +71,7 @@ namespace Server
                     Write("data\r\nData Recieved");
                     this.clientData.PrintData();
                     break;
+                
             }
 
 
