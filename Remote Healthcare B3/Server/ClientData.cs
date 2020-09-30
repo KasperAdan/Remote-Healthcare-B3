@@ -28,11 +28,11 @@ namespace Server
             }
             if (heartRate != null || heartRate.Trim() != string.Empty)
             {
-                heartRateData = float.Parse(speed);
+                heartRateData = float.Parse(heartRate);
             }
             if (resistance != null || resistance.Trim() != string.Empty)
             {
-                resistanceData = float.Parse(speed);
+                resistanceData = float.Parse(resistance);
             }
             if (time != null || time.Trim() != string.Empty)
             {
@@ -51,7 +51,7 @@ namespace Server
                 int hours = (int)totalSeconds / 3600;
                 int minutes = ((int)totalSeconds % 3600)/60;
                 int seconds = (int)totalSeconds % 60;
-                
+
                 Console.WriteLine($"Measurement {i + 1}: Time: {hours:00}:{minutes:00}:{seconds:00}   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Resistance: {data[i][2]}");
             }
         }

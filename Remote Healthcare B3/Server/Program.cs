@@ -15,7 +15,7 @@ namespace Server
         {
             Console.WriteLine("Hello Server!");
             DoctorPasswordData.init();
-            AllClientData.init();
+            AllClients.init();
             listener = new TcpListener(IPAddress.Any, 15243);
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
@@ -32,6 +32,7 @@ namespace Server
         {
             var tcpClient = listener.EndAcceptTcpClient(ar);
             Console.WriteLine($"Client connected from {tcpClient.Client.RemoteEndPoint}");
+            //check if the client already excists
             clients.Add(new Client(tcpClient));
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
         }
@@ -47,6 +48,7 @@ namespace Server
         internal static void Disconnect(Client client)
         {
             clients.Remove(client);
+            client.Disconnect();
             Console.WriteLine("Client disconnected");
         }
 

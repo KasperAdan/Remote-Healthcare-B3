@@ -13,11 +13,12 @@ namespace Server
         private NetworkStream stream;
         private byte[] buffer = new byte[1024];
         private string totalBuffer = "";
-        private ClientData clientData;
+        public ClientData clientData;
         #endregion
 
         public string UserName { get; set; }
         public bool IsDoctor { get; set; }
+        public bool isOnline { get; set; }
 
 
         public Client(TcpClient tcpClient)
@@ -26,6 +27,7 @@ namespace Server
             this.clientData = new ClientData();
 
             this.IsDoctor = false;
+            this.isOnline = true;
             this.stream = this.tcpClient.GetStream();
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
@@ -65,9 +67,19 @@ namespace Server
                         return;
                     this.UserName = packetData[1];
                     Console.WriteLine($"User {this.UserName} is connected");
-                    AllClientData.AddClient(UserName, clientData);
+
+                    if (AllClients.totalClients.ContainsKey(UserName))
+                    {
+                        Client clientData;
+                        AllClients.totalClients.TryGetValue(this.UserName, out clientData);
+                        this.clientData = clientData.clientData;
+                        //AllClients.Remove(this.UserName);
+                    } 
+                    AllClients.Add(UserName, this);
+
                     Write("login\r\nok");
                     break;
+
                 case "data":
                     if (!assertPacketData(packetData, 5))
                         return;
@@ -75,6 +87,7 @@ namespace Server
                     Write("data\r\nData Recieved");
                     this.clientData.PrintData();
                     break;
+
                 case "DoctorLogin":
                     if (!assertPacketData(packetData, 3))
                         return;
@@ -90,6 +103,7 @@ namespace Server
                         {
                             this.IsDoctor = true;
                             Write("DoctorLogin\r\nok");
+                            AllClients.Add(username, this);
                         }
                         else
                         {
@@ -101,18 +115,80 @@ namespace Server
                         Write("DoctorLogin\r\nerror\r\nIncorrect username");
                     }
                     break;
-                case "GetHistoricData":
-                    if (!assertPacketData(packetData, 2))
+
+                case "GetHistoricData": //doctor wants historic data
+                    if (!assertPacketData(packetData, 2) || !this.IsDoctor)
                         return;
                     string dataUsername = packetData[1];
-                    ClientData userClientData;
-                    bool gotValue = AllClientData.TotalClientData.TryGetValue(dataUsername, out userClientData);
+                    Client userClient;
+
+                    bool gotValue = AllClients.totalClients.TryGetValue(dataUsername, out userClient);
+
                     if (!gotValue)
                     {
                         Write("GetHistoricData\r\nerror\r\nUsername not found");
                     }
-                    //send clientdata to doctor
+                    else
+                    {
+                        Write($"SendHistoricData\r\n{userClient.clientData.GetJson().ToString()}");
+                    }
+                    break;
 
+                case "GetRealtimeData":
+                    if (!IsDoctor)
+                        return;
+
+                    break;
+                case "StartTraining":
+                    //Server ontvangt dit en moet dit doorsturen naar bijbehorende Client
+                    if (!assertPacketData(packetData, 2) || !this.IsDoctor)
+                        return;
+
+                    dataUsername = packetData[1];
+                    gotValue = AllClients.totalClients.TryGetValue(dataUsername, out userClient);
+
+                    if (!gotValue)
+                    {
+                        Write("StartTraining\r\nerror\r\nUsername not found");
+                    }
+                    else
+                    {
+                        if (!userClient.isOnline)
+                        {
+                            Write("StartTraining\r\nerror\r\nUser not online");
+                        } 
+                        else
+                        {
+                            userClient.Write("StartTraining");
+                            Write("StartTraining\r\nok");
+                        }
+                    }
+                    break;
+
+                case "StopTraining":
+                    //Server ontvangt dit en moet dit doorsturen naar bijbehorende Client
+                    if (!assertPacketData(packetData, 2) || !this.IsDoctor)
+                        return;
+
+                    dataUsername = packetData[1];
+                    gotValue = AllClients.totalClients.TryGetValue(dataUsername, out userClient);
+
+                    if (!gotValue)
+                    {
+                        Write("StopTraining\r\nerror\r\nUsername not found");
+                    }
+                    else
+                    {
+                        if (!userClient.isOnline)
+                        {
+                            Write("StopTraining\r\nerror\r\nUser not online");
+                        }
+                        else
+                        {
+                            userClient.Write("StopTraining");
+                            Write("StopTraining\r\nok");
+                        } 
+                    }
                     break;
             }
 
@@ -134,6 +210,11 @@ namespace Server
             var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
             stream.Write(dataAsBytes, 0, dataAsBytes.Length);
             stream.Flush();
+        }
+
+        public void Disconnect()
+        {
+            this.isOnline = false;
         }
     }
 }
