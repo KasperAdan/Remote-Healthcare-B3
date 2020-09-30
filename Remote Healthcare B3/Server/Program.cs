@@ -15,6 +15,7 @@ namespace Server
         {
             Console.WriteLine("Hello Server!");
             DoctorPasswordData.init();
+            AllClientData.init();
             listener = new TcpListener(IPAddress.Any, 15243);
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);

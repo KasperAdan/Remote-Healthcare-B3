@@ -65,6 +65,7 @@ namespace Server
                         return;
                     this.UserName = packetData[1];
                     Console.WriteLine($"User {this.UserName} is connected");
+                    AllClientData.AddClient(UserName, clientData);
                     Write("login\r\nok");
                     break;
                 case "data":
@@ -99,6 +100,19 @@ namespace Server
                     {
                         Write("DoctorLogin\r\nerror\r\nIncorrect username");
                     }
+                    break;
+                case "GetHistoricData":
+                    if (!assertPacketData(packetData, 2))
+                        return;
+                    string dataUsername = packetData[1];
+                    ClientData userClientData;
+                    bool gotValue = AllClientData.TotalClientData.TryGetValue(dataUsername, out userClientData);
+                    if (!gotValue)
+                    {
+                        Write("GetHistoricData\r\nerror\r\nUsername not found");
+                    }
+                    //send clientdata to doctor
+
                     break;
             }
 
