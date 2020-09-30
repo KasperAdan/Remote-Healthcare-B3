@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using System.Timers;
 using Avans.TI.BLE;
 using FietsSimulatorGUI;
 
@@ -12,6 +13,7 @@ namespace Client
     {
         event EventHandler<float> OnSpeed;
         event EventHandler<float> OnHeartRate;
+        event EventHandler<float> OnSend; 
     }
 
 
@@ -20,6 +22,8 @@ namespace Client
     {
         public event EventHandler<float> OnSpeed;
         public event EventHandler<float> OnHeartRate;
+        public event EventHandler<float> OnSend;
+
         public BikeData data;
 
         public SimBike(BikeData data)
@@ -35,6 +39,7 @@ namespace Client
             {
                 OnSpeed?.Invoke(this, data.GetSpeed());
                 OnHeartRate?.Invoke(this, data.GetHeartRate());
+                OnSend?.Invoke(this, 0);
                 Thread.Sleep(1000);
             }
         }
@@ -45,22 +50,29 @@ namespace Client
     {
         public event EventHandler<float> OnSpeed;
         public event EventHandler<float> OnHeartRate;
+        public event EventHandler<float> OnSend;
 
         public BLE bleBike;
         public BLE bleHeart;
+
+        public System.Timers.Timer sendTimer;
 
         public RealBike(BLE bike, BLE heart)
         {
             this.bleBike = bike;
             this.bleHeart = heart;
+            sendTimer = new System.Timers.Timer(1000);
+            sendTimer.Elapsed += TimerCallBack;
+            sendTimer.AutoReset = true;
             System.Threading.Thread thread = new System.Threading.Thread(new ThreadStart(WorkThreadFunctionRealBike));
             thread.Start();
 
         }
 
+
         async private void WorkThreadFunctionRealBike()
         {
-
+ 
             try
             {
                 int errorCode;
@@ -72,6 +84,7 @@ namespace Client
                 errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
                 // __TODO__ error check
 
+                sendTimer.Start();
                 // Subscribe
                 bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
                 errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
@@ -101,6 +114,7 @@ namespace Client
 
         private void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         { 
+
                 //foreach (byte b in e.Data)
                 //{
                 //    Console.Write(b + " ");
@@ -132,6 +146,13 @@ namespace Client
                 //    Encoding.UTF8.GetString(e.Data));
             
         }
+
+
+        private void TimerCallBack(object sender, ElapsedEventArgs e)
+        {
+            OnSend?.Invoke(this, 0);
+        }
+
 
 
     }

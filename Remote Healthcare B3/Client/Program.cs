@@ -3,6 +3,7 @@ using FietsSimulatorGUI;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -18,11 +19,15 @@ namespace Client
         private static string username;
 
         private static bool loggedIn = false;
-        private static bool useRealBike = true;
+        private static bool useRealBike = false;
         private static BikeData data;
 
         private static BLE bleBike;
         private static BLE bleHeart;
+
+        private static float lastSpeed;
+        private static float lastHeartRate;
+        private static float lastResistance;
 
         static void Main(string[] args)
         {
@@ -36,14 +41,21 @@ namespace Client
             {
                 initBLEConnection();
                 bike = new RealBike(bleBike,bleHeart);
+                lastResistance = 0;
+                lastSpeed = -1;
+                lastHeartRate = -1;
             }
             else
             {
                 data = new BikeData(5, 120, 30, 5);
+                lastSpeed = 5;
+                lastHeartRate = 120;
+                lastResistance = 30;
                 bike = new SimBike(data);
             }
             bike.OnSpeed += Bike_OnSpeed;
             bike.OnHeartRate += Bike_OnHeartrate;
+            bike.OnSend += Bike_OnSend;
 
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
@@ -58,7 +70,7 @@ namespace Client
                         Console.WriteLine("Input resistance: ");
                         int resistance = int.Parse(Console.ReadLine());
                         sendResistance(resistance);
-                        sendData(-1, -1, resistance);
+                        lastResistance = resistance;
                     }
 
                 }
@@ -85,7 +97,7 @@ namespace Client
                             case "Resistance":
                                 Console.WriteLine("Input Resistance: ");
                                 float resistance = float.Parse(Console.ReadLine());
-                                sendData(-1, -1, resistance);
+                                lastResistance = resistance;
                                 break;
                             default:
                                 Console.WriteLine($"{command} is not a valid input!");
@@ -96,18 +108,22 @@ namespace Client
             }
         }
 
+        private static void Bike_OnSend(object sender, float e)
+        {
+            sendData(lastSpeed, lastHeartRate, lastResistance);
+        }
+
         private static void Bike_OnSpeed(object sender, float e)
         {
-            //Console.WriteLine("Speed: " + e);
-            sendData(e, -1, -1);
-
+            lastSpeed = e;
         }
 
         private static void Bike_OnHeartrate(object sender, float e)
         {
-            //Console.WriteLine("Heartrate: " + e);
-            sendData(-1, e, -1);
+            lastHeartRate = e;
         }
+
+    
 
         private static void OnConnect(IAsyncResult ar)
         {
