@@ -12,31 +12,36 @@ namespace DokterApplicatie
 {
     public partial class FormLogin : Form
     {
+        public string username { get; set; }
+        public string password { get; set; }
+
+        public string error { get; set; }
         public FormLogin()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        public FormLogin(string error)
         {
-
+            InitializeComponent();
+            DialogResult = DialogResult.None;
+            ErrorMessageTextBox.Visible = true;
+            ErrorMessageTextBox.Text = error;
         }
 
-        
-
-        private void button1_Click_1(object sender, EventArgs e)
+        private void LoginButton_Click(object sender, EventArgs e)
         {
-            // Create a new instance of the Form2 class
-            this.Hide();
-            FormMainView settingsForm = new FormMainView();
-
-            // Show the settings form
-            settingsForm.Show();
+            DialogResult = DialogResult.Yes;
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void UsernameTextBox_TextChanged(object sender, EventArgs e)
         {
+            this.username = UsernameTextBox.Text;
+        }
 
+        private void PasswordTextBox_TextChanged(object sender, EventArgs e)
+        {
+            this.password = PasswordTextBox.Text;
         }
     }
 }

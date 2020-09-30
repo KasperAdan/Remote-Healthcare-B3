@@ -71,10 +71,11 @@ namespace Server
                     Write("data\r\nData Recieved");
                     this.clientData.PrintData();
                     break;
+                case "DocterLogin":
+                    Write("DocterLogin\r\nok");
+                    break;
                 
             }
-
-
         }
 
         private bool assertPacketData(string[] packetData, int requiredLength)
