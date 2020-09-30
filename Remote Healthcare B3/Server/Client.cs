@@ -74,7 +74,7 @@ namespace Server
                         AllClients.totalClients.TryGetValue(this.UserName, out clientData);
                         this.clientData = clientData.clientData;
                         //AllClients.Remove(this.UserName);
-                    } 
+                    }
                     AllClients.Add(UserName, this);
 
                     Write("login\r\nok");
@@ -88,9 +88,9 @@ namespace Server
                     this.clientData.PrintData();
 
                     //send real time data to all connected doctors
-                    foreach(Client client in AllClients.totalClients.Values)
+                    foreach (Client client in AllClients.totalClients.Values)
                     {
-                        if(client.IsDoctor && client.isOnline)
+                        if (client.IsDoctor && client.isOnline)
                         {
                             client.Write($"RealTimeData\r\n{packetData[1]}\r\n{packetData[2]}\r\n{packetData[3]}\r\n{packetData[4]}");
                         }
@@ -165,7 +165,7 @@ namespace Server
                         if (!userClient.isOnline)
                         {
                             Write("StartTraining\r\nerror\r\nUser not online");
-                        } 
+                        }
                         else
                         {
                             userClient.Write("StartTraining");
@@ -196,7 +196,52 @@ namespace Server
                         {
                             userClient.Write("StopTraining");
                             Write("StopTraining\r\nok");
-                        } 
+                        }
+                    }
+                    break;
+
+                case "chatToAll":
+                    if (!assertPacketData(packetData, 2))
+                        return;
+                    if (this.IsDoctor) { 
+                        string messageToAll = packetData[1];
+                        foreach (Client client in AllClients.totalClients.Values)
+                        {
+                            if (client.isOnline)
+                            {
+                                Write($"chatToAll\r\nmessage\r\n[{this.UserName}]: {messageToAll}");
+                            }
+                        }
+                     }
+                    else
+                    {
+                        Write($"chatToAll\r\nerror\r\nOnly doctors can chat to all");
+                    }
+                    break;
+                case "directMessage":
+                    if (!assertPacketData(packetData, 3))
+                        return;
+                    string messageTo = packetData[1];
+                    string message = packetData[2];
+                    Client messageToClient;
+                    gotValue = AllClients.totalClients.TryGetValue(messageTo, out messageToClient);
+                    if (gotValue)
+                    {
+                        if (this.IsDoctor || messageToClient.IsDoctor) {
+                            if (messageToClient.isOnline)
+                            {
+                                messageToClient.Write($"directMessage\r\nmessage\r\n({this.UserName}: {message})");
+                                Write($"directMessage\r\nok");
+                            }
+                            else
+                            {
+                                Write($"directMessage\r\nerror\r\nTarget client is not online");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Write($"directMessage\r\nerror\r\nNeither client is a doctor");
                     }
                     break;
             }
