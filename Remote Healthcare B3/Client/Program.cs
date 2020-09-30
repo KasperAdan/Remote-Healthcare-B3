@@ -34,7 +34,6 @@ namespace Client
             Console.WriteLine("Welcome user!");
             Console.WriteLine("Whats your name? ");
             username = Console.ReadLine();
-            //username = "test";
 
             IBike bike;
             if (useRealBike)
@@ -60,7 +59,7 @@ namespace Client
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
-            //VRController vrController = new VRController();
+            VRController vrController = new VRController();
             while (true)
             {
                 if (useRealBike)
