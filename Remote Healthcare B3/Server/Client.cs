@@ -86,6 +86,15 @@ namespace Server
                     this.clientData.AddData(packetData[1], packetData[2], packetData[3], packetData[4]);
                     Write("data\r\nData Recieved");
                     this.clientData.PrintData();
+
+                    //send real time data to all connected doctors
+                    foreach(Client client in AllClients.totalClients.Values)
+                    {
+                        if(client.IsDoctor && client.isOnline)
+                        {
+                            client.Write($"RealTimeData\r\n{packetData[1]}\r\n{packetData[2]}\r\n{packetData[3]}\r\n{packetData[4]}");
+                        }
+                    }
                     break;
 
                 case "DoctorLogin":
