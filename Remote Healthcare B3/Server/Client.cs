@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
@@ -16,6 +17,7 @@ namespace Server
         #endregion
 
         public string UserName { get; set; }
+        public bool IsDoctor { get; set; }
 
 
         public Client(TcpClient tcpClient)
@@ -23,6 +25,7 @@ namespace Server
             this.tcpClient = tcpClient;
             this.clientData = new ClientData();
 
+            this.IsDoctor = false;
             this.stream = this.tcpClient.GetStream();
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
@@ -70,6 +73,32 @@ namespace Server
                     this.clientData.AddData(packetData[1], packetData[2], packetData[3], packetData[4]);
                     Write("data\r\nData Recieved");
                     this.clientData.PrintData();
+                    break;
+                case "DoctorLogin":
+                    if (!assertPacketData(packetData, 3))
+                        return;
+                    string username = packetData[1];
+                    string password = packetData[2];
+                    //check password
+                    Dictionary<string, string> passwords = DoctorPasswordData.DoctorPassWords;
+                    string dictionaryPassword;
+                    if (passwords.ContainsKey(username))
+                    {
+                        passwords.TryGetValue(username, out dictionaryPassword);
+                        if (dictionaryPassword.Equals(password))
+                        {
+                            this.IsDoctor = true;
+                            Write("DoctorLogin\r\nok");
+                        }
+                        else
+                        {
+                            Write("DoctorLogin\r\nerror\r\nIncorrect password");
+                        }
+                    }
+                    else
+                    {
+                        Write("DoctorLogin\r\nerror\r\nIncorrect username");
+                    }
                     break;
             }
 
