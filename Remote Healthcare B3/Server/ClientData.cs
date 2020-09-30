@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Server
 {
@@ -51,6 +54,14 @@ namespace Server
                 
                 Console.WriteLine($"Measurement {i + 1}: Time: {hours:00}:{minutes:00}:{seconds:00}   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Resistance: {data[i][2]}");
             }
+        }
+        
+        public JObject GetJson()
+        {
+            JObject historyJson =
+                new JObject(
+                    new JProperty("data", new JArray(from d in this.data select new JArray(d))));
+            return historyJson;
         }
     }
 }

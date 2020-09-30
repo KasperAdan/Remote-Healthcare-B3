@@ -1,4 +1,4 @@
-﻿using Avans.TI.BLE;
+using Avans.TI.BLE;
 using FietsSimulatorGUI;
 using System;
 using System.Collections.Generic;
