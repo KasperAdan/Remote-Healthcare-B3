@@ -49,12 +49,12 @@ namespace Client
 
             //while (vrObject.getUUID("RightHand") == string.Empty) { }
             string parentPanel = vrObject.getUUID("RightHand");
-            WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new int[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 1, 0, 0, 1 }, true)));
+            WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new int[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, true)));
 
             response = GetResponse(3);
             SaveObjects(response, VRObjects.PANEL);
 
-            SetSpeed(50);
+            SetSpeed(5.5f);
 
         }
 
@@ -102,9 +102,9 @@ namespace Client
                 {
                     string message = Encoding.ASCII.GetString(TotalBuffer, 4, packetLength);
                     JObject messageJson = JObject.Parse(message);
-                    Console.WriteLine(messageJson.ToString());
+                    //Console.WriteLine(messageJson.ToString());
 
-                    byte[] tempBuffer = TotalBuffer.Skip(3 + packetLength).Take(receivedBytes - packetLength - 4).ToArray();
+                    byte[] tempBuffer = TotalBuffer.Skip(4 + packetLength).Take(TotalBuffer.Length - packetLength - 4).ToArray();
                     TotalBuffer = tempBuffer;
 
                     int serial = 0;
@@ -118,6 +118,7 @@ namespace Client
                         serial = 0;
                     }
                     this.ServerResponses[serial] = messageJson;
+                    Console.WriteLine($"Added ServerResponse with serial: {serial}");
                 } else
                 {
                     break;
@@ -162,12 +163,10 @@ namespace Client
             return totalMessage.ToString();
         }
 
-        public void SetSpeed(int speed)
+        public void SetSpeed(float speed)
         {
             string panelUUID = vrObject.getUUID("SpeedPanel");
-            WriteTextMessage(GenerateMessage(Scene.Panel.Swap(11, panelUUID)));
-            WriteTextMessage(GenerateMessage(Scene.Panel.SetClearColor(6, panelUUID, new float[] { 1, 1, 1, 1 })));
-            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, speed + "m/s", new float[] { 10, 100 }, 100, new float[] { 0, 0, 0, 1 }, "Calibri")));
+            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{speed:#0.00} m/s", new float[] { 100, 280 }, 100, new float[] { 1, 1, 1, 1 }, "Calibri")));
             WriteTextMessage(GenerateMessage(Scene.Panel.Swap(11, panelUUID)));
         }
 
