@@ -78,6 +78,7 @@ namespace Server
                     AllClients.Add(UserName, this);
 
                     Write("login\r\nok");
+
                     break;
 
                 case "data":
@@ -151,7 +152,7 @@ namespace Server
                 case "GetRealtimeData":
                     if (!IsDoctor)
                         return;
-
+                    //volgens mij zijn we deze vergeten en moeten we deze nog doen!!!
                     break;
                 case "StartTraining":
                     //Server ontvangt dit en moet dit doorsturen naar bijbehorende Client

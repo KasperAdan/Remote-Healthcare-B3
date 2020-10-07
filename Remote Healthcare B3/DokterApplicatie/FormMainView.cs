@@ -29,6 +29,7 @@ namespace DokterApplicatie
             while (!loggedIn){}
 
             InitializeComponent();
+            cbMessageClient.Items.Add("All clients");
             tabControl1.DrawItem += new DrawItemEventHandler(tabControl1_DrawItem);
         }
 
@@ -167,15 +168,34 @@ namespace DokterApplicatie
             Write($"directMessage\r\n{username}\r\n{message}");
         }
 
-        public void messageToAll(string message)
+        public void chatToAll(string message)
         {
             Write($"chatToAll\r\n{message}");
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnStartSession_Click(object sender, EventArgs e)
         {
-            messageToAll("Test message to all clients!!!");
-            directMessage("jkb", "Hello jkb!");
+            //dictionary to connect user with tab
+            Write($"StartTraining\r\njkb");
+        }
+
+        private void btnStopSession_Click(object sender, EventArgs e)
+        {
+            //dictionary to connect user with tab
+            Write($"StopTraining\r\njkb");
+        }
+
+        private void btnSendMessage_Click(object sender, EventArgs e)
+        {
+            Object selectedItem = cbMessageClient.SelectedItem;
+            if(selectedItem.ToString().Equals("All clients"))
+            {
+                chatToAll(tbMessage.Text);
+            }
+            else
+            {
+                directMessage(cbMessageClient.SelectedValue.ToString(), tbMessage.Text);
+            }
         }
     }
 }

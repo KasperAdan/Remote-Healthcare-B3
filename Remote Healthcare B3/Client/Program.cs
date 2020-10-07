@@ -19,6 +19,7 @@ namespace Client
         private static string username;
 
         private static bool loggedIn = false;
+        private static bool runningTraining = false;
         private static bool useRealBike = false;
         private static BikeData data;
 
@@ -194,6 +195,15 @@ namespace Client
                         Console.WriteLine(message);
                     }
                     break;
+
+                case "StartTraining":
+
+                    break;
+
+                case "StopTraining":
+
+                    break;
+
                 default:
                     Console.WriteLine("Did not understand: "+ packetData[0]);
                     break;
