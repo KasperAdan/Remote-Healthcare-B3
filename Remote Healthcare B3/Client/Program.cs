@@ -167,11 +167,6 @@ namespace Client
                 { 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9,  9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9};
             var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
 
-            for (int i = 0; i < receivedBytes; i++)
-            {
-                Console.WriteLine(receivedText[i]);
-            }
-
             byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
 
 

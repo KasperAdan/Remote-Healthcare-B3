@@ -29,8 +29,6 @@ namespace DokterApplicatie
         private string username;
         private bool loggedIn;
 
-        public CryptoStream crStreamRead;
-
         public FormMainView()
         {
             Clients = new List<string>();
@@ -77,14 +75,7 @@ namespace DokterApplicatie
         {
             client.EndConnect(ar);
             stream = client.GetStream();
-            DESCryptoServiceProvider cryptic = new DESCryptoServiceProvider();
-
-            cryptic.Key = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
-            cryptic.IV = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
-
-            crStreamRead = new CryptoStream(stream,
-                cryptic.CreateDecryptor(), CryptoStreamMode.Read);
-            crStreamRead.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         private void OnRead(IAsyncResult ar)
@@ -136,11 +127,6 @@ namespace DokterApplicatie
             var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
 
             var dataStringEncrypted = EncryptStringToBytes(data + "\r\n\r\n", Key, IV);
-
-
-            Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
-
-            Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
 
             stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 

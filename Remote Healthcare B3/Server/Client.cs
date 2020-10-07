@@ -24,8 +24,6 @@ namespace Server
         public bool IsDoctor { get; set; }
         public bool isOnline { get; set; }
 
-        public CryptoStream crStreamRead;
-
         public Client(TcpClient tcpClient)
         {
             this.tcpClient = tcpClient;
@@ -34,13 +32,7 @@ namespace Server
             this.IsDoctor = false;
             this.isOnline = true;
             this.stream = this.tcpClient.GetStream();
-            DESCryptoServiceProvider cryptic = new DESCryptoServiceProvider();
-
-            cryptic.Key = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
-            cryptic.IV = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
-
-            crStreamRead = new CryptoStream(stream, cryptic.CreateDecryptor(), CryptoStreamMode.Read);
-            crStreamRead.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
         #region connection stuff
         private void OnRead(IAsyncResult ar)
@@ -55,11 +47,6 @@ namespace Server
                 var Key = new byte[32]
                     { 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9,  9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9};
                 var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
-
-                for (int i = 0; i < receivedBytes; i++)
-                {
-                    Console.WriteLine(receivedText[i]);
-                }
 
                 byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
 
@@ -82,7 +69,7 @@ namespace Server
                 string[] packetData = Regex.Split(packet, "\r\n");
                 handleData(packetData);
             }
-            crStreamRead.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
         #endregion
 
@@ -156,7 +143,7 @@ namespace Server
                             this.UserName = username;
                             Console.WriteLine("correct password");
                             this.IsDoctor = true;
-                            Write("DocterLogin\r\nok");
+                            Write("DoctorLogin\r\nok");
                             AllClients.Add(username, this);
                         }
                         else
@@ -337,11 +324,6 @@ namespace Server
             var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
 
             var dataStringEncrypted = EncryptStringToBytes(data + "\r\n\r\n", Key, IV);
-
-
-            Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
-
-            Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
 
             stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 
