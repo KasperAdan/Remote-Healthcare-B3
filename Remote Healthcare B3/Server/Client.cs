@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
@@ -111,17 +111,17 @@ namespace Server
                         if (dictionaryPassword.Equals(password))
                         {
                             this.IsDoctor = true;
-                            Write("DoctorLogin\r\nok");
+                            Write("DocterLogin\r\nok");
                             AllClients.Add(username, this);
                         }
                         else
                         {
-                            Write("DoctorLogin\r\nerror\r\nIncorrect password");
+                            Write("DocterLogin\r\nerror\r\nIncorrect password");
                         }
                     }
                     else
                     {
-                        Write("DoctorLogin\r\nerror\r\nIncorrect username");
+                        Write("DocterLogin\r\nerror\r\nIncorrect username");
                     }
                     break;
 
@@ -244,10 +244,6 @@ namespace Server
                         Write($"directMessage\r\nerror\r\nNeither client is a doctor");
                     }
                     break;
-                case "DocterLogin":
-                    Write("DocterLogin\r\nok");
-                    break;
-                
             }
         }
 
