@@ -79,7 +79,13 @@ namespace Server
                     }
                     else
                     {
-                        Write($"AddClient\r\n{UserName}");
+                        foreach(Client client in AllClients.totalClients.Values)
+                        {
+                            if (client.IsDoctor && client.isOnline)
+                            {
+                                client.Write($"AddClient\r\n{UserName}");
+                            }
+                        }
                     }
                     AllClients.Add(UserName, this);
 

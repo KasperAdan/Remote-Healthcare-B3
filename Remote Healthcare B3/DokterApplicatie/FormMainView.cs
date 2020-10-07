@@ -33,7 +33,6 @@ namespace DokterApplicatie
 
             InitializeComponent();
             getClients();
-            cbMessageClient.Items.Add("All clients");
             tabControl1.DrawItem += new DrawItemEventHandler(tabControl1_DrawItem);
         }
 
@@ -155,20 +154,45 @@ namespace DokterApplicatie
 
         private void updateComboBoxes()
         {
-            cbMessageClient.Items.Clear();
-            foreach(string username in Clients)
+            
+            if (cbMessageClient.InvokeRequired)
             {
-                cbMessageClient.Items.Add(username);
+                cbMessageClient.Invoke((MethodInvoker)delegate
+                {
+                    cbMessageClient.Items.Clear();
+                    foreach (string username in Clients)
+                    {
+                        cbMessageClient.Items.Add(username);
+                    }
+                    cbMessageClient.Items.Add("All clients");
+                    cbMessageClient.Refresh();
+                });
             }
-            cbMessageClient.Items.Add("All clients");
-            cbMessageClient.Refresh();
+            else
+            {
+                cbMessageClient.Items.Clear();
+                foreach (string username in Clients)
+                {
+                    cbMessageClient.Items.Add(username);
+                }
+                cbMessageClient.Items.Add("All clients");
+                cbMessageClient.Refresh();
+            }
 
-            cbSessionClients.Items.Clear();
-            foreach (string username in Clients)
+            if (cbSessionClients.InvokeRequired)
             {
-                cbSessionClients.Items.Add(username);
+                cbSessionClients.Invoke((MethodInvoker)delegate
+                {
+                    cbSessionClients.Items.Clear();
+                    foreach (string username in Clients)
+                    {
+                        cbSessionClients.Items.Add(username);
+                    }
+                    cbSessionClients.Refresh();
+                });
             }
-            cbSessionClients.Refresh();
+  
+            
         }
 
         private void tabControl1_DrawItem(Object sender, System.Windows.Forms.DrawItemEventArgs e)

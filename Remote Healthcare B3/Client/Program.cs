@@ -34,8 +34,8 @@ namespace Client
         {
             Console.WriteLine("Welcome user!");
             Console.WriteLine("Whats your name? ");
-            //username = Console.ReadLine();
-            username = "jkb";
+            username = Console.ReadLine();
+            //username = "jkb";
 
 
             IBike bike;
