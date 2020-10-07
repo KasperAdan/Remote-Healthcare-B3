@@ -2,8 +2,13 @@ using Avans.TI.BLE;
 using FietsSimulatorGUI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -139,8 +144,26 @@ namespace Client
         private static void OnRead(IAsyncResult ar)
         {
             int receivedBytes = stream.EndRead(ar);
+
             string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-            totalBuffer += receivedText;
+
+
+            var Key = new byte[32]
+                { 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9,  9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9};
+            var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
+
+            for (int i = 0; i < receivedBytes; i++)
+            {
+                Console.WriteLine(receivedText[i]);
+            }
+
+            byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
+
+
+            String Decrypted = DecryptStringFromBytes(PartialBuffer, Key, IV);
+            ;
+
+            totalBuffer += Decrypted;
 
             while (totalBuffer.Contains("\r\n\r\n"))
             {
@@ -153,8 +176,24 @@ namespace Client
         }
         private static void Write(string data)
         {
+            //key and initialization vector (IV).
+
+            var Key = new byte[32]
+                {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+            var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
+
+
             var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
+
+            var dataStringEncrypted = EncryptStringToBytes(data + "\r\n\r\n", Key, IV);
+
+
+            Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
+
+            Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
+
+            stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
+
             stream.Flush();
         }
 
@@ -273,6 +312,89 @@ namespace Client
                 Write(message);
             }
 
+        }
+
+        static byte[] EncryptStringToBytes(string plainText, byte[] Key, byte[] IV)
+        {
+            // Check arguments.
+            if (plainText == null || plainText.Length <= 0)
+                throw new ArgumentNullException("plainText");
+            if (Key == null || Key.Length <= 0)
+                throw new ArgumentNullException("Key");
+            if (IV == null || IV.Length <= 0)
+                throw new ArgumentNullException("IV");
+            byte[] encrypted;
+            // Create an Rijndael object
+            // with the specified key and IV.
+            using (Rijndael rijAlg = Rijndael.Create())
+            {
+                rijAlg.Key = Key;
+                rijAlg.IV = IV;
+
+                // Create an encryptor to perform the stream transform.
+                ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
+
+                // Create the streams used for encryption.
+                using (MemoryStream msEncrypt = new MemoryStream())
+                {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        {
+
+                            //Write all data to the stream.
+                            swEncrypt.Write(plainText);
+                        }
+                        encrypted = msEncrypt.ToArray();
+                    }
+                }
+            }
+
+            // Return the encrypted bytes from the memory stream.
+            return encrypted;
+        }
+
+        static string DecryptStringFromBytes(byte[] cipherText, byte[] Key, byte[] IV)
+        {
+            // Check arguments.
+            if (cipherText == null || cipherText.Length <= 0)
+                throw new ArgumentNullException("cipherText");
+            if (Key == null || Key.Length <= 0)
+                throw new ArgumentNullException("Key");
+            if (IV == null || IV.Length <= 0)
+                throw new ArgumentNullException("IV");
+
+            // Declare the string used to hold
+            // the decrypted text.
+            string plaintext = null;
+
+            // Create an Rijndael object
+            // with the specified key and IV.
+            using (Rijndael rijAlg = Rijndael.Create())
+            {
+                rijAlg.Key = Key;
+                rijAlg.IV = IV;
+
+                // Create a decryptor to perform the stream transform.
+                ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
+
+                // Create the streams used for decryption.
+                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
+                {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        {
+
+                            // Read the decrypted bytes from the decrypting stream
+                            // and place them in a string.
+                            plaintext = srDecrypt.ReadToEnd();
+                        }
+                    }
+                }
+            }
+
+            return plaintext;
         }
     }
 }
