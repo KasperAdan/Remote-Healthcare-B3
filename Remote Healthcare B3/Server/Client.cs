@@ -264,7 +264,7 @@ namespace Server
                     }
                     break;
                 case "GetClients":
-                    if (!IsDoctor && !assertPacketData(packetData, 1))
+                    if (!IsDoctor || !assertPacketData(packetData, 1))
                     {
                         return;
                     }

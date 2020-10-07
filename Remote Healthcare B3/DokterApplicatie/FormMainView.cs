@@ -144,10 +144,24 @@ namespace DokterApplicatie
                     Clients.Add(username);
                     updateComboBoxes();
                     break;
-                default:
-                    //Console.WriteLine("Did not understand: " + packetData[0]);
+                case "StartTraining":
+                    if(packetData[1] == "ok")
+                    {
+                        Console.WriteLine("Training started");
+                    }
                     break;
-
+                case "StopTraining":
+                    if(packetData[1] == "ok")
+                    {
+                        Console.WriteLine("Training stopped");
+                    }
+                    break;
+                case "RealTimeData":
+                    //handle real time data
+                    break;
+                default:
+                    Console.WriteLine("Did not understand: " + packetData[0]);
+                    break;
             }
 
         }
@@ -242,13 +256,15 @@ namespace DokterApplicatie
         private void btnStartSession_Click(object sender, EventArgs e)
         {
             //dictionary to connect user with tab
-            Write($"StartTraining\r\njkb");
+            string username = cbSessionClients.SelectedItem.ToString();
+            startTraining(username);
         }
 
         private void btnStopSession_Click(object sender, EventArgs e)
         {
             //dictionary to connect user with tab
-            Write($"StopTraining\r\njkb");
+            string username = cbSessionClients.SelectedItem.ToString();
+            stopTraining(username);
         }
 
         private void btnSendMessage_Click(object sender, EventArgs e)
@@ -267,6 +283,16 @@ namespace DokterApplicatie
         private void getClients()
         {
             Write("GetClients");
+        }
+
+        private void startTraining(string username)
+        {
+            Write($"StartTraining\r\n{username}");
+        }
+
+        private void stopTraining(string username)
+        {
+            Write($"StopTraining\r\n{username}");
         }
     }
 }
