@@ -37,6 +37,7 @@ namespace Client
             //username = Console.ReadLine();
             username = "jkb";
 
+
             IBike bike;
             if (useRealBike)
             {

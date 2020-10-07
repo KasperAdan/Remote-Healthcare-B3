@@ -15,7 +15,7 @@ namespace DokterApplicatie
 {
     public partial class FormMainView : Form
     {
-        private Dictionary<int, string> Clients;
+        private List<string> Clients;
         private TcpClient client;
         private NetworkStream stream;
         private byte[] buffer = new byte[1024];
@@ -26,7 +26,7 @@ namespace DokterApplicatie
 
         public FormMainView()
         {
-            Clients = new Dictionary<int, string>();
+            Clients = new List<string>();
             Connect();
 
             while (!loggedIn){}
@@ -130,22 +130,23 @@ namespace DokterApplicatie
                     {
                         return;
                     }
-                    Clients = new Dictionary<int, string>();
+                    Clients = new List<string>();
                     int UserAmount = int.Parse(packetData[2]);
                     for(int i = 0; i < UserAmount; i++)
                     {
                         Console.WriteLine("Got:"+ packetData[i+3]);
-                        Clients.Add(i, packetData[i + 3]);
+                        Clients.Add(packetData[i + 3]);
                     }
                     updateComboBoxes();
                     break;
                 case"AddClient":
+                    Console.WriteLine("AddClient: " + packetData[1]);
                     username = packetData[1];
-                    Clients.Add(Clients.Count, username);
+                    Clients.Add(username);
                     updateComboBoxes();
                     break;
                 default:
-                    Console.WriteLine("Did not understand: " + packetData[0]);
+                    //Console.WriteLine("Did not understand: " + packetData[0]);
                     break;
 
             }
@@ -155,12 +156,19 @@ namespace DokterApplicatie
         private void updateComboBoxes()
         {
             cbMessageClient.Items.Clear();
-            foreach(string username in Clients.Values)
+            foreach(string username in Clients)
             {
                 cbMessageClient.Items.Add(username);
             }
             cbMessageClient.Items.Add("All clients");
             cbMessageClient.Refresh();
+
+            cbSessionClients.Items.Clear();
+            foreach (string username in Clients)
+            {
+                cbSessionClients.Items.Add(username);
+            }
+            cbSessionClients.Refresh();
         }
 
         private void tabControl1_DrawItem(Object sender, System.Windows.Forms.DrawItemEventArgs e)
