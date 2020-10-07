@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
@@ -12,10 +13,12 @@ namespace Server
         private NetworkStream stream;
         private byte[] buffer = new byte[1024];
         private string totalBuffer = "";
-        private ClientData clientData;
+        public ClientData clientData;
         #endregion
 
         public string UserName { get; set; }
+        public bool IsDoctor { get; set; }
+        public bool isOnline { get; set; }
 
 
         public Client(TcpClient tcpClient)
@@ -23,6 +26,8 @@ namespace Server
             this.tcpClient = tcpClient;
             this.clientData = new ClientData();
 
+            this.IsDoctor = false;
+            this.isOnline = true;
             this.stream = this.tcpClient.GetStream();
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
@@ -62,14 +67,182 @@ namespace Server
                         return;
                     this.UserName = packetData[1];
                     Console.WriteLine($"User {this.UserName} is connected");
+
+                    if (AllClients.totalClients.ContainsKey(UserName))
+                    {
+                        Client clientData;
+                        AllClients.totalClients.TryGetValue(this.UserName, out clientData);
+                        this.clientData = clientData.clientData;
+                        //AllClients.Remove(this.UserName);
+                    }
+                    AllClients.Add(UserName, this);
+
                     Write("login\r\nok");
                     break;
+
                 case "data":
                     if (!assertPacketData(packetData, 5))
                         return;
                     this.clientData.AddData(packetData[1], packetData[2], packetData[3], packetData[4]);
                     Write("data\r\nData Recieved");
                     this.clientData.PrintData();
+
+                    //send real time data to all connected doctors
+                    foreach (Client client in AllClients.totalClients.Values)
+                    {
+                        if (client.IsDoctor && client.isOnline)
+                        {
+                            client.Write($"RealTimeData\r\n{packetData[1]}\r\n{packetData[2]}\r\n{packetData[3]}\r\n{packetData[4]}");
+                        }
+                    }
+                    break;
+
+                case "DoctorLogin":
+                    if (!assertPacketData(packetData, 3))
+                        return;
+                    string username = packetData[1];
+                    string password = packetData[2];
+                    //check password
+                    Dictionary<string, string> passwords = DoctorPasswordData.DoctorPassWords;
+                    string dictionaryPassword;
+                    if (passwords.ContainsKey(username))
+                    {
+                        passwords.TryGetValue(username, out dictionaryPassword);
+                        if (dictionaryPassword.Equals(password))
+                        {
+                            this.IsDoctor = true;
+                            Write("DoctorLogin\r\nok");
+                            AllClients.Add(username, this);
+                        }
+                        else
+                        {
+                            Write("DoctorLogin\r\nerror\r\nIncorrect password");
+                        }
+                    }
+                    else
+                    {
+                        Write("DoctorLogin\r\nerror\r\nIncorrect username");
+                    }
+                    break;
+
+                case "GetHistoricData": //doctor wants historic data
+                    if (!assertPacketData(packetData, 2) || !this.IsDoctor)
+                        return;
+                    string dataUsername = packetData[1];
+                    Client userClient;
+
+                    bool gotValue = AllClients.totalClients.TryGetValue(dataUsername, out userClient);
+
+                    if (!gotValue)
+                    {
+                        Write("GetHistoricData\r\nerror\r\nUsername not found");
+                    }
+                    else
+                    {
+                        Write($"SendHistoricData\r\n{userClient.clientData.GetJson().ToString()}");
+                    }
+                    break;
+
+                case "GetRealtimeData":
+                    if (!IsDoctor)
+                        return;
+
+                    break;
+                case "StartTraining":
+                    //Server ontvangt dit en moet dit doorsturen naar bijbehorende Client
+                    if (!assertPacketData(packetData, 2) || !this.IsDoctor)
+                        return;
+
+                    dataUsername = packetData[1];
+                    gotValue = AllClients.totalClients.TryGetValue(dataUsername, out userClient);
+
+                    if (!gotValue)
+                    {
+                        Write("StartTraining\r\nerror\r\nUsername not found");
+                    }
+                    else
+                    {
+                        if (!userClient.isOnline)
+                        {
+                            Write("StartTraining\r\nerror\r\nUser not online");
+                        }
+                        else
+                        {
+                            userClient.Write("StartTraining");
+                            Write("StartTraining\r\nok");
+                        }
+                    }
+                    break;
+
+                case "StopTraining":
+                    //Server ontvangt dit en moet dit doorsturen naar bijbehorende Client
+                    if (!assertPacketData(packetData, 2) || !this.IsDoctor)
+                        return;
+
+                    dataUsername = packetData[1];
+                    gotValue = AllClients.totalClients.TryGetValue(dataUsername, out userClient);
+
+                    if (!gotValue)
+                    {
+                        Write("StopTraining\r\nerror\r\nUsername not found");
+                    }
+                    else
+                    {
+                        if (!userClient.isOnline)
+                        {
+                            Write("StopTraining\r\nerror\r\nUser not online");
+                        }
+                        else
+                        {
+                            userClient.Write("StopTraining");
+                            Write("StopTraining\r\nok");
+                        }
+                    }
+                    break;
+
+                case "chatToAll":
+                    if (!assertPacketData(packetData, 2))
+                        return;
+                    if (this.IsDoctor) { 
+                        string messageToAll = packetData[1];
+                        foreach (Client client in AllClients.totalClients.Values)
+                        {
+                            if (client.isOnline)
+                            {
+                                Write($"chatToAll\r\nmessage\r\n[{this.UserName}]: {messageToAll}");
+                            }
+                        }
+                     }
+                    else
+                    {
+                        Write($"chatToAll\r\nerror\r\nOnly doctors can chat to all");
+                    }
+                    break;
+                case "directMessage":
+                    if (!assertPacketData(packetData, 3))
+                        return;
+                    string messageTo = packetData[1];
+                    string message = packetData[2];
+                    Client messageToClient;
+                    gotValue = AllClients.totalClients.TryGetValue(messageTo, out messageToClient);
+                    if (gotValue)
+                    {
+                        if (this.IsDoctor || messageToClient.IsDoctor) {
+                            if (messageToClient.isOnline)
+                            {
+                                messageToClient.Write($"directMessage\r\nmessage\r\n({this.UserName}: {message})");
+                                Write($"directMessage\r\nok");
+                            }
+                            else
+                            {
+                                Write($"directMessage\r\nerror\r\nTarget client is not online");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Write($"directMessage\r\nerror\r\nNeither client is a doctor");
+                    }
                     break;
                 case "DocterLogin":
                     Write("DocterLogin\r\nok");
@@ -93,6 +266,11 @@ namespace Server
             var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
             stream.Write(dataAsBytes, 0, dataAsBytes.Length);
             stream.Flush();
+        }
+
+        public void Disconnect()
+        {
+            this.isOnline = false;
         }
     }
 }

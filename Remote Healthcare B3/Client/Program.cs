@@ -1,8 +1,9 @@
-﻿using Avans.TI.BLE;
+using Avans.TI.BLE;
 using FietsSimulatorGUI;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -24,41 +25,52 @@ namespace Client
         private static BLE bleBike;
         private static BLE bleHeart;
 
+        private static float lastSpeed;
+        private static float lastHeartRate;
+        private static float lastResistance;
+
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome user!");
             Console.WriteLine("Whats your name? ");
-            //username = Console.ReadLine();
-            username = "test";
+            username = Console.ReadLine();
 
             IBike bike;
             if (useRealBike)
             {
                 initBLEConnection();
                 bike = new RealBike(bleBike,bleHeart);
+                lastResistance = 0;
+                lastSpeed = -1;
+                lastHeartRate = -1;
             }
             else
             {
                 data = new BikeData(5, 120, 30, 5);
+                lastSpeed = 5;
+                lastHeartRate = 120;
+                lastResistance = 30;
                 bike = new SimBike(data);
             }
             bike.OnSpeed += Bike_OnSpeed;
             bike.OnHeartRate += Bike_OnHeartrate;
+            bike.OnSend += Bike_OnSend;
 
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
-            //VRController vrController = new VRController();
+            VRController vrController = new VRController();
             while (true)
             {
                 if (useRealBike)
                 {
                     if (Console.ReadLine() == "")
                     {
-                        Console.WriteLine("Input resistance: ");
+                        Console.WriteLine("Input resistance: (First type a 0, after that the resistance)");
+                        
                         int resistance = int.Parse(Console.ReadLine());
-                        sendResistance(resistance);
-                        sendData(-1, -1, resistance);
+                        lastResistance = resistance;
+                        sendResistance((int)lastResistance);
                     }
 
                 }
@@ -85,7 +97,7 @@ namespace Client
                             case "Resistance":
                                 Console.WriteLine("Input Resistance: ");
                                 float resistance = float.Parse(Console.ReadLine());
-                                sendData(-1, -1, resistance);
+                                lastResistance = resistance;
                                 break;
                             default:
                                 Console.WriteLine($"{command} is not a valid input!");
@@ -96,18 +108,24 @@ namespace Client
             }
         }
 
+        private static void Bike_OnSend(object sender, float e)
+        {
+            sendData(lastSpeed, lastHeartRate, lastResistance);
+        }
+
         private static void Bike_OnSpeed(object sender, float e)
         {
-            //Console.WriteLine("Speed: " + e);
-            sendData(e, -1, -1);
-
+            //Console.WriteLine($"Speed: {e}");
+            lastSpeed = e;
         }
 
         private static void Bike_OnHeartrate(object sender, float e)
         {
-            //Console.WriteLine("Heartrate: " + e);
-            sendData(-1, e, -1);
+            //Console.WriteLine($"HeartRate: {e}");
+            lastHeartRate = e;
         }
+
+    
 
         private static void OnConnect(IAsyncResult ar)
         {
@@ -164,9 +182,12 @@ namespace Client
 
         public static async void sendResistance(int resistance)
         {
+            Console.WriteLine($"Send resistance {resistance}");
+            Console.WriteLine($"lastResistance {lastResistance}");
+            lastResistance = resistance;
             if (useRealBike)
             {
-                Console.WriteLine($"Resistance: {resistance}");
+                //Console.WriteLine($"Resistance: {lastResistance}");
 
                 //Sending resistance to the Bluetooth device
                 byte[] data = new byte[13];
@@ -181,7 +202,7 @@ namespace Client
                 data[8] = 0xff; // Not in use
                 data[9] = 0xff; // Not in use
                 data[10] = 0xff; // Not in use
-                data[11] = (byte)(resistance * 2); // Resistance percentage /2
+                data[11] = (byte)(lastResistance * 2); // Resistance percentage /2
                 data[12] = 0; // Checksum
 
                 byte previous = (byte)(data[0] ^ data[1]);
@@ -191,13 +212,9 @@ namespace Client
                     previous = (byte)(previous ^ data[i]);
                 }
 
-                Console.WriteLine($"\n\n{previous}\n\n");
+                //Console.WriteLine($"\n\n{previous}\n\n");
                 data[12] = previous;
 
-                for (int i = 0; i < data.Length; i++)
-                {
-                    Console.WriteLine(data[i]);
-                }
                 await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);
             }
         }

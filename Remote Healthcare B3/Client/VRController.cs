@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Client
 {
@@ -18,7 +19,7 @@ namespace Client
         private static NetworkStream Stream;
         private static string TunnelId;
         private static byte[] Buffer = new byte[1024];
-        private static string TotalBuffer = "";
+        private static byte[] TotalBuffer = new byte[0];
         private VRObject vrObject;
         private List<JObject> ServerResponses;
         private bool Connected = false;
@@ -41,19 +42,19 @@ namespace Client
             SaveObjects(response, VRObjects.BASE);
 
             //exercise 3b: delete groundplane
-            while (vrObject.getUUID("GroundPlane") == string.Empty){}
+            //while (vrObject.getUUID("GroundPlane") == string.Empty) { }
             string planeUUID = vrObject.getUUID("GroundPlane");
             JObject delNode = Scene.Node.Delete(5, planeUUID);
             WriteTextMessage(GenerateMessage(delNode));
 
-            //while (vrObject.getUUID("RightHand") == string.Empty){}
-            //string parentPanel = vrObject.getUUID("RightHand");
-            //WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new int[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 1, 0, 0, 1 }, true)));
-            
-            //response = GetResponse(3);
-            //SaveObjects(response, VRObjects.PANEL);
+            //while (vrObject.getUUID("RightHand") == string.Empty) { }
+            string parentPanel = vrObject.getUUID("RightHand");
+            WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new int[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, true)));
 
-            //SetSpeed(50);
+            response = GetResponse(3);
+            SaveObjects(response, VRObjects.PANEL);
+
+            SetSpeed(5.5f);
 
         }
 
@@ -91,89 +92,48 @@ namespace Client
 
         private void OnRead(IAsyncResult ar)
         {
-            Debug.WriteLine("received data");
             int receivedBytes = Stream.EndRead(ar);
-            string receivedString = Encoding.ASCII.GetString(Buffer, 0, receivedBytes);
+            TotalBuffer = AddByteArrays(TotalBuffer, Buffer, receivedBytes);
 
-            if (Encoding.ASCII.GetString(new byte[] { Buffer[0] }) != "{" && this.messageLength == int.MaxValue)
+            while (TotalBuffer.Length >= 4)
             {
-                byte[] lengthBytes;
-                if (receivedString.Contains('{'))
+                int packetLength = BitConverter.ToInt32(TotalBuffer, 0);
+                if (TotalBuffer.Length >= packetLength + 4)
                 {
-                    int indexBracket = receivedString.IndexOf('{');
-                    lengthBytes = new byte[indexBracket];
-                    for (int i = 0; i < indexBracket; i++)
-                    {
-                        lengthBytes[i] = Buffer[i];
-                    }
-                    TotalBuffer += receivedString.Substring(indexBracket);
-                }
-                else
-                {
-                    lengthBytes = Buffer;
-                }
-                lengthBytes.Reverse();
-                int messageLengthInt = BitConverter.ToInt32(lengthBytes);
-                this.messageLength = messageLengthInt;
-                if (TotalBuffer == "")
-                {
-                    Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnRead), null);
-                    return;
-                }
-            }
-            else
-            {
-                TotalBuffer += receivedString;
-            }
+                    string message = Encoding.ASCII.GetString(TotalBuffer, 4, packetLength);
+                    JObject messageJson = JObject.Parse(message);
+                    //Console.WriteLine(messageJson.ToString());
 
-            if (TotalBuffer.Length >= this.messageLength)
-            {
-                Debug.WriteLine("Full packet received:");
-                string message = TotalBuffer.Substring(0, this.messageLength);
-                JObject messageJson = JObject.Parse(message);
-                Debug.WriteLine(messageJson.ToString());
-                TotalBuffer = TotalBuffer.Substring(messageLength);
+                    byte[] tempBuffer = TotalBuffer.Skip(4 + packetLength).Take(TotalBuffer.Length - packetLength - 4).ToArray();
+                    TotalBuffer = tempBuffer;
 
-                if (TotalBuffer.Length > 1)
-                {
-                    byte[] lengthBytes;
-                    if (TotalBuffer.Contains('{'))
+                    int serial = 0;
+                    try
                     {
-                        int indexBracket = TotalBuffer.IndexOf('{');
-                        lengthBytes = new byte[indexBracket];
-                        for (int i = 0; i < indexBracket; i++)
-                        {
-                            lengthBytes[i] = Buffer[i + messageLength];
-                        }
-                        TotalBuffer = TotalBuffer.Substring(indexBracket);
+                        serial = (int)messageJson["data"]["data"]["serial"];
                     }
-                    else
+                    catch (Exception e)
                     {
-                        lengthBytes = Buffer;
+                        Debug.WriteLine(e.StackTrace);
+                        serial = 0;
                     }
-                    lengthBytes.Reverse();
-                    int messageLengthInt = BitConverter.ToInt32(lengthBytes);
-                    this.messageLength = messageLengthInt;
-                }
-                else
+                    this.ServerResponses[serial] = messageJson;
+                    Console.WriteLine($"Added ServerResponse with serial: {serial}");
+                } else
                 {
-                    this.messageLength = int.MaxValue;
+                    break;
                 }
-
-                int serial = 0;
-                try
-                {
-                    serial = (int)messageJson["data"]["data"]["serial"];
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.StackTrace);
-                    serial = 0;
-                }
-                this.ServerResponses[serial] = messageJson;
             }
 
             Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnRead), null);
+        }
+
+        private static byte[] AddByteArrays(byte[] b1, byte[] b2, int count)
+        {
+            byte[] newByteArray = new byte[b1.Length + count];
+            System.Buffer.BlockCopy(b1, 0, newByteArray, 0, b1.Length);
+            System.Buffer.BlockCopy(b2, 0, newByteArray, b1.Length, count);
+            return newByteArray;
         }
 
         public static void WriteTextMessage(String message)
@@ -203,17 +163,11 @@ namespace Client
             return totalMessage.ToString();
         }
 
-        public void SetSpeed(int speed)
+        public void SetSpeed(float speed)
         {
-            while (vrObject.getUUID("SpeedPanel") == string.Empty) { }
-                if (vrObject.getUUID("SpeedPanel") != string.Empty)
-                {
-                    string panelUUID = vrObject.getUUID("SpeedPanel");
-                    WriteTextMessage(GenerateMessage(Scene.Panel.Swap(11, panelUUID)));
-                    WriteTextMessage(GenerateMessage(Scene.Panel.SetClearColor(6, panelUUID, new float[] { 1, 1, 1, 1 })));
-                    WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, speed + "m/s", new float[] { 10, 100 }, 100, new float[] { 0, 0, 0, 1 }, "Calibri")));
-                    WriteTextMessage(GenerateMessage(Scene.Panel.Swap(11, panelUUID)));
-                }
+            string panelUUID = vrObject.getUUID("SpeedPanel");
+            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{speed:#0.00} m/s", new float[] { 100, 280 }, 100, new float[] { 1, 1, 1, 1 }, "Calibri")));
+            WriteTextMessage(GenerateMessage(Scene.Panel.Swap(11, panelUUID)));
         }
 
         public void SaveObjects(JObject json, VRObjects objectType)

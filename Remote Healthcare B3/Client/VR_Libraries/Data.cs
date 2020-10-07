@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Client_VR
 {
@@ -118,11 +119,15 @@ namespace Client_VR
 
         public string getUUID(string name)
         {
-            foreach (var item in dictionaries)
+            bool found = false;
+            while (!found)
             {
-                if (item.TryGetValue(name, out string value))
+                foreach (var item in dictionaries)
                 {
-                    return value;
+                    if (item.TryGetValue(name, out string value))
+                    {
+                        return value;
+                    }
                 }
             }
             return "";
