@@ -93,7 +93,7 @@ namespace DokterApplicatie
 
             switch (packetData[0])
             {
-                case "DocterLogin":
+                case "DoctorLogin":
                     if (packetData[1] == "ok")
                     {
                         Console.WriteLine("Connected");
@@ -119,6 +119,9 @@ namespace DokterApplicatie
                     {
                         Console.WriteLine("Client received message!");
                     }
+                    break;
+                default:
+                    Console.WriteLine("Did not understand: " + packetData[0]);
                     break;
 
             }
@@ -166,12 +169,13 @@ namespace DokterApplicatie
 
         public void messageToAll(string message)
         {
-            Write($"messageToAll\r\n{message}");
+            Write($"chatToAll\r\n{message}");
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             messageToAll("Test message to all clients!!!");
+            directMessage("jkb", "Hello jkb!");
         }
     }
 }

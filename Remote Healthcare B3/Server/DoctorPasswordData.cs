@@ -13,6 +13,7 @@ namespace Server
         {
             DoctorPassWords = new Dictionary<string, string>();
             //add passwords
+            DoctorPassWords.Add("Lars", "123");
         }
 
         public static void Add(string username, string password)

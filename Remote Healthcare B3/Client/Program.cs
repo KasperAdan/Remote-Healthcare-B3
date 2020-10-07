@@ -19,7 +19,7 @@ namespace Client
         private static string username;
 
         private static bool loggedIn = false;
-        private static bool useRealBike = true;
+        private static bool useRealBike = false;
         private static BikeData data;
 
         private static BLE bleBike;
@@ -179,7 +179,7 @@ namespace Client
                     //Console.WriteLine(packetData[1]);
                     break;
 
-                case "messageToAll":
+                case "chatToAll":
                     if (packetData[1].Equals("message"))
                     {
                         string message = packetData[2];
@@ -193,6 +193,9 @@ namespace Client
                         string message = packetData[2];
                         Console.WriteLine(message);
                     }
+                    break;
+                default:
+                    Console.WriteLine("Did not understand: "+ packetData[0]);
                     break;
             }
 

@@ -111,17 +111,21 @@ namespace Server
                         passwords.TryGetValue(username, out dictionaryPassword);
                         if (dictionaryPassword.Equals(password))
                         {
+                            this.UserName = username;
+                            Console.WriteLine("correct password");
                             this.IsDoctor = true;
                             Write("DoctorLogin\r\nok");
                             AllClients.Add(username, this);
                         }
                         else
                         {
+                            Console.WriteLine("incorrect password");
                             Write("DoctorLogin\r\nerror\r\nIncorrect password");
                         }
                     }
                     else
                     {
+                        Console.WriteLine("incorrect username");
                         Write("DoctorLogin\r\nerror\r\nIncorrect username");
                     }
                     break;
@@ -206,7 +210,6 @@ namespace Server
                         return;
                     if (this.IsDoctor) { 
                         string messageToAll = packetData[1];
-                        Console.WriteLine(messageToAll);
                         foreach (Client client in AllClients.totalClients.Values)
                         {
                             if (client.isOnline)
@@ -233,7 +236,7 @@ namespace Server
                         if (this.IsDoctor || messageToClient.IsDoctor) {
                             if (messageToClient.isOnline)
                             {
-                                messageToClient.Write($"directMessage\r\nmessage\r\n({this.UserName}: {message})");
+                                messageToClient.Write($"directMessage\r\nmessage\r\n({this.UserName}): {message}");
                                 Write($"directMessage\r\nok");
                             }
                             else
@@ -247,10 +250,10 @@ namespace Server
                         Write($"directMessage\r\nerror\r\nNeither client is a doctor");
                     }
                     break;
-                case "DocterLogin":
-                    Write("DocterLogin\r\nok");
+                default:
+                    Console.WriteLine("Did not understand: " + packetData[0]);
                     break;
-                
+
             }
         }
 
