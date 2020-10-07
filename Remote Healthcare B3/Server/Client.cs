@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Server
@@ -20,6 +22,7 @@ namespace Server
         public bool IsDoctor { get; set; }
         public bool isOnline { get; set; }
 
+        public CryptoStream crStreamRead;
 
         public Client(TcpClient tcpClient)
         {
@@ -29,15 +32,21 @@ namespace Server
             this.IsDoctor = false;
             this.isOnline = true;
             this.stream = this.tcpClient.GetStream();
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            DESCryptoServiceProvider cryptic = new DESCryptoServiceProvider();
+
+            cryptic.Key = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
+            cryptic.IV = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
+
+            crStreamRead = new CryptoStream(stream, cryptic.CreateDecryptor(), CryptoStreamMode.Read);
+            crStreamRead.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
         #region connection stuff
         private void OnRead(IAsyncResult ar)
         {
             try
             {
-                int receivedBytes = stream.EndRead(ar);
-                string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
+                int receivedBytes = crStreamRead.EndRead(ar);
+                string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
                 totalBuffer += receivedText;
             }
             catch (IOException)
@@ -53,7 +62,7 @@ namespace Server
                 string[] packetData = Regex.Split(packet, "\r\n");
                 handleData(packetData);
             }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            crStreamRead.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
         #endregion
 
@@ -259,9 +268,16 @@ namespace Server
 
         public void Write(string data)
         {
-            var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
-            stream.Flush();
+            var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n");
+            DESCryptoServiceProvider cryptic = new DESCryptoServiceProvider();
+
+            cryptic.Key = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
+            cryptic.IV = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
+
+            CryptoStream crStream = new CryptoStream(stream,
+               cryptic.CreateEncryptor(), CryptoStreamMode.Write);
+
+            crStream.Write(dataAsBytes, 0, dataAsBytes.Length);
         }
 
         public void Disconnect()

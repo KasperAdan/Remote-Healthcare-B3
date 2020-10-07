@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace DokterApplicatie
 {
@@ -21,6 +23,8 @@ namespace DokterApplicatie
 
         private string username;
         private bool loggedIn;
+
+        public CryptoStream crStreamRead;
 
         public FormMainView()
         {
@@ -61,13 +65,20 @@ namespace DokterApplicatie
         {
             client.EndConnect(ar);
             stream = client.GetStream();
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            DESCryptoServiceProvider cryptic = new DESCryptoServiceProvider();
+
+            cryptic.Key = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
+            cryptic.IV = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
+
+            crStreamRead = new CryptoStream(stream,
+                cryptic.CreateDecryptor(), CryptoStreamMode.Read);
+            crStreamRead.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         private void OnRead(IAsyncResult ar)
         {
-            int receivedBytes = stream.EndRead(ar);
-            string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
+            int receivedBytes = crStreamRead.EndRead(ar);
+            string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
             totalBuffer += receivedText;
 
             while (totalBuffer.Contains("\r\n\r\n"))
@@ -77,15 +88,22 @@ namespace DokterApplicatie
                 string[] packetData = Regex.Split(packet, "\r\n");
                 handleData(packetData);
             }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            crStreamRead.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
         private void Write(string data)
         {
-            var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
-            stream.Flush();
-        }
+            var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n");
+            DESCryptoServiceProvider cryptic = new DESCryptoServiceProvider();
 
+            cryptic.Key = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
+            cryptic.IV = ASCIIEncoding.ASCII.GetBytes("ABCDEFGH");
+
+            CryptoStream crStream = new CryptoStream(stream,
+               cryptic.CreateEncryptor(), CryptoStreamMode.Write);
+
+            crStream.Write(dataAsBytes, 0, dataAsBytes.Length);
+        }
+            
 
         private void handleData(string[] packetData)
         {
