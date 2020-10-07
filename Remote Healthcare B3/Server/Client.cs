@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
@@ -97,7 +97,7 @@ namespace Server
                     }
                     break;
 
-                case "DoctorLogin":
+                case "DocterLogin":
                     if (!assertPacketData(packetData, 3))
                         return;
                     string username = packetData[1];

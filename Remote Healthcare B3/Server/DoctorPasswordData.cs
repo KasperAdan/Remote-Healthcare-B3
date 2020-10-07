@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -12,7 +12,7 @@ namespace Server
         public static void init()
         {
             DoctorPassWords = new Dictionary<string, string>();
-            //add passwords
+            DoctorPassWords.Add("Test", "123");
         }
 
         public static void Add(string username, string password)
