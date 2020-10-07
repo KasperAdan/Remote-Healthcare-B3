@@ -14,11 +14,13 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.IO;
+using System.Configuration;
 
 namespace DokterApplicatie
 {
     public partial class FormMainView : Form
     {
+        private List<string> Clients;
         private TcpClient client;
         private NetworkStream stream;
         private byte[] buffer = new byte[1024];
@@ -31,6 +33,7 @@ namespace DokterApplicatie
 
         public FormMainView()
         {
+            Clients = new List<string>();
             Connect();
 
             while (!loggedIn)
@@ -38,6 +41,7 @@ namespace DokterApplicatie
             }
 
             InitializeComponent();
+            getClients();
             tabControl1.DrawItem += new DrawItemEventHandler(tabControl1_DrawItem);
         }
 
@@ -53,11 +57,8 @@ namespace DokterApplicatie
         {
             FormLogin loginForm = new FormLogin();
             var result = loginForm.ShowDialog();
-            while (result != DialogResult.Yes)
-            {
-            }
-
-            Write($"DocterLogin\r\n{loginForm.username}\r\n{loginForm.password}");
+            while (result != DialogResult.Yes){}
+            Write($"DoctorLogin\r\n{loginForm.username}\r\n{loginForm.password}");
         }
 
         private void ShowLogin(string error)
@@ -69,7 +70,7 @@ namespace DokterApplicatie
             }
 
             this.username = loginForm.username;
-            Write($"DocterLogin\r\n{loginForm.username}\r\n{loginForm.password}");
+            Write($"DoctorLogin\r\n{loginForm.username}\r\n{loginForm.password}");
         }
 
         private void OnConnect(IAsyncResult ar)
@@ -154,7 +155,7 @@ namespace DokterApplicatie
 
             switch (packetData[0])
             {
-                case "DocterLogin":
+                case "DoctorLogin":
                     if (packetData[1] == "ok")
                     {
                         Console.WriteLine("Connected");
@@ -170,7 +171,100 @@ namespace DokterApplicatie
                 case "data":
                     //Console.WriteLine(packetData[1]);
                     break;
+                case "chatToAll":
+                    if(packetData[1] == "ok")
+                    {
+                        Console.WriteLine("All clients received message!");
+                    }
+                    break;
+                case "directMessage":
+                    if (packetData[1] == "ok")
+                    {
+                        Console.WriteLine("Client received message!");
+                    }
+                    break;
+                case "GetClients":
+                    if(packetData[1] != "ok")
+                    {
+                        return;
+                    }
+                    Clients = new List<string>();
+                    int UserAmount = int.Parse(packetData[2]);
+                    for(int i = 0; i < UserAmount; i++)
+                    {
+                        Console.WriteLine("Got:"+ packetData[i+3]);
+                        Clients.Add(packetData[i + 3]);
+                    }
+                    updateComboBoxes();
+                    break;
+                case"AddClient":
+                    Console.WriteLine("AddClient: " + packetData[1]);
+                    username = packetData[1];
+                    Clients.Add(username);
+                    updateComboBoxes();
+                    break;
+                case "StartTraining":
+                    if(packetData[1] == "ok")
+                    {
+                        Console.WriteLine("Training started");
+                    }
+                    break;
+                case "StopTraining":
+                    if(packetData[1] == "ok")
+                    {
+                        Console.WriteLine("Training stopped");
+                    }
+                    break;
+                case "RealTimeData":
+                    //handle real time data
+                    break;
+                default:
+                    Console.WriteLine("Did not understand: " + packetData[0]);
+                    break;
             }
+        }
+
+        private void updateComboBoxes()
+        {
+            
+            if (cbMessageClient.InvokeRequired)
+            {
+                cbMessageClient.Invoke((MethodInvoker)delegate
+                {
+                    cbMessageClient.Items.Clear();
+                    foreach (string username in Clients)
+                    {
+                        cbMessageClient.Items.Add(username);
+                    }
+                    cbMessageClient.Items.Add("All clients");
+                    cbMessageClient.Refresh();
+                });
+            }
+            else
+            {
+                cbMessageClient.Items.Clear();
+                foreach (string username in Clients)
+                {
+                    cbMessageClient.Items.Add(username);
+                }
+                cbMessageClient.Items.Add("All clients");
+                cbMessageClient.Refresh();
+            }
+
+            if (cbSessionClients.InvokeRequired)
+            {
+                cbSessionClients.Invoke((MethodInvoker)delegate
+                {
+                    cbSessionClients.Items.Clear();
+                    foreach (string username in Clients)
+                    {
+                        cbSessionClients.Items.Add(username);
+                    }
+                    cbSessionClients.Refresh();
+                });
+            }
+  
+            
         }
 
         private void tabControl1_DrawItem(Object sender, System.Windows.Forms.DrawItemEventArgs e)
@@ -289,6 +383,57 @@ namespace DokterApplicatie
 
 
             return plaintext;
+        }
+        public void directMessage(string username, string message)
+        {
+            Write($"directMessage\r\n{username}\r\n{message}");
+        }
+
+        public void chatToAll(string message)
+        {
+            Write($"chatToAll\r\n{message}");
+        }
+
+        private void btnStartSession_Click(object sender, EventArgs e)
+        {
+            //dictionary to connect user with tab
+            string username = cbSessionClients.SelectedItem.ToString();
+            startTraining(username);
+        }
+
+        private void btnStopSession_Click(object sender, EventArgs e)
+        {
+            //dictionary to connect user with tab
+            string username = cbSessionClients.SelectedItem.ToString();
+            stopTraining(username);
+        }
+
+        private void btnSendMessage_Click(object sender, EventArgs e)
+        {
+            Object selectedItem = cbMessageClient.SelectedItem;
+            if(selectedItem.ToString().Equals("All clients"))
+            {
+                chatToAll(tbMessage.Text);
+            }
+            else
+            {
+                directMessage(selectedItem.ToString(), tbMessage.Text);
+            }
+        }
+
+        private void getClients()
+        {
+            Write("GetClients");
+        }
+
+        private void startTraining(string username)
+        {
+            Write($"StartTraining\r\n{username}");
+        }
+
+        private void stopTraining(string username)
+        {
+            Write($"StopTraining\r\n{username}");
         }
     }
 }

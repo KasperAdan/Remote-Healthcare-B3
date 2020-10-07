@@ -24,7 +24,8 @@ namespace Client
         private static string username;
 
         private static bool loggedIn = false;
-        private static bool useRealBike = true;
+        private static bool runningTraining = false;
+        private static bool useRealBike = false;
         private static BikeData data;
 
         private static BLE bleBike;
@@ -39,6 +40,8 @@ namespace Client
             Console.WriteLine("Welcome user!");
             Console.WriteLine("Whats your name? ");
             username = Console.ReadLine();
+            //username = "jkb";
+
 
             IBike bike;
             if (useRealBike)
@@ -64,49 +67,52 @@ namespace Client
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
-            VRController vrController = new VRController();
+            //VRController vrController = new VRController();
             while (true)
             {
-                if (useRealBike)
+                if (runningTraining)
                 {
-                    if (Console.ReadLine() == "")
+                    if (useRealBike)
                     {
-                        Console.WriteLine("Input resistance: (First type a 0, after that the resistance)");
-                        
-                        int resistance = int.Parse(Console.ReadLine());
-                        lastResistance = resistance;
-                        sendResistance((int)lastResistance);
-                    }
-
-                }
-                else
-                {
-                    if (Console.ReadLine() == "")
-                    {
-                       
-                        Console.WriteLine("Input Command(Speed/HeartRate/Resistance): ");
-                        string  command= Console.ReadLine();
-                        switch (command)
+                        if (Console.ReadLine() == "")
                         {
-                            case "Speed":
-                                Console.WriteLine("Input Speed: ");
-                                float speed = float.Parse(Console.ReadLine());
-                                Console.WriteLine(speed.ToString());
-                                data.Speed = speed;
-                                break;
-                            case "HeartRate":
-                                Console.WriteLine("Input HeartRAte: ");
-                                int heartRate = int.Parse(Console.ReadLine());
-                                data.HeartRate = heartRate;
-                                break;
-                            case "Resistance":
-                                Console.WriteLine("Input Resistance: ");
-                                float resistance = float.Parse(Console.ReadLine());
-                                lastResistance = resistance;
-                                break;
-                            default:
-                                Console.WriteLine($"{command} is not a valid input!");
-                                break;
+                            Console.WriteLine("Input resistance: (First type a 0, after that the resistance)");
+
+                            int resistance = int.Parse(Console.ReadLine());
+                            lastResistance = resistance;
+                            sendResistance((int)lastResistance);
+                        }
+
+                    }
+                    else
+                    {
+                        if (Console.ReadLine() == "")
+                        {
+
+                            Console.WriteLine("Input Command(Speed/HeartRate/Resistance): ");
+                            string command = Console.ReadLine();
+                            switch (command)
+                            {
+                                case "Speed":
+                                    Console.WriteLine("Input Speed: ");
+                                    float speed = float.Parse(Console.ReadLine());
+                                    Console.WriteLine(speed.ToString());
+                                    data.Speed = speed;
+                                    break;
+                                case "HeartRate":
+                                    Console.WriteLine("Input HeartRAte: ");
+                                    int heartRate = int.Parse(Console.ReadLine());
+                                    data.HeartRate = heartRate;
+                                    break;
+                                case "Resistance":
+                                    Console.WriteLine("Input Resistance: ");
+                                    float resistance = float.Parse(Console.ReadLine());
+                                    lastResistance = resistance;
+                                    break;
+                                default:
+                                    Console.WriteLine($"{command} is not a valid input!");
+                                    break;
+                            }
                         }
                     }
                 }
@@ -115,19 +121,28 @@ namespace Client
 
         private static void Bike_OnSend(object sender, float e)
         {
-            sendData(lastSpeed, lastHeartRate, lastResistance);
+            if (runningTraining)
+            {
+                sendData(lastSpeed, lastHeartRate, lastResistance);
+            }
         }
 
         private static void Bike_OnSpeed(object sender, float e)
         {
-            //Console.WriteLine($"Speed: {e}");
-            lastSpeed = e;
+            if (runningTraining)
+            {
+                //Console.WriteLine($"Speed: {e}");
+                lastSpeed = e;
+            }
         }
 
         private static void Bike_OnHeartrate(object sender, float e)
         {
-            //Console.WriteLine($"HeartRate: {e}");
-            lastHeartRate = e;
+            if (runningTraining)
+            {
+                //Console.WriteLine($"HeartRate: {e}");
+                lastHeartRate = e;
+            }
         }
 
     
@@ -212,8 +227,39 @@ namespace Client
                     else
                         Console.WriteLine(packetData[1]);
                     break;
+
                 case "data":
                     //Console.WriteLine(packetData[1]);
+                    break;
+
+                case "chatToAll":
+                    if (packetData[1].Equals("message"))
+                    {
+                        string message = packetData[2];
+                        Console.WriteLine(message);
+                    }
+                    break;
+
+                case "directMessage":
+                    if (packetData[1].Equals("message"))
+                    {
+                        string message = packetData[2];
+                        Console.WriteLine(message);
+                    }
+                    break;
+
+                case "StartTraining":
+                    runningTraining = true;
+                    Console.WriteLine("Started Training");
+                    break;
+
+                case "StopTraining":
+                    runningTraining = false;
+                    Console.WriteLine("Stopped Training");
+                    break;
+
+                default:
+                    Console.WriteLine("Did not understand: "+ packetData[0]);
                     break;
             }
 

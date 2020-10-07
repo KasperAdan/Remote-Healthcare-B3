@@ -88,7 +88,7 @@ namespace Server
 
         private void handleData(string[] packetData)
         {
-            Console.WriteLine($"Got a packet: {packetData[0]}");
+            //Console.WriteLine($"Got a packet: {packetData[0]}");
             switch (packetData[0])
             {
                 case "login":
@@ -97,16 +97,29 @@ namespace Server
                     this.UserName = packetData[1];
                     Console.WriteLine($"User {this.UserName} is connected");
 
+                    Write("login\r\nok");
                     if (AllClients.totalClients.ContainsKey(UserName))
                     {
                         Client clientData;
                         AllClients.totalClients.TryGetValue(this.UserName, out clientData);
                         this.clientData = clientData.clientData;
                         //AllClients.Remove(this.UserName);
+                       
+                    }
+                    else
+                    {
+                        foreach(Client client in AllClients.totalClients.Values)
+                        {
+                            if (client.IsDoctor && client.isOnline)
+                            {
+                                client.Write($"AddClient\r\n{UserName}");
+                            }
+                        }
                     }
                     AllClients.Add(UserName, this);
 
-                    Write("login\r\nok");
+                    
+
                     break;
 
                 case "data":
@@ -126,7 +139,8 @@ namespace Server
                     }
                     break;
 
-                case "DocterLogin":
+                case "DoctorLogin":
+                    Console.WriteLine("DoctorLogin received");
                     if (!assertPacketData(packetData, 3))
                         return;
                     string username = packetData[1];
@@ -139,18 +153,22 @@ namespace Server
                         passwords.TryGetValue(username, out dictionaryPassword);
                         if (dictionaryPassword.Equals(password))
                         {
+                            this.UserName = username;
+                            Console.WriteLine("correct password");
                             this.IsDoctor = true;
                             Write("DocterLogin\r\nok");
                             AllClients.Add(username, this);
                         }
                         else
                         {
-                            Write("DocterLogin\r\nerror\r\nIncorrect password");
+                            Console.WriteLine("incorrect password");
+                            Write("DoctorLogin\r\nerror\r\nIncorrect password");
                         }
                     }
                     else
                     {
-                        Write("DocterLogin\r\nerror\r\nIncorrect username");
+                        Console.WriteLine("incorrect username");
+                        Write("DoctorLogin\r\nerror\r\nIncorrect username");
                     }
                     break;
 
@@ -175,7 +193,7 @@ namespace Server
                 case "GetRealtimeData":
                     if (!IsDoctor)
                         return;
-
+                    //volgens mij zijn we deze vergeten en moeten we deze nog doen!!!
                     break;
                 case "StartTraining":
                     //Server ontvangt dit en moet dit doorsturen naar bijbehorende Client
@@ -238,9 +256,10 @@ namespace Server
                         {
                             if (client.isOnline)
                             {
-                                Write($"chatToAll\r\nmessage\r\n[{this.UserName}]: {messageToAll}");
+                                client.Write($"chatToAll\r\nmessage\r\n[{this.UserName}]: {messageToAll}");
                             }
                         }
+                        Write($"chatToAll\r\nok");
                      }
                     else
                     {
@@ -259,7 +278,7 @@ namespace Server
                         if (this.IsDoctor || messageToClient.IsDoctor) {
                             if (messageToClient.isOnline)
                             {
-                                messageToClient.Write($"directMessage\r\nmessage\r\n({this.UserName}: {message})");
+                                messageToClient.Write($"directMessage\r\nmessage\r\n({this.UserName}): {message}");
                                 Write($"directMessage\r\nok");
                             }
                             else
@@ -273,6 +292,28 @@ namespace Server
                         Write($"directMessage\r\nerror\r\nNeither client is a doctor");
                     }
                     break;
+                case "GetClients":
+                    if (!IsDoctor || !assertPacketData(packetData, 1))
+                    {
+                        return;
+                    }
+                    string allUsernames = "";
+                    int userAmount = 0;
+                    foreach(Client client in AllClients.totalClients.Values)
+                    {
+                        if (!client.IsDoctor)
+                        {
+                            allUsernames += "\r\n" + client.UserName;
+                            userAmount++;
+                        }
+                    }
+                    message = $"GetClients\r\nok\r\n{userAmount}{allUsernames}";
+                    Write(message);
+                    break;
+                default:
+                    Console.WriteLine("Did not understand: " + packetData[0]);
+                    break;
+
             }
         }
 
