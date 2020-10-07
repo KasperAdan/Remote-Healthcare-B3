@@ -68,16 +68,22 @@ namespace Server
                     this.UserName = packetData[1];
                     Console.WriteLine($"User {this.UserName} is connected");
 
+                    Write("login\r\nok");
                     if (AllClients.totalClients.ContainsKey(UserName))
                     {
                         Client clientData;
                         AllClients.totalClients.TryGetValue(this.UserName, out clientData);
                         this.clientData = clientData.clientData;
                         //AllClients.Remove(this.UserName);
+                       
+                    }
+                    else
+                    {
+                        Write($"AddClient\r\n{UserName}");
                     }
                     AllClients.Add(UserName, this);
 
-                    Write("login\r\nok");
+                    
 
                     break;
 
@@ -250,6 +256,24 @@ namespace Server
                     {
                         Write($"directMessage\r\nerror\r\nNeither client is a doctor");
                     }
+                    break;
+                case "GetClients":
+                    if (!IsDoctor && !assertPacketData(packetData, 1))
+                    {
+                        return;
+                    }
+                    string allUsernames = "";
+                    int userAmount = 0;
+                    foreach(Client client in AllClients.totalClients.Values)
+                    {
+                        if (!client.IsDoctor)
+                        {
+                            allUsernames += "\r\n" + client.UserName;
+                            userAmount++;
+                        }
+                    }
+                    message = $"GetClients\r\nok\r\n{userAmount}{allUsernames}";
+                    Write(message);
                     break;
                 default:
                     Console.WriteLine("Did not understand: " + packetData[0]);

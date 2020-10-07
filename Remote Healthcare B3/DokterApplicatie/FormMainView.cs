@@ -9,11 +9,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using System.Configuration;
 
 namespace DokterApplicatie
 {
     public partial class FormMainView : Form
     {
+        private Dictionary<int, string> Clients;
         private TcpClient client;
         private NetworkStream stream;
         private byte[] buffer = new byte[1024];
@@ -24,11 +26,13 @@ namespace DokterApplicatie
 
         public FormMainView()
         {
+            Clients = new Dictionary<int, string>();
             Connect();
 
             while (!loggedIn){}
 
             InitializeComponent();
+            getClients();
             cbMessageClient.Items.Add("All clients");
             tabControl1.DrawItem += new DrawItemEventHandler(tabControl1_DrawItem);
         }
@@ -121,12 +125,42 @@ namespace DokterApplicatie
                         Console.WriteLine("Client received message!");
                     }
                     break;
+                case "GetClients":
+                    if(packetData[1] != "ok")
+                    {
+                        return;
+                    }
+                    Clients = new Dictionary<int, string>();
+                    int UserAmount = int.Parse(packetData[2]);
+                    for(int i = 0; i < UserAmount; i++)
+                    {
+                        Console.WriteLine("Got:"+ packetData[i+3]);
+                        Clients.Add(i, packetData[i + 3]);
+                    }
+                    updateComboBoxes();
+                    break;
+                case"AddClient":
+                    username = packetData[1];
+                    Clients.Add(Clients.Count, username);
+                    updateComboBoxes();
+                    break;
                 default:
                     Console.WriteLine("Did not understand: " + packetData[0]);
                     break;
 
             }
 
+        }
+
+        private void updateComboBoxes()
+        {
+            cbMessageClient.Items.Clear();
+            foreach(string username in Clients.Values)
+            {
+                cbMessageClient.Items.Add(username);
+            }
+            cbMessageClient.Items.Add("All clients");
+            cbMessageClient.Refresh();
         }
 
         private void tabControl1_DrawItem(Object sender, System.Windows.Forms.DrawItemEventArgs e)
@@ -194,8 +228,13 @@ namespace DokterApplicatie
             }
             else
             {
-                directMessage(cbMessageClient.SelectedValue.ToString(), tbMessage.Text);
+                directMessage(selectedItem.ToString(), tbMessage.Text);
             }
+        }
+
+        private void getClients()
+        {
+            Write("GetClients");
         }
     }
 }
