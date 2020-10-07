@@ -59,7 +59,7 @@ namespace Server
 
         private void handleData(string[] packetData)
         {
-            Console.WriteLine($"Got a packet: {packetData[0]}");
+            //Console.WriteLine($"Got a packet: {packetData[0]}");
             switch (packetData[0])
             {
                 case "login":
@@ -98,6 +98,7 @@ namespace Server
                     break;
 
                 case "DoctorLogin":
+                    Console.WriteLine("DoctorLogin received");
                     if (!assertPacketData(packetData, 3))
                         return;
                     string username = packetData[1];
@@ -205,13 +206,15 @@ namespace Server
                         return;
                     if (this.IsDoctor) { 
                         string messageToAll = packetData[1];
+                        Console.WriteLine(messageToAll);
                         foreach (Client client in AllClients.totalClients.Values)
                         {
                             if (client.isOnline)
                             {
-                                Write($"chatToAll\r\nmessage\r\n[{this.UserName}]: {messageToAll}");
+                                client.Write($"chatToAll\r\nmessage\r\n[{this.UserName}]: {messageToAll}");
                             }
                         }
+                        Write($"chatToAll\r\nok");
                      }
                     else
                     {

@@ -33,7 +33,8 @@ namespace Client
         {
             Console.WriteLine("Welcome user!");
             Console.WriteLine("Whats your name? ");
-            username = Console.ReadLine();
+            //username = Console.ReadLine();
+            username = "jkb";
 
             IBike bike;
             if (useRealBike)
@@ -59,7 +60,7 @@ namespace Client
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
-            VRController vrController = new VRController();
+            //VRController vrController = new VRController();
             while (true)
             {
                 if (useRealBike)
@@ -173,8 +174,25 @@ namespace Client
                     else
                         Console.WriteLine(packetData[1]);
                     break;
+
                 case "data":
                     //Console.WriteLine(packetData[1]);
+                    break;
+
+                case "messageToAll":
+                    if (packetData[1].Equals("message"))
+                    {
+                        string message = packetData[2];
+                        Console.WriteLine(message);
+                    }
+                    break;
+
+                case "directMessage":
+                    if (packetData[1].Equals("message"))
+                    {
+                        string message = packetData[2];
+                        Console.WriteLine(message);
+                    }
                     break;
             }
 

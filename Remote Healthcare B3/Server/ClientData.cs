@@ -52,7 +52,7 @@ namespace Server
                 int minutes = ((int)totalSeconds % 3600)/60;
                 int seconds = (int)totalSeconds % 60;
 
-                Console.WriteLine($"Measurement {i + 1}: Time: {hours:00}:{minutes:00}:{seconds:00}   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Resistance: {data[i][2]}");
+                //Console.WriteLine($"Measurement {i + 1}: Time: {hours:00}:{minutes:00}:{seconds:00}   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Resistance: {data[i][2]}");
             }
         }
         

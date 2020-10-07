@@ -45,7 +45,7 @@ namespace DokterApplicatie
             FormLogin loginForm = new FormLogin();
             var result = loginForm.ShowDialog();
             while (result != DialogResult.Yes){}
-            Write($"DocterLogin\r\n{loginForm.username}\r\n{loginForm.password}");
+            Write($"DoctorLogin\r\n{loginForm.username}\r\n{loginForm.password}");
         }
 
         private void ShowLogin(string error)
@@ -54,7 +54,7 @@ namespace DokterApplicatie
             var result = loginForm.ShowDialog();
             while (result != DialogResult.Yes){}
             this.username = loginForm.username;
-            Write($"DocterLogin\r\n{loginForm.username}\r\n{loginForm.password}");
+            Write($"DoctorLogin\r\n{loginForm.username}\r\n{loginForm.password}");
         }
 
         private void OnConnect(IAsyncResult ar)
@@ -108,6 +108,19 @@ namespace DokterApplicatie
                 case "data":
                     //Console.WriteLine(packetData[1]);
                     break;
+                case "chatToAll":
+                    if(packetData[1] == "ok")
+                    {
+                        Console.WriteLine("All clients received message!");
+                    }
+                    break;
+                case "directMessage":
+                    if (packetData[1] == "ok")
+                    {
+                        Console.WriteLine("Client received message!");
+                    }
+                    break;
+
             }
 
         }
@@ -146,6 +159,19 @@ namespace DokterApplicatie
             g.DrawString(_tabPage.Text, _tabFont, _textBrush, _tabBounds, new StringFormat(_stringFlags));
         }
 
-       
+        public void directMessage(string username, string message)
+        {
+            Write($"directMessage\r\n{username}\r\n{message}");
+        }
+
+        public void messageToAll(string message)
+        {
+            Write($"messageToAll\r\n{message}");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            messageToAll("Test message to all clients!!!");
+        }
     }
 }
