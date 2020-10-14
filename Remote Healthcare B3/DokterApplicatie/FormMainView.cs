@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.IO;
 using System.Configuration;
+using Server;
 
 namespace DokterApplicatie
 {
@@ -39,8 +40,8 @@ namespace DokterApplicatie
             }
 
             InitializeComponent();
-            getClients();
-            tabControl1.DrawItem += new DrawItemEventHandler(tabControl1_DrawItem);
+            GetClients();
+            tabControl1.DrawItem += new DrawItemEventHandler(TabControl1_DrawItem);
         }
 
         public void Connect()
@@ -82,23 +83,9 @@ namespace DokterApplicatie
         {
             int receivedBytes = stream.EndRead(ar);
 
-            string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-
-
-            var Key = new byte[32]
-                { 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9,  9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9};
-            var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
-
-            for (int i = 0; i < receivedBytes; i++)
-            {
-                Console.WriteLine(receivedText[i]);
-            }
-
             byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
 
-
-            String Decrypted = DecryptStringFromBytes(PartialBuffer, Key, IV);
-            ;
+            string Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
 
             totalBuffer += Decrypted;
 
@@ -107,7 +94,7 @@ namespace DokterApplicatie
                 string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
                 string[] packetData = Regex.Split(packet, "\r\n");
-                handleData(packetData);
+                HandleData(packetData);
             }
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
@@ -115,18 +102,7 @@ namespace DokterApplicatie
 
         private void Write(string data)
         {
-           
-
-            //key and initialization vector (IV).
-
-            var Key = new byte[32]
-                {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
-            var IV = new byte[16] {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
-
-
-            var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
-
-            var dataStringEncrypted = EncryptStringToBytes(data + "\r\n\r\n", Key, IV);
+           var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
 
             stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 
@@ -135,7 +111,7 @@ namespace DokterApplicatie
         }
             
 
-        private void handleData(string[] packetData)
+        private void HandleData(string[] packetData)
         {
             //Console.WriteLine($"Packet ontvangen: {packetData[0]}");
 
@@ -181,13 +157,13 @@ namespace DokterApplicatie
                         Console.WriteLine("Got:"+ packetData[i+3]);
                         Clients.Add(packetData[i + 3]);
                     }
-                    updateComboBoxes();
+                    UpdateComboBoxes();
                     break;
                 case"AddClient":
                     Console.WriteLine("AddClient: " + packetData[1]);
                     username = packetData[1];
                     Clients.Add(username);
-                    updateComboBoxes();
+                    UpdateComboBoxes();
                     break;
                 case "StartTraining":
                     if(packetData[1] == "ok")
@@ -210,7 +186,7 @@ namespace DokterApplicatie
             }
         }
 
-        private void updateComboBoxes()
+        private void UpdateComboBoxes()
         {
             
             if (cbMessageClient.InvokeRequired)
@@ -253,7 +229,7 @@ namespace DokterApplicatie
             
         }
 
-        private void tabControl1_DrawItem(Object sender, System.Windows.Forms.DrawItemEventArgs e)
+        private void TabControl1_DrawItem(Object sender, System.Windows.Forms.DrawItemEventArgs e)
         {
             Graphics g = e.Graphics;
             Brush _textBrush;
@@ -286,138 +262,54 @@ namespace DokterApplicatie
             g.DrawString(_tabPage.Text, _tabFont, _textBrush, _tabBounds, new StringFormat(_stringFlags));
         }
 
-
-        //Encrypt and decrypt methods
-        static byte[] EncryptStringToBytes(string plainText, byte[] Key, byte[] IV)
-        {
-            // Check arguments.
-            if (plainText == null || plainText.Length <= 0)
-                throw new ArgumentNullException("plainText");
-            if (Key == null || Key.Length <= 0)
-                throw new ArgumentNullException("Key");
-            if (IV == null || IV.Length <= 0)
-                throw new ArgumentNullException("IV");
-            byte[] encrypted;
-            // Create an Rijndael object
-            // with the specified key and IV.
-            using (Rijndael rijAlg = Rijndael.Create())
-            {
-                rijAlg.Key = Key;
-                rijAlg.IV = IV;
-
-                // Create an encryptor to perform the stream transform.
-                ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
-
-                // Create the streams used for encryption.
-                using (MemoryStream msEncrypt = new MemoryStream())
-                {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
-                        {
-
-                            //Write all data to the stream.
-                            swEncrypt.Write(plainText);
-                        }
-                        encrypted = msEncrypt.ToArray();
-                    }
-                }
-            }
-
-            // Return the encrypted bytes from the memory stream.
-            return encrypted;
-        }
-
-        static string DecryptStringFromBytes(byte[] cipherText, byte[] Key, byte[] IV)
-        {
-            // Check arguments.
-            if (cipherText == null || cipherText.Length <= 0)
-                throw new ArgumentNullException("cipherText");
-            if (Key == null || Key.Length <= 0)
-                throw new ArgumentNullException("Key");
-            if (IV == null || IV.Length <= 0)
-                throw new ArgumentNullException("IV");
-
-            // Declare the string used to hold
-            // the decrypted text.
-            string plaintext = null;
-
-            // Create an Rijndael object
-            // with the specified key and IV.
-            using (Rijndael rijAlg = Rijndael.Create())
-            {
-                rijAlg.Key = Key;
-                rijAlg.IV = IV;
-
-                // Create a decryptor to perform the stream transform.
-                ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
-
-                // Create the streams used for decryption.
-                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
-                {
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
-                        {
-                            // Read the decrypted bytes from the decrypting stream
-                            // and place them in a string.
-                            plaintext = srDecrypt.ReadToEnd();
-                        }
-                    }
-                }
-            }
-
-
-            return plaintext;
-        }
-        public void directMessage(string username, string message)
+        public void DirectMessage(string username, string message)
         {
             Write($"directMessage\r\n{username}\r\n{message}");
         }
 
-        public void chatToAll(string message)
+        public void ChatToAll(string message)
         {
             Write($"chatToAll\r\n{message}");
         }
 
-        private void btnStartSession_Click(object sender, EventArgs e)
+        private void BtnStartSession_Click(object sender, EventArgs e)
         {
             //dictionary to connect user with tab
             string username = cbSessionClients.SelectedItem.ToString();
-            startTraining(username);
+            StartTraining(username);
         }
 
-        private void btnStopSession_Click(object sender, EventArgs e)
+        private void BtnStopSession_Click(object sender, EventArgs e)
         {
             //dictionary to connect user with tab
             string username = cbSessionClients.SelectedItem.ToString();
-            stopTraining(username);
+            StopTraining(username);
         }
 
-        private void btnSendMessage_Click(object sender, EventArgs e)
+        private void BtnSendMessage_Click(object sender, EventArgs e)
         {
             Object selectedItem = cbMessageClient.SelectedItem;
             if(selectedItem.ToString().Equals("All clients"))
             {
-                chatToAll(tbMessage.Text);
+                ChatToAll(tbMessage.Text);
             }
             else
             {
-                directMessage(selectedItem.ToString(), tbMessage.Text);
+                DirectMessage(selectedItem.ToString(), tbMessage.Text);
             }
         }
 
-        private void getClients()
+        private void GetClients()
         {
             Write("GetClients");
         }
 
-        private void startTraining(string username)
+        private void StartTraining(string username)
         {
             Write($"StartTraining\r\n{username}");
         }
 
-        private void stopTraining(string username)
+        private void StopTraining(string username)
         {
             Write($"StopTraining\r\n{username}");
         }

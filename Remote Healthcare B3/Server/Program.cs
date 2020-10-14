@@ -14,7 +14,7 @@ namespace Server
         static void Main(string[] args)
         {
             Console.WriteLine("Hello Server!");
-            DoctorPasswordData.init();
+            DoctorPasswordData.Init();
             AllClients.init();
             listener = new TcpListener(IPAddress.Any, 15243);
             listener.Start();

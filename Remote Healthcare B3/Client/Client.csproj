@@ -42,4 +42,6 @@
     </None>
   </ItemGroup>
 
+  <Import Project="..\SharedCrypting\SharedCrypting.projitems" Label="Shared" />
+
 </Project>

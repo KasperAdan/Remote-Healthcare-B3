@@ -304,7 +304,7 @@
             this.btnStartSession.TabIndex = 6;
             this.btnStartSession.Text = "Start session";
             this.btnStartSession.UseVisualStyleBackColor = true;
-            this.btnStartSession.Click += new System.EventHandler(this.btnStartSession_Click);
+            this.btnStartSession.Click += new System.EventHandler(this.BtnStartSession_Click);
             // 
             // cbSessionClients
             // 
@@ -322,7 +322,7 @@
             this.btnStopSession.TabIndex = 8;
             this.btnStopSession.Text = "Stop session";
             this.btnStopSession.UseVisualStyleBackColor = true;
-            this.btnStopSession.Click += new System.EventHandler(this.btnStopSession_Click);
+            this.btnStopSession.Click += new System.EventHandler(this.BtnStopSession_Click);
             // 
             // pictureBox4
             // 
@@ -341,7 +341,7 @@
             this.btnSendMessage.TabIndex = 3;
             this.btnSendMessage.Text = "Send message";
             this.btnSendMessage.UseVisualStyleBackColor = true;
-            this.btnSendMessage.Click += new System.EventHandler(this.btnSendMessage_Click);
+            this.btnSendMessage.Click += new System.EventHandler(this.BtnSendMessage_Click);
             // 
             // tbMessage
             // 

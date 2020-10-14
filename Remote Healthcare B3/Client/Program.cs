@@ -1,5 +1,6 @@
 using Avans.TI.BLE;
 using FietsSimulatorGUI;
+using Server;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -46,7 +47,7 @@ namespace Client
             IBike bike;
             if (useRealBike)
             {
-                initBLEConnection();
+                InitBLEConnection();
                 bike = new RealBike(bleBike,bleHeart);
                 lastResistance = 0;
                 lastSpeed = -1;
@@ -80,7 +81,7 @@ namespace Client
 
                             int resistance = int.Parse(Console.ReadLine());
                             lastResistance = resistance;
-                            sendResistance((int)lastResistance);
+                            SendResistance((int)lastResistance);
                         }
 
                     }
@@ -123,7 +124,7 @@ namespace Client
         {
             if (runningTraining)
             {
-                sendData(lastSpeed, lastHeartRate, lastResistance);
+                SendData(lastSpeed, lastHeartRate, lastResistance);
             }
         }
 
@@ -160,17 +161,12 @@ namespace Client
         {
             int receivedBytes = stream.EndRead(ar);
 
-            string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-
-
-            var Key = new byte[32]
-                { 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9,  9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9, 9, 9 , 9, 9};
-            var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
+            string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
 
             byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
 
 
-            String Decrypted = DecryptStringFromBytes(PartialBuffer, Key, IV);
+            String Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
             ;
 
             totalBuffer += Decrypted;
@@ -180,22 +176,15 @@ namespace Client
                 string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
                 string[] packetData = Regex.Split(packet, "\r\n");
-                handleData(packetData);
+                HandleData(packetData);
             }
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
         private static void Write(string data)
         {
-            //key and initialization vector (IV).
+            var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n");
 
-            var Key = new byte[32]
-                {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
-            var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
-
-
-            var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
-
-            var dataStringEncrypted = EncryptStringToBytes(data + "\r\n\r\n", Key, IV);
+            var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
 
 
             Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
@@ -207,7 +196,7 @@ namespace Client
             stream.Flush();
         }
 
-        private static void handleData(string[] packetData)
+        private static void HandleData(string[] packetData)
         {
             //Console.WriteLine($"Packet ontvangen: {packetData[0]}");
 
@@ -260,7 +249,7 @@ namespace Client
 
         }
 
-        public static async void sendResistance(int resistance)
+        public static async void SendResistance(int resistance)
         {
             Console.WriteLine($"Send resistance {resistance}");
             Console.WriteLine($"lastResistance {lastResistance}");
@@ -299,7 +288,7 @@ namespace Client
             }
         }
 
-        public async static void initBLEConnection()
+        public async static void InitBLEConnection()
         {
             bleBike = new BLE();
             bleHeart = new BLE();
@@ -335,7 +324,7 @@ namespace Client
             }
         }
 
-        public static void sendData(float speed, float heartRate, float resistance)
+        public static void SendData(float speed, float heartRate, float resistance)
         {
             if (loggedIn)
             {
@@ -352,90 +341,6 @@ namespace Client
                     $"{totalSeconds}";
                 Write(message);
             }
-
-        }
-
-        static byte[] EncryptStringToBytes(string plainText, byte[] Key, byte[] IV)
-        {
-            // Check arguments.
-            if (plainText == null || plainText.Length <= 0)
-                throw new ArgumentNullException("plainText");
-            if (Key == null || Key.Length <= 0)
-                throw new ArgumentNullException("Key");
-            if (IV == null || IV.Length <= 0)
-                throw new ArgumentNullException("IV");
-            byte[] encrypted;
-            // Create an Rijndael object
-            // with the specified key and IV.
-            using (Rijndael rijAlg = Rijndael.Create())
-            {
-                rijAlg.Key = Key;
-                rijAlg.IV = IV;
-
-                // Create an encryptor to perform the stream transform.
-                ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
-
-                // Create the streams used for encryption.
-                using (MemoryStream msEncrypt = new MemoryStream())
-                {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
-                        {
-
-                            //Write all data to the stream.
-                            swEncrypt.Write(plainText);
-                        }
-                        encrypted = msEncrypt.ToArray();
-                    }
-                }
-            }
-
-            // Return the encrypted bytes from the memory stream.
-            return encrypted;
-        }
-
-        static string DecryptStringFromBytes(byte[] cipherText, byte[] Key, byte[] IV)
-        {
-            // Check arguments.
-            if (cipherText == null || cipherText.Length <= 0)
-                throw new ArgumentNullException("cipherText");
-            if (Key == null || Key.Length <= 0)
-                throw new ArgumentNullException("Key");
-            if (IV == null || IV.Length <= 0)
-                throw new ArgumentNullException("IV");
-
-            // Declare the string used to hold
-            // the decrypted text.
-            string plaintext = null;
-
-            // Create an Rijndael object
-            // with the specified key and IV.
-            using (Rijndael rijAlg = Rijndael.Create())
-            {
-                rijAlg.Key = Key;
-                rijAlg.IV = IV;
-
-                // Create a decryptor to perform the stream transform.
-                ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
-
-                // Create the streams used for decryption.
-                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
-                {
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
-                        {
-
-                            // Read the decrypted bytes from the decrypting stream
-                            // and place them in a string.
-                            plaintext = srDecrypt.ReadToEnd();
-                        }
-                    }
-                }
-            }
-
-            return plaintext;
         }
     }
 }

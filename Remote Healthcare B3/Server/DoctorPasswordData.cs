@@ -9,7 +9,7 @@ namespace Server
     {
         public static Dictionary<string, string> DoctorPassWords { get; set; }
 
-        public static void init()
+        public static void Init()
         {
             DoctorPassWords = new Dictionary<string, string>();
             //add passwords
