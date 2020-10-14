@@ -1,4 +1,4 @@
-﻿using Client.VR_Libraries;
+using Client.VR_Libraries;
 using Client_VR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -52,9 +52,9 @@ namespace Client
             JObject delNode = Scene.Node.Delete(5, planeUUID);
             WriteTextMessage(GenerateMessage(delNode));
 
-            //while (vrObject.getUUID("RightHand") == string.Empty) { }
+            while (vrObject.getUUID("RightHand") == string.Empty) { }
             string parentPanel = vrObject.getUUID("RightHand");
-            WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new int[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, true)));
+            WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new float[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, true)));
 
 
             InitVR();
@@ -71,7 +71,7 @@ namespace Client
             //Adding mountains
             JObject flatTerain = Scene.Terrain.Add(90, Resources.Height_Map4);
             WriteTextMessage(GenerateMessage(flatTerain));
-            JObject grondRender = Scene.Node.Add(91, "Grond", new int[] { -128, 0, -128 }, 1, new int[] { 0, 0, 0 }, true);
+            JObject grondRender = Scene.Node.Add(91, "Grond", new int[] { -128, 0, -128 }, 1, new float[] { 0, 0, 0 }, true);
             WriteTextMessage(GenerateMessage(grondRender));
 
             //add route (red)
@@ -89,10 +89,14 @@ namespace Client
             WriteTextMessage(GenerateMessage(addRoad));
 
             //adding a bicycle object
-            JObject addBike = Scene.Node.Add(95, "bike1", new int[] { 25, 0, 10 }, 1, new int[] { 0, 0, 0 }, @"Resources.Height_Map4", true, false, "no");
+            //JObject addBike = Scene.Node.Add(94, "bike", new int[] { 0, 0, 0 }, 0.1f, new float[] { 0, 0, 0 }, @"data\NetworkEngine\models\Bike_FBX\Sepeda_Facific_Invert.fbx", true, true, "Armature_sepeda|jalan");
+            JObject addBike = Scene.Node.Add(94, "bike", new int[] { 0, 0, 0 }, 0.01f, new float[] { 0, 0, 0 }, @"data\NetworkEngine\models\bike\bike_anim.fbx", true, true, "Armature|Fietsen");
             WriteTextMessage(GenerateMessage(addBike));
-            SaveObjects(GetResponse(95), VRObjects.NODE);
+            SaveObjects(GetResponse(94), VRObjects.NODE);
 
+            WriteTextMessage(GenerateMessage(Scene.Node.Update(95, vrObject.getUUID("Camera"), vrObject.getUUID("bike"), new int[] { 0, 50, 0 }, 100, new int[] { 0, 90, 0 })));
+
+            WriteTextMessage(GenerateMessage(Route.Follow(96, vrObject.getUUID("empty"), vrObject.getUUID("bike"), 1, 0, Route.Rotation.XZ, 1, false, new float[] { 0, 0, 0 }, new int[] { 0, 0, 0 })));
         }
 
         private void Init()
@@ -126,6 +130,11 @@ namespace Client
             this.ServerResponses[0] = null;
 
             WriteTextMessage(GenerateMessage(Scene.Reset(2)));
+        }
+
+        public void SetBikeSpeed(float speed)
+        {
+            WriteTextMessage(GenerateMessage(Route.SetFollowSpeed(97, vrObject.getUUID("bike"), speed)));
         }
 
         private void OnConnect(IAsyncResult ar)
@@ -165,6 +174,7 @@ namespace Client
                     }
                     this.ServerResponses[serial] = messageJson;
                     Console.WriteLine($"Added ServerResponse with serial: {serial}");
+                    //Console.WriteLine($"Response \n: {messageJson}");
                 } else
                 {
                     break;
@@ -184,7 +194,7 @@ namespace Client
 
         public static void WriteTextMessage(String message)
         {
-            Debug.WriteLine("WriteTextMessage():  " + message);
+            //    Debug.WriteLine("WriteTextMessage():  " + message);
             int messageLength = message.Length;
             byte[] dataLength = BitConverter.GetBytes(messageLength);
             byte[] messageData = Encoding.ASCII.GetBytes(message);

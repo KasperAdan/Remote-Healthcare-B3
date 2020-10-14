@@ -110,7 +110,7 @@ namespace Client_VR
             return Delete;
         }
 
-        public static JObject Follow(int serial, string RouteId, string NodeId, double speed, double offset, Rotation rotation, double smoothing, bool followHeight, int[] rotateOffset, int[] positionOffset)
+        public static JObject Follow(int serial, string RouteId, string NodeId, double speed, double offset, Rotation rotation, double smoothing, bool followHeight, float[] rotateOffset, int[] positionOffset)
         {
             string rotationValue;
             switch (rotation)
