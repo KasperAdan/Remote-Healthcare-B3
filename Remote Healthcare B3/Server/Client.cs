@@ -224,6 +224,7 @@ namespace Server
                         {
                             userClient.Write("StopTraining");
                             Write("StopTraining\r\nok");
+                            userClient.clientData.finishGraph();
                         }
                     }
                     break;

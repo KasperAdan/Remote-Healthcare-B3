@@ -9,13 +9,18 @@ namespace Server
     internal class ClientData
     {
         private List<float?[]> data;
+        private List<List<float?[]>> graphs;
+        private bool acceptData;
         public ClientData()
         {
+            graphs = new List<List<float?[]>>();
             data = new List<float?[]>();
+            acceptData = false;
         }
 
         public void AddData(string speed, string heartRate, string resistance, string time)
         {
+            if (!acceptData) { return; }
             float? speedData = null;
             float? heartRateData = null;
             float? resistanceData = null;
@@ -54,6 +59,20 @@ namespace Server
 
                 //Console.WriteLine($"Measurement {i + 1}: Time: {hours:00}:{minutes:00}:{seconds:00}   Speed: {data[i][0]}   HeartRate: {data[i][1]}   Resistance: {data[i][2]}");
             }
+        }
+
+        public void finishGraph()
+        {
+            if (!acceptData) { return; }
+            graphs.Add(data);
+            acceptData = false;
+        }
+
+        public void startGraph()
+        {
+            if (acceptData) { return; }
+            data = new List<float?[]>();
+            acceptData = true;
         }
         
         public JObject GetJson()
