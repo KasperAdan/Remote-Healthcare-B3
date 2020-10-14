@@ -8,8 +8,8 @@ namespace Server
 {
     internal class ClientData
     {
-        private List<float?[]> data;
-        private List<List<float?[]>> graphs;
+        public List<float?[]> data;
+        public List<List<float?[]>> graphs;
         private bool acceptData;
         public ClientData()
         {
@@ -20,6 +20,11 @@ namespace Server
 
         public void AddData(string speed, string heartRate, string resistance, string time)
         {
+            if(data.Count == 39)
+            {
+                finishGraph();
+                startGraph();
+            }
             if (!acceptData) { return; }
             float? speedData = null;
             float? heartRateData = null;
@@ -46,6 +51,7 @@ namespace Server
             #endregion
 
             this.data.Add(new float?[] { speedData, heartRateData, resistanceData, timeData });
+            Console.WriteLine("Added data!");
         }
 
         public void PrintData()

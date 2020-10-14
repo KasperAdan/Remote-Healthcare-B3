@@ -1,6 +1,8 @@
-﻿using Server;
+﻿using Newtonsoft.Json;
+using Server;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
@@ -30,6 +32,7 @@ namespace DokterApplicatie
             }
 
             InitializeComponent();
+            ListViewRecentDataInit();
             GetClients();
             tabControl1.DrawItem += new DrawItemEventHandler(TabControl1_DrawItem);
         }
@@ -168,11 +171,57 @@ namespace DokterApplicatie
                     }
                     break;
                 case "RealTimeData":
-                    //handle real time data
+                    if (cbSessionClients.InvokeRequired)
+                    {
+                        cbSessionClients.Invoke((MethodInvoker)delegate
+                        {
+
+                            if (cbSessionClients.SelectedItem == null || !packetData[1].Equals(cbSessionClients.SelectedItem.ToString()))
+                            {
+                                return;
+                            }
+                            Debug.WriteLine("Got recent data: "+packetData[2]);
+                            List<float?[]> recentData = JsonConvert.DeserializeObject<List<float?[]>>(packetData[2]);
+                            UpdateRecentData(recentData);
+                        });
+                    }
+                    else
+                    {
+                        if (!packetData[1].Equals(cbSessionClients.SelectedItem.ToString()))
+                        {
+                            return;
+                        }
+                        List<float?[]> recentData = JsonConvert.DeserializeObject<List<float?[]>>(packetData[2]);
+                        UpdateRecentData(recentData);
+                    }
                     break;
                 default:
                     Console.WriteLine("Did not understand: " + packetData[0]);
                     break;
+            }
+        }
+
+        private void ListViewRecentDataInit()
+        {
+            LVRecentData.View = View.Details;
+            LVRecentData.Columns.Add("Time");
+            LVRecentData.Columns.Add("Speed");
+            LVRecentData.Columns.Add("Heartrate");
+            LVRecentData.Columns.Add("Resistance");
+
+        }
+
+        private void UpdateRecentData(List<float?[]> data)
+        {
+            LVRecentData.Items.Clear();
+            
+            foreach (float?[] dataPoint in data)
+            {
+                float? totalSeconds = dataPoint[3];
+                int hours = (int)totalSeconds / 3600;
+                int minutes = ((int)totalSeconds % 3600) / 60;
+                int seconds = (int)totalSeconds % 60;
+                LVRecentData.Items.Add(new ListViewItem(new string[] { $"{hours:00}:{minutes:00}:{seconds:00}", dataPoint[0].ToString(), dataPoint[1].ToString(), dataPoint[2].ToString() }));
             }
         }
 
@@ -265,6 +314,10 @@ namespace DokterApplicatie
         private void BtnStartSession_Click(object sender, EventArgs e)
         {
             //dictionary to connect user with tab
+            if (cbSessionClients.SelectedItem == null)
+            {
+                return;
+            }
             string username = cbSessionClients.SelectedItem.ToString();
             StartTraining(username);
         }

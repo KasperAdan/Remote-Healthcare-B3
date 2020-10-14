@@ -42,6 +42,8 @@ namespace Server
                         encrypted = msEncrypt.ToArray();
                     }
                 }
+                rijAlg.Padding = PaddingMode.None;
+
             }
 
             // Return the encrypted bytes from the memory stream.
@@ -86,6 +88,7 @@ namespace Server
                         }
                     }
                 }
+                rijAlg.Padding = PaddingMode.None;
             }
             string cleaned = plaintext.Replace("\n", "").Replace("\r", "");
             return plaintext;

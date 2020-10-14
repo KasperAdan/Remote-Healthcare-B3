@@ -208,6 +208,13 @@ namespace Client
                         Console.WriteLine("Connected");
                         loggedIn = true;
                     }
+                    else if (packetData[1] == "error")
+                    {
+                        Console.WriteLine(packetData[2]);
+                        Console.WriteLine("Whats your name? ");
+                        username = Console.ReadLine();
+                        Write($"login\r\n{username}");
+                    }
                     else
                         Console.WriteLine(packetData[1]);
                     break;

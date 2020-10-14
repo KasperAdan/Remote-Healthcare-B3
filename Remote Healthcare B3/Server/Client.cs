@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -78,13 +80,24 @@ namespace Server
                     this.UserName = packetData[1];
                     Console.WriteLine($"User {this.UserName} is connected");
 
-                    Write("login\r\nok");
+                    
                     if (AllClients.totalClients.ContainsKey(UserName))
                     {
-                        Client clientData;
-                        AllClients.totalClients.TryGetValue(this.UserName, out clientData);
-                        this.clientData = clientData.clientData;
-                        //AllClients.Remove(this.UserName);
+                        Client client;
+                        AllClients.totalClients.TryGetValue(UserName,out client);
+                        if (client.isOnline)
+                        {
+                            Write("login\r\nerror\r\nA user with the same name is already online");
+                        }
+                        else {
+                            Client clientData;
+                            AllClients.totalClients.TryGetValue(this.UserName, out clientData);
+                            this.clientData = clientData.clientData;
+                            //AllClients.Remove(this.UserName);
+                            Write("login\r\nok");
+                            AllClients.Add(UserName, this);
+
+                        }
                        
                     }
                     else
@@ -96,8 +109,10 @@ namespace Server
                                 client.Write($"AddClient\r\n{UserName}");
                             }
                         }
+                        Write("login\r\nok");
+                        AllClients.Add(UserName, this);
                     }
-                    AllClients.Add(UserName, this);
+
 
                     
 
@@ -115,7 +130,10 @@ namespace Server
                     {
                         if (client.IsDoctor && client.isOnline)
                         {
-                            client.Write($"RealTimeData\r\n{packetData[1]}\r\n{packetData[2]}\r\n{packetData[3]}\r\n{packetData[4]}");
+                            Console.WriteLine("Data size: "+this.clientData.data.Count);
+                            string recentDataJson = JsonConvert.SerializeObject(this.clientData.data);
+                            Console.WriteLine("Sending realtime: "+ recentDataJson);
+                            client.Write($"RealTimeData\r\n{this.UserName}\r\n{recentDataJson}");
                         }
                     }
                     break;
@@ -198,6 +216,7 @@ namespace Server
                         {
                             userClient.Write("StartTraining");
                             Write("StartTraining\r\nok");
+                            userClient.clientData.startGraph();
                         }
                     }
                     break;
