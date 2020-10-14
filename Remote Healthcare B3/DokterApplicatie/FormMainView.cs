@@ -22,6 +22,8 @@ namespace DokterApplicatie
         private string username;
         private bool loggedIn;
 
+        private List<List<float?[]>> HistoricData;
+
         public FormMainView()
         {
             Clients = new List<string>();
@@ -35,6 +37,7 @@ namespace DokterApplicatie
             ListViewRecentDataInit();
             ListViewHistoricDataInit();
             GetClients();
+            HistoricData = new List<List<float?[]>>();
             tabControl1.DrawItem += new DrawItemEventHandler(TabControl1_DrawItem);
         }
 
@@ -198,16 +201,18 @@ namespace DokterApplicatie
                     break;
                 case "GetHistoricData":
                     List<List<float?[]>> historicData = JsonConvert.DeserializeObject<List<List<float?[]>>>(packetData[2]);
-                    if (cbUsername.InvokeRequired)
+                    this.HistoricData = historicData;
+                    if (cbTime.InvokeRequired)
                     {
-                        cbUsername.Invoke((MethodInvoker)delegate
+                        cbTime.Invoke((MethodInvoker)delegate
                         {
-                            UpdateHistoricData(historicData);
+                            updateDateCombobox();
+                            
                         });
                     } 
                     else
                     {
-                        UpdateHistoricData(historicData);
+                        updateDateCombobox();
                     }
                     
                     
@@ -244,10 +249,9 @@ namespace DokterApplicatie
             LVRecentData.Items[LVRecentData.Items.Count - 1].EnsureVisible();
         }
 
-        private void UpdateHistoricData(List<List<float?[]>> historicData)
+        private void UpdateHistoricData(List<float?[]> graph)
         {
-            foreach (List<float?[]> graph in historicData)
-            {
+            LVHistoricData.Items.Clear();
                 foreach (float?[] dataPoint in graph)
                 {
                     float? totalSeconds = dataPoint[3];
@@ -256,7 +260,6 @@ namespace DokterApplicatie
                     int seconds = (int)totalSeconds % 60;
                     LVHistoricData.Items.Add(new ListViewItem(new string[] { $"{dataPoint[4]}-{dataPoint[5]}-{dataPoint[6]}", $"{hours:00}:{minutes:00}:{seconds:00}", dataPoint[0].ToString(), dataPoint[1].ToString(), dataPoint[2].ToString() }));
                 }
-            }
         }
 
         private void ListViewHistoricDataInit()
@@ -267,6 +270,21 @@ namespace DokterApplicatie
             LVHistoricData.Columns.Add("Speed");
             LVHistoricData.Columns.Add("Heartrate");
             LVHistoricData.Columns.Add("Resistance");
+        }
+
+        private void updateDateCombobox()
+        {
+            cbTime.Items.Clear();
+            foreach (List<float?[]> graph in HistoricData)
+            {
+                float? totalSeconds = graph[1][3];
+                int hours = (int)totalSeconds / 3600;
+                int minutes = ((int)totalSeconds % 3600) / 60;
+                int seconds = (int)totalSeconds % 60;
+                string DateTime = $"{hours}:{minutes}:{seconds} : {graph[1][4]}-{graph[1][5]}-{graph[1][6]}";
+                cbTime.Items.Add(DateTime);
+            }
+            cbTime.Refresh();
         }
 
         private void UpdateComboBoxes()
@@ -440,6 +458,14 @@ namespace DokterApplicatie
         private void GetHistoricData(string username)
         {
             Write($"GetHistoricData\r\n{username}");
+        }
+
+        private void LoadTableButton_Click(object sender, EventArgs e)
+        {
+            int selectedIndex = cbTime.SelectedIndex;
+            if(selectedIndex < 0) { return; }
+            List<float?[]> selectedGraph = HistoricData[selectedIndex];
+            UpdateHistoricData(selectedGraph);
         }
     }
 }

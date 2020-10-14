@@ -37,6 +37,10 @@
             this.btnStartSession = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.History = new System.Windows.Forms.TabPage();
+            this.LVHistoricData = new System.Windows.Forms.ListView();
+            this.btnGetHistoricData = new System.Windows.Forms.Button();
+            this.cbTime = new System.Windows.Forms.ComboBox();
+            this.cbUsername = new System.Windows.Forms.ComboBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.Chat = new System.Windows.Forms.TabPage();
             this.cbMessageClient = new System.Windows.Forms.ComboBox();
@@ -51,10 +55,7 @@
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.Settings = new System.Windows.Forms.TabPage();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
-            this.cbUsername = new System.Windows.Forms.ComboBox();
-            this.cbTime = new System.Windows.Forms.ComboBox();
-            this.btnGetHistoricData = new System.Windows.Forms.Button();
-            this.LVHistoricData = new System.Windows.Forms.ListView();
+            this.LoadTableButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.Monitoring.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -155,6 +156,7 @@
             // History
             // 
             this.History.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("History.BackgroundImage")));
+            this.History.Controls.Add(this.LoadTableButton);
             this.History.Controls.Add(this.LVHistoricData);
             this.History.Controls.Add(this.btnGetHistoricData);
             this.History.Controls.Add(this.cbTime);
@@ -167,6 +169,43 @@
             this.History.TabIndex = 1;
             this.History.Text = "History";
             this.History.UseVisualStyleBackColor = true;
+            // 
+            // LVHistoricData
+            // 
+            this.LVHistoricData.HideSelection = false;
+            this.LVHistoricData.Location = new System.Drawing.Point(119, 35);
+            this.LVHistoricData.Name = "LVHistoricData";
+            this.LVHistoricData.Size = new System.Drawing.Size(501, 143);
+            this.LVHistoricData.TabIndex = 4;
+            this.LVHistoricData.UseCompatibleStateImageBehavior = false;
+            // 
+            // btnGetHistoricData
+            // 
+            this.btnGetHistoricData.Location = new System.Drawing.Point(373, 8);
+            this.btnGetHistoricData.Name = "btnGetHistoricData";
+            this.btnGetHistoricData.Size = new System.Drawing.Size(75, 23);
+            this.btnGetHistoricData.TabIndex = 3;
+            this.btnGetHistoricData.Text = "Get";
+            this.btnGetHistoricData.UseVisualStyleBackColor = true;
+            this.btnGetHistoricData.Click += new System.EventHandler(this.btnGetHistoricData_Click);
+            // 
+            // cbTime
+            // 
+            this.cbTime.FormattingEnabled = true;
+            this.cbTime.Location = new System.Drawing.Point(246, 8);
+            this.cbTime.Name = "cbTime";
+            this.cbTime.Size = new System.Drawing.Size(121, 21);
+            this.cbTime.TabIndex = 2;
+            this.cbTime.Text = "Choose dataset:";
+            // 
+            // cbUsername
+            // 
+            this.cbUsername.FormattingEnabled = true;
+            this.cbUsername.Location = new System.Drawing.Point(119, 8);
+            this.cbUsername.Name = "cbUsername";
+            this.cbUsername.Size = new System.Drawing.Size(121, 21);
+            this.cbUsername.TabIndex = 1;
+            this.cbUsername.Text = "Choose username:";
             // 
             // pictureBox3
             // 
@@ -308,42 +347,15 @@
             this.pictureBox6.TabIndex = 1;
             this.pictureBox6.TabStop = false;
             // 
-            // cbUsername
+            // LoadTableButton
             // 
-            this.cbUsername.FormattingEnabled = true;
-            this.cbUsername.Location = new System.Drawing.Point(119, 8);
-            this.cbUsername.Name = "cbUsername";
-            this.cbUsername.Size = new System.Drawing.Size(121, 21);
-            this.cbUsername.TabIndex = 1;
-            this.cbUsername.Text = "Choose username:";
-            // 
-            // cbTime
-            // 
-            this.cbTime.FormattingEnabled = true;
-            this.cbTime.Location = new System.Drawing.Point(246, 8);
-            this.cbTime.Name = "cbTime";
-            this.cbTime.Size = new System.Drawing.Size(121, 21);
-            this.cbTime.TabIndex = 2;
-            this.cbTime.Text = "Choose dataset:";
-            // 
-            // btnGetHistoricData
-            // 
-            this.btnGetHistoricData.Location = new System.Drawing.Point(373, 8);
-            this.btnGetHistoricData.Name = "btnGetHistoricData";
-            this.btnGetHistoricData.Size = new System.Drawing.Size(75, 23);
-            this.btnGetHistoricData.TabIndex = 3;
-            this.btnGetHistoricData.Text = "Get";
-            this.btnGetHistoricData.UseVisualStyleBackColor = true;
-            this.btnGetHistoricData.Click += new System.EventHandler(this.btnGetHistoricData_Click);
-            // 
-            // LVHistoricData
-            // 
-            this.LVHistoricData.HideSelection = false;
-            this.LVHistoricData.Location = new System.Drawing.Point(119, 35);
-            this.LVHistoricData.Name = "LVHistoricData";
-            this.LVHistoricData.Size = new System.Drawing.Size(501, 143);
-            this.LVHistoricData.TabIndex = 4;
-            this.LVHistoricData.UseCompatibleStateImageBehavior = false;
+            this.LoadTableButton.Location = new System.Drawing.Point(454, 8);
+            this.LoadTableButton.Name = "LoadTableButton";
+            this.LoadTableButton.Size = new System.Drawing.Size(75, 23);
+            this.LoadTableButton.TabIndex = 5;
+            this.LoadTableButton.Text = "Load table";
+            this.LoadTableButton.UseVisualStyleBackColor = true;
+            this.LoadTableButton.Click += new System.EventHandler(this.LoadTableButton_Click);
             // 
             // FormMainView
             // 
@@ -401,5 +413,6 @@
         private System.Windows.Forms.ComboBox cbUsername;
         private System.Windows.Forms.Button btnGetHistoricData;
         private System.Windows.Forms.ListView LVHistoricData;
+        private System.Windows.Forms.Button LoadTableButton;
     }
 }
