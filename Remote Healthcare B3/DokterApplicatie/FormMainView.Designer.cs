@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMainView));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Monitoring = new System.Windows.Forms.TabPage();
+            this.LVRecentData = new System.Windows.Forms.ListView();
             this.btnStopSession = new System.Windows.Forms.Button();
             this.cbSessionClients = new System.Windows.Forms.ComboBox();
             this.btnStartSession = new System.Windows.Forms.Button();
@@ -50,7 +51,9 @@
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.Settings = new System.Windows.Forms.TabPage();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
-            this.LVRecentData = new System.Windows.Forms.ListView();
+            this.cbUsername = new System.Windows.Forms.ComboBox();
+            this.cbTime = new System.Windows.Forms.ComboBox();
+            this.btnGetHistoricData = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.Monitoring.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -101,6 +104,15 @@
             this.Monitoring.Text = "Monitoring";
             this.Monitoring.UseVisualStyleBackColor = true;
             // 
+            // LVRecentData
+            // 
+            this.LVRecentData.HideSelection = false;
+            this.LVRecentData.Location = new System.Drawing.Point(111, 108);
+            this.LVRecentData.Name = "LVRecentData";
+            this.LVRecentData.Size = new System.Drawing.Size(474, 283);
+            this.LVRecentData.TabIndex = 9;
+            this.LVRecentData.UseCompatibleStateImageBehavior = false;
+            // 
             // btnStopSession
             // 
             this.btnStopSession.Location = new System.Drawing.Point(325, 6);
@@ -118,6 +130,7 @@
             this.cbSessionClients.Name = "cbSessionClients";
             this.cbSessionClients.Size = new System.Drawing.Size(121, 21);
             this.cbSessionClients.TabIndex = 7;
+            this.cbSessionClients.Text = "Choose username: ";
             // 
             // btnStartSession
             // 
@@ -141,6 +154,9 @@
             // History
             // 
             this.History.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("History.BackgroundImage")));
+            this.History.Controls.Add(this.btnGetHistoricData);
+            this.History.Controls.Add(this.cbTime);
+            this.History.Controls.Add(this.cbUsername);
             this.History.Controls.Add(this.pictureBox3);
             this.History.Location = new System.Drawing.Point(104, 4);
             this.History.Name = "History";
@@ -153,7 +169,7 @@
             // pictureBox3
             // 
             this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
-            this.pictureBox3.Location = new System.Drawing.Point(294, 8);
+            this.pictureBox3.Location = new System.Drawing.Point(6, 6);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(107, 106);
             this.pictureBox3.TabIndex = 0;
@@ -290,14 +306,33 @@
             this.pictureBox6.TabIndex = 1;
             this.pictureBox6.TabStop = false;
             // 
-            // LVRecentData
+            // cbUsername
             // 
-            this.LVRecentData.HideSelection = false;
-            this.LVRecentData.Location = new System.Drawing.Point(111, 108);
-            this.LVRecentData.Name = "LVRecentData";
-            this.LVRecentData.Size = new System.Drawing.Size(474, 283);
-            this.LVRecentData.TabIndex = 9;
-            this.LVRecentData.UseCompatibleStateImageBehavior = false;
+            this.cbUsername.FormattingEnabled = true;
+            this.cbUsername.Location = new System.Drawing.Point(119, 8);
+            this.cbUsername.Name = "cbUsername";
+            this.cbUsername.Size = new System.Drawing.Size(121, 21);
+            this.cbUsername.TabIndex = 1;
+            this.cbUsername.Text = "Choose username:";
+            // 
+            // cbTime
+            // 
+            this.cbTime.FormattingEnabled = true;
+            this.cbTime.Location = new System.Drawing.Point(246, 8);
+            this.cbTime.Name = "cbTime";
+            this.cbTime.Size = new System.Drawing.Size(121, 21);
+            this.cbTime.TabIndex = 2;
+            this.cbTime.Text = "Choose dataset:";
+            // 
+            // btnGetHistoricData
+            // 
+            this.btnGetHistoricData.Location = new System.Drawing.Point(373, 8);
+            this.btnGetHistoricData.Name = "btnGetHistoricData";
+            this.btnGetHistoricData.Size = new System.Drawing.Size(75, 23);
+            this.btnGetHistoricData.TabIndex = 3;
+            this.btnGetHistoricData.Text = "Get";
+            this.btnGetHistoricData.UseVisualStyleBackColor = true;
+            this.btnGetHistoricData.Click += new System.EventHandler(this.btnGetHistoricData_Click);
             // 
             // FormMainView
             // 
@@ -351,5 +386,8 @@
         private System.Windows.Forms.Button btnSendMessage;
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.ListView LVRecentData;
+        private System.Windows.Forms.ComboBox cbTime;
+        private System.Windows.Forms.ComboBox cbUsername;
+        private System.Windows.Forms.Button btnGetHistoricData;
     }
 }

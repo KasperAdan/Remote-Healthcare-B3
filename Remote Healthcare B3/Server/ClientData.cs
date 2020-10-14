@@ -18,9 +18,9 @@ namespace Server
             acceptData = false;
         }
 
-        public void AddData(string speed, string heartRate, string resistance, string time)
+        public void AddData(string speed, string heartRate, string resistance, string time, string day, string month, string year)
         {
-            if(data.Count == 39)
+            if(data.Count == 23)
             {
                 finishGraph();
                 startGraph();
@@ -30,6 +30,9 @@ namespace Server
             float? heartRateData = null;
             float? resistanceData = null;
             float? timeData = null;
+            float? dayData = null;
+            float? monthData = null;
+            float? yearData = null;
 
             #region value casting
             if (speed != null || speed.Trim() != string.Empty)
@@ -48,9 +51,21 @@ namespace Server
             {
                 timeData = float.Parse(time);
             }
+            if (day != null || day.Trim() != string.Empty)
+            {
+                dayData = float.Parse(day);
+            }
+            if (month != null || month.Trim() != string.Empty)
+            {
+                monthData = float.Parse(month);
+            }
+            if (year != null || year.Trim() != string.Empty)
+            {
+                yearData = float.Parse(year);
+            }
             #endregion
 
-            this.data.Add(new float?[] { speedData, heartRateData, resistanceData, timeData });
+            this.data.Add(new float?[] { speedData, heartRateData, resistanceData, timeData, dayData, monthData, yearData });
             Console.WriteLine("Added data!");
         }
 

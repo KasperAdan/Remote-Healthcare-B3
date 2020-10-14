@@ -195,6 +195,16 @@ namespace DokterApplicatie
                         UpdateRecentData(recentData);
                     }
                     break;
+                case "GetHistoricData":
+                    List<List<float?[]>> historicData = JsonConvert.DeserializeObject<List<List<float?[]>>>(packetData[2]);
+                    foreach(List<float?[]> list in historicData)
+                    {
+                        foreach (float?[] data in list)
+                        {
+                            Debug.WriteLine("Received historic data: " + data);
+                        }
+                    }
+                    break;
                 default:
                     Console.WriteLine("Did not understand: " + packetData[0]);
                     break;
@@ -204,6 +214,7 @@ namespace DokterApplicatie
         private void ListViewRecentDataInit()
         {
             LVRecentData.View = View.Details;
+            LVRecentData.Columns.Add("Date");
             LVRecentData.Columns.Add("Time");
             LVRecentData.Columns.Add("Speed");
             LVRecentData.Columns.Add("Heartrate");
@@ -221,8 +232,9 @@ namespace DokterApplicatie
                 int hours = (int)totalSeconds / 3600;
                 int minutes = ((int)totalSeconds % 3600) / 60;
                 int seconds = (int)totalSeconds % 60;
-                LVRecentData.Items.Add(new ListViewItem(new string[] { $"{hours:00}:{minutes:00}:{seconds:00}", dataPoint[0].ToString(), dataPoint[1].ToString(), dataPoint[2].ToString() }));
+                LVRecentData.Items.Add(new ListViewItem(new string[] {$"{dataPoint[4]}-{dataPoint[5]}-{dataPoint[6]}" ,$"{hours:00}:{minutes:00}:{seconds:00}", dataPoint[0].ToString(), dataPoint[1].ToString(), dataPoint[2].ToString() }));
             }
+            LVRecentData.Items[LVRecentData.Items.Count - 1].EnsureVisible();
         }
 
         private void UpdateComboBoxes()
@@ -264,7 +276,37 @@ namespace DokterApplicatie
                     cbSessionClients.Refresh();
                 });
             }
+            else
+            {
+                cbSessionClients.Items.Clear();
+                foreach (string username in Clients)
+                {
+                    cbSessionClients.Items.Add(username);
+                }
+                cbSessionClients.Refresh();
+            }
 
+            if (cbUsername.InvokeRequired)
+            {
+                cbUsername.Invoke((MethodInvoker)delegate
+                {
+                    cbUsername.Items.Clear();
+                    foreach (string username in Clients)
+                    {
+                        cbUsername.Items.Add(username);
+                    }
+                    cbUsername.Refresh();
+                });
+            }
+            else
+            {
+                cbUsername.Items.Clear();
+                foreach (string username in Clients)
+                {
+                    cbUsername.Items.Add(username);
+                }
+                cbUsername.Refresh();
+            }
 
         }
 
@@ -342,6 +384,12 @@ namespace DokterApplicatie
             }
         }
 
+        private void btnGetHistoricData_Click(object sender, EventArgs e)
+        {
+            string username = cbUsername.SelectedItem.ToString();
+            GetHistoricData(username);
+        }
+
         private void GetClients()
         {
             Write("GetClients");
@@ -355,6 +403,11 @@ namespace DokterApplicatie
         private void StopTraining(string username)
         {
             Write($"StopTraining\r\n{username}");
+        }
+
+        private void GetHistoricData(string username)
+        {
+            Write($"GetHistoricData\r\n{username}");
         }
     }
 }

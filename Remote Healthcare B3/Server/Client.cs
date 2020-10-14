@@ -112,16 +112,12 @@ namespace Server
                         Write("login\r\nok");
                         AllClients.Add(UserName, this);
                     }
-
-
-                    
-
                     break;
 
                 case "data":
-                    if (!assertPacketData(packetData, 5))
+                    if (!assertPacketData(packetData, 8))
                         return;
-                    this.clientData.AddData(packetData[1], packetData[2], packetData[3], packetData[4]);
+                    this.clientData.AddData(packetData[1], packetData[2], packetData[3], packetData[4], packetData[5], packetData[6], packetData[7]);
                     Write("data\r\nData Recieved");
                     this.clientData.PrintData();
 
@@ -185,14 +181,17 @@ namespace Server
                     }
                     else
                     {
-                        Write($"SendHistoricData\r\n{userClient.clientData.GetJson().ToString()}");
+
+                        //We moeten de graph lijst pakken i.p.v. de getJson!!!
+                        string historicDataJson = JsonConvert.SerializeObject(userClient.clientData.graphs);
+                        Write($"GetHistoricData\r\n{dataUsername}\r\n{historicDataJson}");
                     }
                     break;
 
                 case "GetRealtimeData":
                     if (!IsDoctor)
                         return;
-                    //volgens mij zijn we deze vergeten en moeten we deze nog doen!!!
+                    
                     break;
                 case "StartTraining":
                     //Server ontvangt dit en moet dit doorsturen naar bijbehorende Client

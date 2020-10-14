@@ -339,13 +339,19 @@ namespace Client
                 int hour = now.Hour;
                 int minute = now.Minute;
                 int second = now.Second;
+                int day = now.Day;
+                int month = now.Month;
+                int year = now.Year;
                 int totalSeconds = hour * 60 * 60 + minute * 60 + second; 
 
                 string message = "data\r\n" +
                     $"{speed}\r\n" +
                     $"{heartRate}\r\n" +
                     $"{resistance}\r\n" +
-                    $"{totalSeconds}";
+                    $"{totalSeconds}\r\n" +
+                    $"{day}\r\n" +
+                    $"{month}\r\n" +
+                    $"{year}";
                 Write(message);
             }
         }
