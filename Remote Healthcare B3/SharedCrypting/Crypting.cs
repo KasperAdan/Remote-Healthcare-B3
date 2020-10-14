@@ -24,7 +24,7 @@ namespace Server
 
                 rijAlg.Key = Key;
                 rijAlg.IV = IV;
-
+                rijAlg.Padding = PaddingMode.None;
                 // Create an encryptor to perform the stream transform.
                 ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
 
@@ -38,11 +38,16 @@ namespace Server
 
                             //Write all data to the stream.
                             swEncrypt.Write(plainText);
+                            swEncrypt.Flush();
+                            csEncrypt.FlushFinalBlock();
+                            encrypted = msEncrypt.ToArray();
                         }
-                        encrypted = msEncrypt.ToArray();
+
+
+               
                     }
                 }
-                rijAlg.Padding = PaddingMode.None;
+                
 
             }
 
@@ -70,6 +75,7 @@ namespace Server
                 var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
                 rijAlg.Key = Key;
                 rijAlg.IV = IV;
+                rijAlg.Padding = PaddingMode.None;
 
                 // Create a decryptor to perform the stream transform.
                 ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
@@ -88,7 +94,6 @@ namespace Server
                         }
                     }
                 }
-                rijAlg.Padding = PaddingMode.None;
             }
             string cleaned = plaintext.Replace("\n", "").Replace("\r", "");
             return plaintext;

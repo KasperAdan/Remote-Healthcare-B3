@@ -20,11 +20,13 @@ namespace Server
 
         public void AddData(string speed, string heartRate, string resistance, string time, string day, string month, string year)
         {
-            if(data.Count == 23)
+            /*
+            if(data.Count == )
             {
                 finishGraph();
                 startGraph();
             }
+            */
             if (!acceptData) { return; }
             float? speedData = null;
             float? heartRateData = null;

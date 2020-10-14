@@ -191,6 +191,9 @@ namespace Client
 
             Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
 
+            stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
+            stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
+
             stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 
             stream.Flush();
