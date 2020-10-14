@@ -1,21 +1,11 @@
-﻿using System;
+﻿using Server;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using System.Security.Cryptography;
-using System.IO;
-using System.Configuration;
-using Server;
+using System.Windows.Forms;
 
 namespace DokterApplicatie
 {
@@ -56,7 +46,7 @@ namespace DokterApplicatie
         {
             FormLogin loginForm = new FormLogin();
             var result = loginForm.ShowDialog();
-            while (result != DialogResult.Yes){}
+            while (result != DialogResult.Yes) { }
             Write($"DoctorLogin\r\n{loginForm.username}\r\n{loginForm.password}");
         }
 
@@ -102,14 +92,14 @@ namespace DokterApplicatie
 
         private void Write(string data)
         {
-           var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
+            var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
 
             stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 
             stream.Flush();
-           
+
         }
-            
+
 
         private void HandleData(string[] packetData)
         {
@@ -134,7 +124,7 @@ namespace DokterApplicatie
                     //Console.WriteLine(packetData[1]);
                     break;
                 case "chatToAll":
-                    if(packetData[1] == "ok")
+                    if (packetData[1] == "ok")
                     {
                         Console.WriteLine("All clients received message!");
                     }
@@ -146,33 +136,33 @@ namespace DokterApplicatie
                     }
                     break;
                 case "GetClients":
-                    if(packetData[1] != "ok")
+                    if (packetData[1] != "ok")
                     {
                         return;
                     }
                     Clients = new List<string>();
                     int UserAmount = int.Parse(packetData[2]);
-                    for(int i = 0; i < UserAmount; i++)
+                    for (int i = 0; i < UserAmount; i++)
                     {
-                        Console.WriteLine("Got:"+ packetData[i+3]);
+                        Console.WriteLine("Got:" + packetData[i + 3]);
                         Clients.Add(packetData[i + 3]);
                     }
                     UpdateComboBoxes();
                     break;
-                case"AddClient":
+                case "AddClient":
                     Console.WriteLine("AddClient: " + packetData[1]);
                     username = packetData[1];
                     Clients.Add(username);
                     UpdateComboBoxes();
                     break;
                 case "StartTraining":
-                    if(packetData[1] == "ok")
+                    if (packetData[1] == "ok")
                     {
                         Console.WriteLine("Training started");
                     }
                     break;
                 case "StopTraining":
-                    if(packetData[1] == "ok")
+                    if (packetData[1] == "ok")
                     {
                         Console.WriteLine("Training stopped");
                     }
@@ -188,7 +178,7 @@ namespace DokterApplicatie
 
         private void UpdateComboBoxes()
         {
-            
+
             if (cbMessageClient.InvokeRequired)
             {
                 cbMessageClient.Invoke((MethodInvoker)delegate
@@ -225,8 +215,8 @@ namespace DokterApplicatie
                     cbSessionClients.Refresh();
                 });
             }
-  
-            
+
+
         }
 
         private void TabControl1_DrawItem(Object sender, System.Windows.Forms.DrawItemEventArgs e)
@@ -289,7 +279,7 @@ namespace DokterApplicatie
         private void BtnSendMessage_Click(object sender, EventArgs e)
         {
             Object selectedItem = cbMessageClient.SelectedItem;
-            if(selectedItem.ToString().Equals("All clients"))
+            if (selectedItem.ToString().Equals("All clients"))
             {
                 ChatToAll(tbMessage.Text);
             }
