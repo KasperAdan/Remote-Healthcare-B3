@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,13 +11,10 @@
     <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\FietsDemo\FietsDemo\FietsDemo.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="BLELibrary">
-      <HintPath>..\FietsDemo\FietsDemo\BLELibrary.dll</HintPath>
+      <HintPath>..\Client\BLELibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -37,6 +34,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Resources\Height_Map5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Mountain_Bike.obj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\reset.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

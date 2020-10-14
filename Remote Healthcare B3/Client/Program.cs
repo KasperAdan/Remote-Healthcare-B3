@@ -68,7 +68,9 @@ namespace Client
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
-            //VRController vrController = new VRController();
+            VRController vrController = new VRController();
+            InitVR();
+
             while (true)
             {
                 if (runningTraining)
@@ -119,6 +121,13 @@ namespace Client
                 }
             }
         }
+
+        private static void InitVR()
+        {
+
+
+        }
+
 
         private static void Bike_OnSend(object sender, float e)
         {

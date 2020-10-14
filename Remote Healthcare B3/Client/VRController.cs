@@ -5,11 +5,13 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Client.Properties;
 
 namespace Client
 {
@@ -41,6 +43,9 @@ namespace Client
             JObject response = GetResponse(1);
             SaveObjects(response, VRObjects.BASE);
 
+
+
+
             //exercise 3b: delete groundplane
             //while (vrObject.getUUID("GroundPlane") == string.Empty) { }
             string planeUUID = vrObject.getUUID("GroundPlane");
@@ -51,10 +56,42 @@ namespace Client
             string parentPanel = vrObject.getUUID("RightHand");
             WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new int[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, true)));
 
+
+            InitVR();
+
             response = GetResponse(3);
             SaveObjects(response, VRObjects.PANEL);
 
             SetSpeed(5.5f);
+
+        }
+
+        private void InitVR()
+        {
+            //Adding mountains
+            JObject flatTerain = Scene.Terrain.Add(90, Resources.Height_Map4);
+            WriteTextMessage(GenerateMessage(flatTerain));
+            JObject grondRender = Scene.Node.Add(91, "Grond", new int[] { -128, 0, -128 }, 1, new int[] { 0, 0, 0 }, true);
+            WriteTextMessage(GenerateMessage(grondRender));
+
+            //add route (red)
+            Route.RouteNode[] routeNodes = new Route.RouteNode[4];
+            routeNodes[0] = new Route.RouteNode(0, 0, 0, 5, 0, -5);
+            routeNodes[1] = new Route.RouteNode(50, 0, 0, 5, 0, 5);
+            routeNodes[2] = new Route.RouteNode(50, 0, 50, -5, 0, 5);
+            routeNodes[3] = new Route.RouteNode(0, 0, 50, -5, 0, -5);
+            JObject addRoute = Route.Add(92, routeNodes);
+            WriteTextMessage(GenerateMessage(addRoute));
+            SaveObjects(GetResponse(92), VRObjects.ROUTE);
+
+            //adding road over the route
+            JObject addRoad = Scene.Road.Add(93, vrObject.getUUID("empty"));
+            WriteTextMessage(GenerateMessage(addRoad));
+
+            //adding a bicycle object
+            JObject addBike = Scene.Node.Add(95, "bike1", new int[] { 25, 0, 10 }, 1, new int[] { 0, 0, 0 }, @"Resources.Height_Map4", true, false, "no");
+            WriteTextMessage(GenerateMessage(addBike));
+            SaveObjects(GetResponse(95), VRObjects.NODE);
 
         }
 
@@ -64,12 +101,21 @@ namespace Client
             WriteTextMessage("{\"id\":\"session/list\",\"serial\":0}");
             JObject value = GetResponse(0);
             // stap 2 (get response)
-            var properSession = value["data"].Where(e => e["clientinfo"]["user"].ToObject<string>() == Environment.UserName).Last();
-            var sessionId = properSession["id"];
-            this.ServerResponses[0] = null;
-            //Console.WriteLine(sessionId); // stap 3 (getting id)
 
-            WriteTextMessage("{\"id\":\"tunnel/create\",\"data\":{\"session\":\"" + sessionId + "\"}}");
+            try
+            {
+                var properSession = value["data"].Where(e => e["clientinfo"]["user"].ToObject<string>() == Environment.UserName).Last();
+                var sessionId = properSession["id"];
+                this.ServerResponses[0] = null;
+                WriteTextMessage("{\"id\":\"tunnel/create\",\"data\":{\"session\":\"" + sessionId + "\"}}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
+            //Console.WriteLine(sessionId); // stap 3 (getting id)
 
             Debug.WriteLine("Na tunnel create");
             JObject response = GetResponse(0);
@@ -176,7 +222,7 @@ namespace Client
             bool nextIsName = false;
             bool nextIsUuid = false;
 
-            string name = "";
+            string name = "empty";
             string uuid = "";
             JsonTextReader reader = new JsonTextReader(new StringReader(jsonString));
             while (reader.Read())
@@ -206,12 +252,12 @@ namespace Client
 
                     }
                 }
-                if (name != "" && uuid != "")
+                if ( uuid != "")
                 {
                     this.vrObject.AddVRObject(objectType, name, uuid);
                     Debug.WriteLine("Name: {0} \nuuid: {1}", name, uuid);
 
-                    name = "";
+                    name = "empty";
                     uuid = "";
                 }
             }

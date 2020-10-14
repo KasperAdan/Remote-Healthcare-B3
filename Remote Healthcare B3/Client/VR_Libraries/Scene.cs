@@ -394,7 +394,7 @@ namespace Client_VR
             {
                 for (int y = 0; y < bitMap.Height; y++)
                 {
-                    float redValue = (bitMap.GetPixel(x, y).R) / 16 - 8f;
+                    float redValue = (bitMap.GetPixel(x, y).R) / 32;
                     heights[(x * bitMap.Height) + y] = redValue;
                 }
             }
