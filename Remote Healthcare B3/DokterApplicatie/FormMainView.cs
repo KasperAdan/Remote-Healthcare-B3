@@ -33,6 +33,7 @@ namespace DokterApplicatie
 
             InitializeComponent();
             ListViewRecentDataInit();
+            ListViewHistoricDataInit();
             GetClients();
             tabControl1.DrawItem += new DrawItemEventHandler(TabControl1_DrawItem);
         }
@@ -197,13 +198,19 @@ namespace DokterApplicatie
                     break;
                 case "GetHistoricData":
                     List<List<float?[]>> historicData = JsonConvert.DeserializeObject<List<List<float?[]>>>(packetData[2]);
-                    foreach(List<float?[]> list in historicData)
+                    if (cbUsername.InvokeRequired)
                     {
-                        foreach (float?[] data in list)
+                        cbUsername.Invoke((MethodInvoker)delegate
                         {
-                            Debug.WriteLine("Received historic data: " + data);
-                        }
+                            UpdateHistoricData(historicData);
+                        });
+                    } 
+                    else
+                    {
+                        UpdateHistoricData(historicData);
                     }
+                    
+                    
                     break;
                 default:
                     Console.WriteLine("Did not understand: " + packetData[0]);
@@ -235,6 +242,31 @@ namespace DokterApplicatie
                 LVRecentData.Items.Add(new ListViewItem(new string[] {$"{dataPoint[4]}-{dataPoint[5]}-{dataPoint[6]}" ,$"{hours:00}:{minutes:00}:{seconds:00}", dataPoint[0].ToString(), dataPoint[1].ToString(), dataPoint[2].ToString() }));
             }
             LVRecentData.Items[LVRecentData.Items.Count - 1].EnsureVisible();
+        }
+
+        private void UpdateHistoricData(List<List<float?[]>> historicData)
+        {
+            foreach (List<float?[]> graph in historicData)
+            {
+                foreach (float?[] dataPoint in graph)
+                {
+                    float? totalSeconds = dataPoint[3];
+                    int hours = (int)totalSeconds / 3600;
+                    int minutes = ((int)totalSeconds % 3600) / 60;
+                    int seconds = (int)totalSeconds % 60;
+                    LVHistoricData.Items.Add(new ListViewItem(new string[] { $"{dataPoint[4]}-{dataPoint[5]}-{dataPoint[6]}", $"{hours:00}:{minutes:00}:{seconds:00}", dataPoint[0].ToString(), dataPoint[1].ToString(), dataPoint[2].ToString() }));
+                }
+            }
+        }
+
+        private void ListViewHistoricDataInit()
+        {
+            LVHistoricData.View = View.Details;
+            LVHistoricData.Columns.Add("Date");
+            LVHistoricData.Columns.Add("Time");
+            LVHistoricData.Columns.Add("Speed");
+            LVHistoricData.Columns.Add("Heartrate");
+            LVHistoricData.Columns.Add("Resistance");
         }
 
         private void UpdateComboBoxes()

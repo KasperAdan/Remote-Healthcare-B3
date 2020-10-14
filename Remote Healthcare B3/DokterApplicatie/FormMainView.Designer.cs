@@ -54,6 +54,7 @@
             this.cbUsername = new System.Windows.Forms.ComboBox();
             this.cbTime = new System.Windows.Forms.ComboBox();
             this.btnGetHistoricData = new System.Windows.Forms.Button();
+            this.LVHistoricData = new System.Windows.Forms.ListView();
             this.tabControl1.SuspendLayout();
             this.Monitoring.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -154,6 +155,7 @@
             // History
             // 
             this.History.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("History.BackgroundImage")));
+            this.History.Controls.Add(this.LVHistoricData);
             this.History.Controls.Add(this.btnGetHistoricData);
             this.History.Controls.Add(this.cbTime);
             this.History.Controls.Add(this.cbUsername);
@@ -334,6 +336,15 @@
             this.btnGetHistoricData.UseVisualStyleBackColor = true;
             this.btnGetHistoricData.Click += new System.EventHandler(this.btnGetHistoricData_Click);
             // 
+            // LVHistoricData
+            // 
+            this.LVHistoricData.HideSelection = false;
+            this.LVHistoricData.Location = new System.Drawing.Point(119, 35);
+            this.LVHistoricData.Name = "LVHistoricData";
+            this.LVHistoricData.Size = new System.Drawing.Size(501, 143);
+            this.LVHistoricData.TabIndex = 4;
+            this.LVHistoricData.UseCompatibleStateImageBehavior = false;
+            // 
             // FormMainView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -389,5 +400,6 @@
         private System.Windows.Forms.ComboBox cbTime;
         private System.Windows.Forms.ComboBox cbUsername;
         private System.Windows.Forms.Button btnGetHistoricData;
+        private System.Windows.Forms.ListView LVHistoricData;
     }
 }
