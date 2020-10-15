@@ -60,12 +60,11 @@ namespace Server
                         
                         string[] packetData = Regex.Split(Decrypted, "\r\n");
                         HandleData(packetData);
+                        totalBuffer = totalBuffer.Skip(encryptedLength + 8).Take(totalBuffer.Length - encryptedLength - 8).ToArray();
                     } else
                     {
                         break;
                     }
-
-
                 }
             }
             catch (IOException)
@@ -81,7 +80,7 @@ namespace Server
         {
             byte[] total = new byte[b1.Length + b2count];
             Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
-            Buffer.BlockCopy(b2, 0, total, 0, b2count);
+            Buffer.BlockCopy(b2, 0, total, b1.Length, b2count);
             return total;
         }
         #endregion
@@ -346,7 +345,17 @@ namespace Server
 
         public void Write(string data)
         {
+            var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n");
+
             var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
+
+
+            Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
+
+            Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
+
+            stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
+            stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
 
             stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 

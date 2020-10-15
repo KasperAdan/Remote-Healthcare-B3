@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -17,7 +18,8 @@ namespace DokterApplicatie
         private TcpClient client;
         private NetworkStream stream;
         private byte[] buffer = new byte[1024];
-        private string totalBuffer;
+        //private string totalBuffer;
+        private byte[] totalBuffer = new byte[0];
 
         private string username;
         private bool loggedIn;
@@ -29,7 +31,7 @@ namespace DokterApplicatie
             Clients = new List<string>();
             Connect();
 
-            while (!loggedIn)
+            while (!loggedIn) //Het programma loopt hier vast. In de ClientHandler komt het bericht niet binnen!
             {
             }
 
@@ -55,6 +57,7 @@ namespace DokterApplicatie
             var result = loginForm.ShowDialog();
             while (result != DialogResult.Yes) { }
             Write($"DoctorLogin\r\n{loginForm.username}\r\n{loginForm.password}");
+            Debug.WriteLine("Doctorlogin send to server...");
         }
 
         private void ShowLogin(string error)
@@ -76,7 +79,7 @@ namespace DokterApplicatie
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private void OnRead(IAsyncResult ar)
+        /*private void OnRead(IAsyncResult ar)
         {
             int receivedBytes = stream.EndRead(ar);
 
@@ -95,11 +98,56 @@ namespace DokterApplicatie
             }
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+        }*/
+
+        private void OnRead(IAsyncResult ar)
+        {
+            int receivedBytes = stream.EndRead(ar);
+            totalBuffer = concat(totalBuffer, buffer, receivedBytes);
+
+            while (totalBuffer.Length > 8)
+            {
+                int encryptedLength = BitConverter.ToInt32(totalBuffer, 0); //waarom is deze lengte zo verschrikkelijk groot?
+                int decryptedLength = BitConverter.ToInt32(totalBuffer, 4); //waarom is deze lengte negatief?
+
+                if (totalBuffer.Length >= 8 + encryptedLength)
+                {
+                    byte[] PartialBuffer = totalBuffer.Skip(8).Take(encryptedLength).ToArray();
+                    string Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
+
+                    string[] packetData = Regex.Split(Decrypted, "\r\n");
+                    HandleData(packetData);
+                    totalBuffer = totalBuffer.Skip(encryptedLength + 8).Take(totalBuffer.Length - encryptedLength - 8).ToArray();
+                }
+                else
+                {
+                    break;
+                }
+            }
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+        }
+
+        private byte[] concat(byte[] b1, byte[] b2, int b2count)
+        {
+            byte[] total = new byte[b1.Length + b2count];
+            Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
+            Buffer.BlockCopy(b2, 0, total, b1.Length, b2count);
+            return total;
         }
 
         private void Write(string data)
         {
+            var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n");
+
             var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
+
+
+            Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
+
+            Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
+
+            stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
+            stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
 
             stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 

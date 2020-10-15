@@ -21,7 +21,8 @@ namespace Client
         private static TcpClient client;
         private static NetworkStream stream;
         private static byte[] buffer = new byte[1024];
-        private static string totalBuffer;
+        //private static string totalBuffer;
+        private static byte[] totalBuffer = new byte[0];
         private static string username;
 
         private static bool loggedIn = false;
@@ -157,7 +158,7 @@ namespace Client
 
         }
 
-        private static void OnRead(IAsyncResult ar)
+        /*private static void OnRead(IAsyncResult ar)
         {
             int receivedBytes = stream.EndRead(ar);
 
@@ -179,7 +180,43 @@ namespace Client
                 HandleData(packetData);
             }
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+        }*/
+
+        private static void OnRead(IAsyncResult ar)
+        {
+            int receivedBytes = stream.EndRead(ar);
+            totalBuffer = concat(totalBuffer, buffer, receivedBytes);
+
+            while (totalBuffer.Length > 8)
+            {
+                int encryptedLength = BitConverter.ToInt32(totalBuffer, 0);
+                int decryptedLength = BitConverter.ToInt32(totalBuffer, 4);
+
+                if (totalBuffer.Length >= 8 + encryptedLength)
+                {
+                    byte[] PartialBuffer = totalBuffer.Skip(8).Take(encryptedLength).ToArray();
+                    string Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
+
+                    string[] packetData = Regex.Split(Decrypted, "\r\n");
+                    HandleData(packetData);
+                    totalBuffer = totalBuffer.Skip(encryptedLength + 8).Take(totalBuffer.Length - encryptedLength - 8).ToArray();
+                }
+                else
+                {
+                    break;
+                }
+            }
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
+
+        private static byte[] concat(byte[] b1, byte[] b2, int b2count)
+        {
+            byte[] total = new byte[b1.Length + b2count];
+            Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
+            Buffer.BlockCopy(b2, 0, total, b1.Length, b2count);
+            return total;
+        }
+
         private static void Write(string data)
         {
             var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n");
