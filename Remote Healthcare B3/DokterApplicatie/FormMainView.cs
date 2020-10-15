@@ -553,13 +553,5 @@ namespace DokterApplicatie
             List<float?[]> selectedGraph = HistoricData[selectedIndex];
             UpdateHistoricData(selectedGraph);
         }
-
-        private byte[] concat(byte[] b1, byte[] b2, int b2count)
-        {
-            byte[] total = new byte[b1.Length + b2count];
-            Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
-            Buffer.BlockCopy(b2, 0, total, 0, b2count);
-            return total;
-        }
     }
 }
