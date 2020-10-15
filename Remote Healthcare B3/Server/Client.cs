@@ -346,7 +346,17 @@ namespace Server
 
         public void Write(string data)
         {
+            var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n");
+
             var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
+
+
+            Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
+
+            Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
+
+            stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
+            stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
 
             stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 

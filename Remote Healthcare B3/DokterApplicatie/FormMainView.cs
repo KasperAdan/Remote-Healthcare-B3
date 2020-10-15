@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -18,6 +19,7 @@ namespace DokterApplicatie
         private NetworkStream stream;
         private byte[] buffer = new byte[1024];
         private string totalBuffer;
+
 
         private string username;
         private bool loggedIn;
@@ -53,7 +55,10 @@ namespace DokterApplicatie
         {
             FormLogin loginForm = new FormLogin();
             var result = loginForm.ShowDialog();
-            while (result != DialogResult.Yes) { }
+            while (result != DialogResult.Yes)
+            {
+            }
+
             Write($"DoctorLogin\r\n{loginForm.username}\r\n{loginForm.password}");
         }
 
@@ -80,18 +85,29 @@ namespace DokterApplicatie
         {
             int receivedBytes = stream.EndRead(ar);
 
-            byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
+            byte[] totalBufferArray = new byte[0];
 
-            string Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
+            totalBufferArray = concat(totalBufferArray, buffer, receivedBytes);
 
-            totalBuffer += Decrypted;
-
-            while (totalBuffer.Contains("\r\n\r\n"))
+            while (totalBuffer.Length > 8)
             {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
-                string[] packetData = Regex.Split(packet, "\r\n");
-                HandleData(packetData);
+                int encryptedLength = BitConverter.ToInt32(totalBufferArray, 0);
+                int decryptedLength = BitConverter.ToInt32(totalBufferArray, 4);
+
+                if (totalBufferArray.Length >= 8 + encryptedLength)
+                {
+                    //string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
+                    byte[] PartialBuffer = totalBufferArray.Skip(8).Take(encryptedLength).ToArray();
+                    String Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
+
+
+                    string[] packetData = Regex.Split(Decrypted, "\r\n");
+                    HandleData(packetData);
+                }
+                else
+                {
+                    break;
+                }
             }
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
@@ -99,12 +115,21 @@ namespace DokterApplicatie
 
         private void Write(string data)
         {
+            var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n");
+
             var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
+
+
+            Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
+
+            Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
+
+            stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
+            stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
 
             stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 
             stream.Flush();
-
         }
 
 
@@ -135,18 +160,21 @@ namespace DokterApplicatie
                     {
                         Console.WriteLine("All clients received message!");
                     }
+
                     break;
                 case "directMessage":
                     if (packetData[1] == "ok")
                     {
                         Console.WriteLine("Client received message!");
                     }
+
                     break;
                 case "GetClients":
                     if (packetData[1] != "ok")
                     {
                         return;
                     }
+
                     Clients = new List<string>();
                     int UserAmount = int.Parse(packetData[2]);
                     for (int i = 0; i < UserAmount; i++)
@@ -154,6 +182,7 @@ namespace DokterApplicatie
                         Console.WriteLine("Got:" + packetData[i + 3]);
                         Clients.Add(packetData[i + 3]);
                     }
+
                     UpdateComboBoxes();
                     break;
                 case "AddClient":
@@ -167,24 +196,27 @@ namespace DokterApplicatie
                     {
                         Console.WriteLine("Training started");
                     }
+
                     break;
                 case "StopTraining":
                     if (packetData[1] == "ok")
                     {
                         Console.WriteLine("Training stopped");
                     }
+
                     break;
                 case "RealTimeData":
                     if (cbSessionClients.InvokeRequired)
                     {
-                        cbSessionClients.Invoke((MethodInvoker)delegate
+                        cbSessionClients.Invoke((MethodInvoker) delegate
                         {
-
-                            if (cbSessionClients.SelectedItem == null || !packetData[1].Equals(cbSessionClients.SelectedItem.ToString()))
+                            if (cbSessionClients.SelectedItem == null ||
+                                !packetData[1].Equals(cbSessionClients.SelectedItem.ToString()))
                             {
                                 return;
                             }
-                            Debug.WriteLine("Got recent data: "+packetData[2]);
+
+                            Debug.WriteLine("Got recent data: " + packetData[2]);
                             List<float?[]> recentData = JsonConvert.DeserializeObject<List<float?[]>>(packetData[2]);
                             UpdateRecentData(recentData);
                         });
@@ -195,27 +227,26 @@ namespace DokterApplicatie
                         {
                             return;
                         }
+
                         List<float?[]> recentData = JsonConvert.DeserializeObject<List<float?[]>>(packetData[2]);
                         UpdateRecentData(recentData);
                     }
+
                     break;
                 case "GetHistoricData":
-                    List<List<float?[]>> historicData = JsonConvert.DeserializeObject<List<List<float?[]>>>(packetData[2]);
+                    List<List<float?[]>> historicData =
+                        JsonConvert.DeserializeObject<List<List<float?[]>>>(packetData[2]);
                     this.HistoricData = historicData;
                     if (cbTime.InvokeRequired)
                     {
-                        cbTime.Invoke((MethodInvoker)delegate
-                        {
-                            updateDateCombobox();
-                            
-                        });
-                    } 
+                        cbTime.Invoke((MethodInvoker) delegate { updateDateCombobox(); });
+                    }
                     else
                     {
                         updateDateCombobox();
                     }
-                    
-                    
+
+
                     break;
                 default:
                     Console.WriteLine("Did not understand: " + packetData[0]);
@@ -231,35 +262,43 @@ namespace DokterApplicatie
             LVRecentData.Columns.Add("Speed");
             LVRecentData.Columns.Add("Heartrate");
             LVRecentData.Columns.Add("Resistance");
-
         }
 
         private void UpdateRecentData(List<float?[]> data)
         {
             LVRecentData.Items.Clear();
-            
+
             foreach (float?[] dataPoint in data)
             {
                 float? totalSeconds = dataPoint[3];
-                int hours = (int)totalSeconds / 3600;
-                int minutes = ((int)totalSeconds % 3600) / 60;
-                int seconds = (int)totalSeconds % 60;
-                LVRecentData.Items.Add(new ListViewItem(new string[] {$"{dataPoint[4]}-{dataPoint[5]}-{dataPoint[6]}" ,$"{hours:00}:{minutes:00}:{seconds:00}", dataPoint[0].ToString(), dataPoint[1].ToString(), dataPoint[2].ToString() }));
+                int hours = (int) totalSeconds / 3600;
+                int minutes = ((int) totalSeconds % 3600) / 60;
+                int seconds = (int) totalSeconds % 60;
+                LVRecentData.Items.Add(new ListViewItem(new string[]
+                {
+                    $"{dataPoint[4]}-{dataPoint[5]}-{dataPoint[6]}", $"{hours:00}:{minutes:00}:{seconds:00}",
+                    dataPoint[0].ToString(), dataPoint[1].ToString(), dataPoint[2].ToString()
+                }));
             }
+
             LVRecentData.Items[LVRecentData.Items.Count - 1].EnsureVisible();
         }
 
         private void UpdateHistoricData(List<float?[]> graph)
         {
             LVHistoricData.Items.Clear();
-                foreach (float?[] dataPoint in graph)
+            foreach (float?[] dataPoint in graph)
+            {
+                float? totalSeconds = dataPoint[3];
+                int hours = (int) totalSeconds / 3600;
+                int minutes = ((int) totalSeconds % 3600) / 60;
+                int seconds = (int) totalSeconds % 60;
+                LVHistoricData.Items.Add(new ListViewItem(new string[]
                 {
-                    float? totalSeconds = dataPoint[3];
-                    int hours = (int)totalSeconds / 3600;
-                    int minutes = ((int)totalSeconds % 3600) / 60;
-                    int seconds = (int)totalSeconds % 60;
-                    LVHistoricData.Items.Add(new ListViewItem(new string[] { $"{dataPoint[4]}-{dataPoint[5]}-{dataPoint[6]}", $"{hours:00}:{minutes:00}:{seconds:00}", dataPoint[0].ToString(), dataPoint[1].ToString(), dataPoint[2].ToString() }));
-                }
+                    $"{dataPoint[4]}-{dataPoint[5]}-{dataPoint[6]}", $"{hours:00}:{minutes:00}:{seconds:00}",
+                    dataPoint[0].ToString(), dataPoint[1].ToString(), dataPoint[2].ToString()
+                }));
+            }
         }
 
         private void ListViewHistoricDataInit()
@@ -278,27 +317,28 @@ namespace DokterApplicatie
             foreach (List<float?[]> graph in HistoricData)
             {
                 float? totalSeconds = graph[1][3];
-                int hours = (int)totalSeconds / 3600;
-                int minutes = ((int)totalSeconds % 3600) / 60;
-                int seconds = (int)totalSeconds % 60;
+                int hours = (int) totalSeconds / 3600;
+                int minutes = ((int) totalSeconds % 3600) / 60;
+                int seconds = (int) totalSeconds % 60;
                 string DateTime = $"{hours}:{minutes}:{seconds} : {graph[1][4]}-{graph[1][5]}-{graph[1][6]}";
                 cbTime.Items.Add(DateTime);
             }
+
             cbTime.Refresh();
         }
 
         private void UpdateComboBoxes()
         {
-
             if (cbMessageClient.InvokeRequired)
             {
-                cbMessageClient.Invoke((MethodInvoker)delegate
+                cbMessageClient.Invoke((MethodInvoker) delegate
                 {
                     cbMessageClient.Items.Clear();
                     foreach (string username in Clients)
                     {
                         cbMessageClient.Items.Add(username);
                     }
+
                     cbMessageClient.Items.Add("All clients");
                     cbMessageClient.Refresh();
                 });
@@ -310,19 +350,21 @@ namespace DokterApplicatie
                 {
                     cbMessageClient.Items.Add(username);
                 }
+
                 cbMessageClient.Items.Add("All clients");
                 cbMessageClient.Refresh();
             }
 
             if (cbSessionClients.InvokeRequired)
             {
-                cbSessionClients.Invoke((MethodInvoker)delegate
+                cbSessionClients.Invoke((MethodInvoker) delegate
                 {
                     cbSessionClients.Items.Clear();
                     foreach (string username in Clients)
                     {
                         cbSessionClients.Items.Add(username);
                     }
+
                     cbSessionClients.Refresh();
                 });
             }
@@ -333,18 +375,20 @@ namespace DokterApplicatie
                 {
                     cbSessionClients.Items.Add(username);
                 }
+
                 cbSessionClients.Refresh();
             }
 
             if (cbUsername.InvokeRequired)
             {
-                cbUsername.Invoke((MethodInvoker)delegate
+                cbUsername.Invoke((MethodInvoker) delegate
                 {
                     cbUsername.Items.Clear();
                     foreach (string username in Clients)
                     {
                         cbUsername.Items.Add(username);
                     }
+
                     cbUsername.Refresh();
                 });
             }
@@ -355,9 +399,9 @@ namespace DokterApplicatie
                 {
                     cbUsername.Items.Add(username);
                 }
+
                 cbUsername.Refresh();
             }
-
         }
 
         private void TabControl1_DrawItem(Object sender, System.Windows.Forms.DrawItemEventArgs e)
@@ -410,6 +454,7 @@ namespace DokterApplicatie
             {
                 return;
             }
+
             string username = cbSessionClients.SelectedItem.ToString();
             StartTraining(username);
         }
@@ -463,9 +508,21 @@ namespace DokterApplicatie
         private void LoadTableButton_Click(object sender, EventArgs e)
         {
             int selectedIndex = cbTime.SelectedIndex;
-            if(selectedIndex < 0) { return; }
+            if (selectedIndex < 0)
+            {
+                return;
+            }
+
             List<float?[]> selectedGraph = HistoricData[selectedIndex];
             UpdateHistoricData(selectedGraph);
+        }
+
+        private byte[] concat(byte[] b1, byte[] b2, int b2count)
+        {
+            byte[] total = new byte[b1.Length + b2count];
+            Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
+            Buffer.BlockCopy(b2, 0, total, 0, b2count);
+            return total;
         }
     }
 }

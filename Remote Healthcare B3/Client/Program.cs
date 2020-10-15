@@ -161,23 +161,31 @@ namespace Client
         {
             int receivedBytes = stream.EndRead(ar);
 
-            string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
+            byte[] totalBufferArray = new byte[0];
 
-            byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
+            totalBufferArray = concat(totalBufferArray, buffer, receivedBytes);
 
-
-            String Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
-            ;
-
-            totalBuffer += Decrypted;
-
-            while (totalBuffer.Contains("\r\n\r\n"))
+            while (totalBuffer.Length > 8)
             {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
-                string[] packetData = Regex.Split(packet, "\r\n");
-                HandleData(packetData);
+                int encryptedLength = BitConverter.ToInt32(totalBufferArray, 0);
+                int decryptedLength = BitConverter.ToInt32(totalBufferArray, 4);
+
+                if (totalBufferArray.Length >= 8 + encryptedLength)
+                {
+                    //string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
+                    byte[] PartialBuffer = totalBufferArray.Skip(8).Take(encryptedLength).ToArray();
+                    String Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
+
+
+                    string[] packetData = Regex.Split(Decrypted, "\r\n");
+                    HandleData(packetData);
+                }
+                else
+                {
+                    break;
+                }
             }
+
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
         private static void Write(string data)
@@ -357,6 +365,14 @@ namespace Client
                     $"{year}";
                 Write(message);
             }
+        }
+
+        private static byte[] concat(byte[] b1, byte[] b2, int b2count)
+        {
+            byte[] total = new byte[b1.Length + b2count];
+            Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
+            Buffer.BlockCopy(b2, 0, total, 0, b2count);
+            return total;
         }
     }
 }
