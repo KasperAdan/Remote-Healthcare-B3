@@ -621,11 +621,21 @@ namespace DokterApplicatie
             chart.Series.Clear();
             var resistanceSeries = chart.ChartAreas[0];
 
-            resistanceSeries.AxisX.IntervalType = DateTimeIntervalType.Number;
-            resistanceSeries.AxisX.Minimum = 0;
-            resistanceSeries.AxisY.Minimum = 0;
-            resistanceSeries.AxisX.Interval = graph.Count/10;
-            resistanceSeries.AxisY.Interval = 5;
+            if (chart.Equals(cHistoricData))
+            {
+                GenerateAxes(resistanceSeries, 0, 0, graph.Count / 10);
+            }
+            else
+            {
+                if (graph.Count > 50)
+                {
+                    GenerateAxes(resistanceSeries, graph.Count - 50, 0, graph.Count / 10);
+                }
+                else
+                {
+                    GenerateAxes(resistanceSeries, 0, 0, graph.Count / 10);
+                }
+            }
 
             chart.Series.Add("Speed");
             chart.Series["Speed"].ChartType = SeriesChartType.Line;
@@ -643,9 +653,7 @@ namespace DokterApplicatie
                 {
                     chart.Series["Speed"].Points.AddXY(seconds, speed);
                 }
-
             }
-
         }
 
         private void loadHeartRateChart(List<float?[]> graph, Chart chart)
@@ -654,13 +662,22 @@ namespace DokterApplicatie
             chart.Series.Clear();
             var resistanceSeries = chart.ChartAreas[0];
 
-            resistanceSeries.AxisX.IntervalType = DateTimeIntervalType.Number;
-            resistanceSeries.AxisX.Minimum = 0;
-            resistanceSeries.AxisY.Minimum = 50;
-            resistanceSeries.AxisX.Interval = graph.Count / 10;
-            resistanceSeries.AxisY.Interval = 10;
+            if (chart.Equals(cHistoricData))
+            {
+                GenerateAxes(resistanceSeries, 0, 50, graph.Count / 10);
+            }
+            else
+            {
+                if (graph.Count > 50)
+                {
+                    GenerateAxes(resistanceSeries, graph.Count - 50, 50, graph.Count / 10);
+                }
+                else
+                {
+                    GenerateAxes(resistanceSeries, 0, 50, graph.Count / 10);
+                }
 
-
+            }
 
             chart.Series.Add("HeartRate");
             chart.Series["HeartRate"].ChartType = SeriesChartType.Line;
@@ -678,9 +695,7 @@ namespace DokterApplicatie
                 {
                     chart.Series["HeartRate"].Points.AddXY(seconds, heartRate);
                 }
-
             }
-
         }
 
         private void loadResistanceChart(List<float?[]> graph, Chart chart)
@@ -689,13 +704,23 @@ namespace DokterApplicatie
             chart.Series.Clear();
             var resistanceSeries = chart.ChartAreas[0];
 
-            resistanceSeries.AxisX.IntervalType = DateTimeIntervalType.Number;
-            resistanceSeries.AxisX.Minimum = 0;
-            resistanceSeries.AxisY.Minimum = 0;
-            resistanceSeries.AxisX.Interval = graph.Count / 10;
-            resistanceSeries.AxisY.Interval = 10;
-
-
+            if (chart.Equals(cHistoricData))
+            {
+                GenerateAxes(resistanceSeries, 0, 0, graph.Count / 10);
+            }
+            else
+            {
+                if (graph.Count > 50)
+                {
+                    GenerateAxes(resistanceSeries, graph.Count - 50, 0, graph.Count / 10);
+                }
+                else
+                {
+                    GenerateAxes(resistanceSeries, 0, 0, graph.Count / 10);
+                }
+                
+            }
+            
 
             chart.Series.Add("Resistance");
             chart.Series["Resistance"].ChartType = SeriesChartType.Line;
@@ -713,9 +738,16 @@ namespace DokterApplicatie
                 {
                     chart.Series["Resistance"].Points.AddXY(seconds, resistance);
                 }
-
             }
+        }
 
+        public void GenerateAxes(dynamic resistanceSeries, int xMin, int yMin, int interval)
+        {
+            resistanceSeries.AxisX.IntervalType = DateTimeIntervalType.Number;
+            resistanceSeries.AxisX.Minimum = xMin;
+            resistanceSeries.AxisY.Minimum = yMin;
+            resistanceSeries.AxisX.Interval = interval;
+            resistanceSeries.AxisY.Interval = 10;
         }
 
         private void rbSpeed_CheckedChanged(object sender, EventArgs e)
