@@ -31,9 +31,14 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMainView));
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Monitoring = new System.Windows.Forms.TabPage();
+            this.cRealtimeData = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.rbRealtimeResistance = new System.Windows.Forms.RadioButton();
+            this.rbRealtimeHeartrate = new System.Windows.Forms.RadioButton();
+            this.rbRealtimeSpeed = new System.Windows.Forms.RadioButton();
             this.labelSelectedResistance = new System.Windows.Forms.Label();
             this.labelMaxResistance = new System.Windows.Forms.Label();
             this.labelMinResistance = new System.Windows.Forms.Label();
@@ -45,6 +50,9 @@
             this.btnStartSession = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.History = new System.Windows.Forms.TabPage();
+            this.rbResistance = new System.Windows.Forms.RadioButton();
+            this.rbHeartRate = new System.Windows.Forms.RadioButton();
+            this.rbSpeed = new System.Windows.Forms.RadioButton();
             this.cHistoricData = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.LoadTableButton = new System.Windows.Forms.Button();
             this.LVHistoricData = new System.Windows.Forms.ListView();
@@ -64,6 +72,7 @@
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.tabControl1.SuspendLayout();
             this.Monitoring.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cRealtimeData)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ResistaneSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.History.SuspendLayout();
@@ -99,6 +108,10 @@
             // Monitoring
             // 
             this.Monitoring.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("Monitoring.BackgroundImage")));
+            this.Monitoring.Controls.Add(this.cRealtimeData);
+            this.Monitoring.Controls.Add(this.rbRealtimeResistance);
+            this.Monitoring.Controls.Add(this.rbRealtimeHeartrate);
+            this.Monitoring.Controls.Add(this.rbRealtimeSpeed);
             this.Monitoring.Controls.Add(this.labelSelectedResistance);
             this.Monitoring.Controls.Add(this.labelMaxResistance);
             this.Monitoring.Controls.Add(this.labelMinResistance);
@@ -117,10 +130,57 @@
             this.Monitoring.Text = "Monitoring";
             this.Monitoring.UseVisualStyleBackColor = true;
             // 
+            // cRealtimeData
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.cRealtimeData.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.cRealtimeData.Legends.Add(legend1);
+            this.cRealtimeData.Location = new System.Drawing.Point(166, 52);
+            this.cRealtimeData.Name = "cRealtimeData";
+            this.cRealtimeData.Size = new System.Drawing.Size(517, 235);
+            this.cRealtimeData.TabIndex = 18;
+            this.cRealtimeData.Text = "chart1";
+            // 
+            // rbRealtimeResistance
+            // 
+            this.rbRealtimeResistance.AutoSize = true;
+            this.rbRealtimeResistance.Location = new System.Drawing.Point(316, 33);
+            this.rbRealtimeResistance.Name = "rbRealtimeResistance";
+            this.rbRealtimeResistance.Size = new System.Drawing.Size(78, 17);
+            this.rbRealtimeResistance.TabIndex = 17;
+            this.rbRealtimeResistance.Text = "Resistance";
+            this.rbRealtimeResistance.UseVisualStyleBackColor = true;
+            this.rbRealtimeResistance.CheckedChanged += new System.EventHandler(this.rbRealtimeResistance_CheckedChanged);
+            // 
+            // rbRealtimeHeartrate
+            // 
+            this.rbRealtimeHeartrate.AutoSize = true;
+            this.rbRealtimeHeartrate.Location = new System.Drawing.Point(241, 33);
+            this.rbRealtimeHeartrate.Name = "rbRealtimeHeartrate";
+            this.rbRealtimeHeartrate.Size = new System.Drawing.Size(69, 17);
+            this.rbRealtimeHeartrate.TabIndex = 16;
+            this.rbRealtimeHeartrate.Text = "Heartrate";
+            this.rbRealtimeHeartrate.UseVisualStyleBackColor = true;
+            this.rbRealtimeHeartrate.CheckedChanged += new System.EventHandler(this.rbRealtimeHeartrate_CheckedChanged);
+            // 
+            // rbRealtimeSpeed
+            // 
+            this.rbRealtimeSpeed.AutoSize = true;
+            this.rbRealtimeSpeed.Checked = true;
+            this.rbRealtimeSpeed.Location = new System.Drawing.Point(166, 33);
+            this.rbRealtimeSpeed.Name = "rbRealtimeSpeed";
+            this.rbRealtimeSpeed.Size = new System.Drawing.Size(56, 17);
+            this.rbRealtimeSpeed.TabIndex = 15;
+            this.rbRealtimeSpeed.TabStop = true;
+            this.rbRealtimeSpeed.Text = "Speed";
+            this.rbRealtimeSpeed.UseVisualStyleBackColor = true;
+            this.rbRealtimeSpeed.CheckedChanged += new System.EventHandler(this.rbRealtimeSpeed_CheckedChanged);
+            // 
             // labelSelectedResistance
             // 
             this.labelSelectedResistance.AutoSize = true;
-            this.labelSelectedResistance.Location = new System.Drawing.Point(251, 83);
+            this.labelSelectedResistance.Location = new System.Drawing.Point(73, 219);
             this.labelSelectedResistance.Name = "labelSelectedResistance";
             this.labelSelectedResistance.Size = new System.Drawing.Size(13, 13);
             this.labelSelectedResistance.TabIndex = 14;
@@ -129,7 +189,7 @@
             // labelMaxResistance
             // 
             this.labelMaxResistance.AutoSize = true;
-            this.labelMaxResistance.Location = new System.Drawing.Point(338, 83);
+            this.labelMaxResistance.Location = new System.Drawing.Point(135, 219);
             this.labelMaxResistance.Name = "labelMaxResistance";
             this.labelMaxResistance.Size = new System.Drawing.Size(25, 13);
             this.labelMaxResistance.TabIndex = 13;
@@ -138,7 +198,7 @@
             // labelMinResistance
             // 
             this.labelMinResistance.AutoSize = true;
-            this.labelMinResistance.Location = new System.Drawing.Point(165, 83);
+            this.labelMinResistance.Location = new System.Drawing.Point(12, 219);
             this.labelMinResistance.Name = "labelMinResistance";
             this.labelMinResistance.Size = new System.Drawing.Size(13, 13);
             this.labelMinResistance.TabIndex = 12;
@@ -146,7 +206,7 @@
             // 
             // buttonSetRestance
             // 
-            this.buttonSetRestance.Location = new System.Drawing.Point(379, 35);
+            this.buttonSetRestance.Location = new System.Drawing.Point(58, 250);
             this.buttonSetRestance.Name = "buttonSetRestance";
             this.buttonSetRestance.Size = new System.Drawing.Size(102, 23);
             this.buttonSetRestance.TabIndex = 11;
@@ -156,29 +216,31 @@
             // 
             // ResistaneSlider
             // 
-            this.ResistaneSlider.Location = new System.Drawing.Point(166, 35);
+            this.ResistaneSlider.Location = new System.Drawing.Point(3, 171);
             this.ResistaneSlider.Maximum = 100;
             this.ResistaneSlider.Name = "ResistaneSlider";
-            this.ResistaneSlider.Size = new System.Drawing.Size(207, 45);
+            this.ResistaneSlider.Size = new System.Drawing.Size(157, 45);
             this.ResistaneSlider.TabIndex = 10;
             // 
             // LVRecentData
             // 
             this.LVRecentData.HideSelection = false;
-            this.LVRecentData.Location = new System.Drawing.Point(166, 112);
+            this.LVRecentData.Location = new System.Drawing.Point(166, 293);
             this.LVRecentData.Name = "LVRecentData";
-            this.LVRecentData.Size = new System.Drawing.Size(517, 264);
+            this.LVRecentData.Size = new System.Drawing.Size(517, 141);
             this.LVRecentData.TabIndex = 9;
             this.LVRecentData.UseCompatibleStateImageBehavior = false;
             // 
             // btnStopSession
             // 
+            this.btnStopSession.BackColor = System.Drawing.Color.Red;
+            this.btnStopSession.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btnStopSession.Location = new System.Drawing.Point(379, 6);
             this.btnStopSession.Name = "btnStopSession";
             this.btnStopSession.Size = new System.Drawing.Size(102, 23);
             this.btnStopSession.TabIndex = 8;
             this.btnStopSession.Text = "Stop session";
-            this.btnStopSession.UseVisualStyleBackColor = true;
+            this.btnStopSession.UseVisualStyleBackColor = false;
             this.btnStopSession.Click += new System.EventHandler(this.BtnStopSession_Click);
             // 
             // cbSessionClients
@@ -213,6 +275,9 @@
             // History
             // 
             this.History.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("History.BackgroundImage")));
+            this.History.Controls.Add(this.rbResistance);
+            this.History.Controls.Add(this.rbHeartRate);
+            this.History.Controls.Add(this.rbSpeed);
             this.History.Controls.Add(this.cHistoricData);
             this.History.Controls.Add(this.LoadTableButton);
             this.History.Controls.Add(this.LVHistoricData);
@@ -228,20 +293,50 @@
             this.History.Text = "History";
             this.History.UseVisualStyleBackColor = true;
             // 
+            // rbResistance
+            // 
+            this.rbResistance.AutoSize = true;
+            this.rbResistance.Location = new System.Drawing.Point(306, 33);
+            this.rbResistance.Name = "rbResistance";
+            this.rbResistance.Size = new System.Drawing.Size(78, 17);
+            this.rbResistance.TabIndex = 9;
+            this.rbResistance.Text = "Resistance";
+            this.rbResistance.UseVisualStyleBackColor = true;
+            this.rbResistance.CheckedChanged += new System.EventHandler(this.rbResistance_CheckedChanged);
+            // 
+            // rbHeartRate
+            // 
+            this.rbHeartRate.AutoSize = true;
+            this.rbHeartRate.Location = new System.Drawing.Point(231, 33);
+            this.rbHeartRate.Name = "rbHeartRate";
+            this.rbHeartRate.Size = new System.Drawing.Size(69, 17);
+            this.rbHeartRate.TabIndex = 8;
+            this.rbHeartRate.Text = "Heartrate";
+            this.rbHeartRate.UseVisualStyleBackColor = true;
+            this.rbHeartRate.CheckedChanged += new System.EventHandler(this.rbHeartRate_CheckedChanged);
+            // 
+            // rbSpeed
+            // 
+            this.rbSpeed.AutoSize = true;
+            this.rbSpeed.Checked = true;
+            this.rbSpeed.Location = new System.Drawing.Point(169, 33);
+            this.rbSpeed.Name = "rbSpeed";
+            this.rbSpeed.Size = new System.Drawing.Size(56, 17);
+            this.rbSpeed.TabIndex = 7;
+            this.rbSpeed.TabStop = true;
+            this.rbSpeed.Text = "Speed";
+            this.rbSpeed.UseVisualStyleBackColor = true;
+            this.rbSpeed.CheckedChanged += new System.EventHandler(this.rbSpeed_CheckedChanged);
+            // 
             // cHistoricData
             // 
-            chartArea1.Name = "ChartArea1";
-            this.cHistoricData.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.cHistoricData.Legends.Add(legend1);
-            this.cHistoricData.Location = new System.Drawing.Point(169, 174);
+            chartArea2.Name = "ChartArea1";
+            this.cHistoricData.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.cHistoricData.Legends.Add(legend2);
+            this.cHistoricData.Location = new System.Drawing.Point(169, 56);
             this.cHistoricData.Name = "cHistoricData";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.cHistoricData.Series.Add(series1);
-            this.cHistoricData.Size = new System.Drawing.Size(514, 260);
+            this.cHistoricData.Size = new System.Drawing.Size(514, 249);
             this.cHistoricData.TabIndex = 6;
             this.cHistoricData.Text = "chart1";
             // 
@@ -258,9 +353,9 @@
             // LVHistoricData
             // 
             this.LVHistoricData.HideSelection = false;
-            this.LVHistoricData.Location = new System.Drawing.Point(169, 33);
+            this.LVHistoricData.Location = new System.Drawing.Point(169, 311);
             this.LVHistoricData.Name = "LVHistoricData";
-            this.LVHistoricData.Size = new System.Drawing.Size(514, 135);
+            this.LVHistoricData.Size = new System.Drawing.Size(514, 123);
             this.LVHistoricData.TabIndex = 4;
             this.LVHistoricData.UseCompatibleStateImageBehavior = false;
             // 
@@ -414,9 +509,11 @@
             this.tabControl1.ResumeLayout(false);
             this.Monitoring.ResumeLayout(false);
             this.Monitoring.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cRealtimeData)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ResistaneSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.History.ResumeLayout(false);
+            this.History.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cHistoricData)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.Chat.ResumeLayout(false);
@@ -459,8 +556,15 @@
         private System.Windows.Forms.TrackBar ResistaneSlider;
         private System.Windows.Forms.Label labelSelectedResistance;
         private System.Windows.Forms.Label labelMaxResistance;
-        private System.Windows.Forms.Label labelMinResistance;
         private System.Windows.Forms.Label lblAllMessages;
         private System.Windows.Forms.DataVisualization.Charting.Chart cHistoricData;
+        private System.Windows.Forms.RadioButton rbResistance;
+        private System.Windows.Forms.RadioButton rbHeartRate;
+        private System.Windows.Forms.RadioButton rbSpeed;
+        private System.Windows.Forms.DataVisualization.Charting.Chart cRealtimeData;
+        private System.Windows.Forms.RadioButton rbRealtimeResistance;
+        private System.Windows.Forms.RadioButton rbRealtimeHeartrate;
+        private System.Windows.Forms.RadioButton rbRealtimeSpeed;
+        private System.Windows.Forms.Label labelMinResistance;
     }
 }

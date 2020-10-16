@@ -27,7 +27,7 @@ namespace Client
 
         private static bool loggedIn = false;
         private static bool runningTraining = false;
-        private static bool useRealBike = false;
+        private static bool useRealBike = true;
         private static BikeData data;
 
         private static BLE bleBike;
