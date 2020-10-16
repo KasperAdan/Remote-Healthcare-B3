@@ -67,7 +67,7 @@ namespace Client
             //Adding texture layer
             WriteTextMessage(GenerateMessage(Scene.Node.AddLayer(100, vrObject.getUUID("Grond"), @"data\NetworkEngine\textures\terrain\grass_autumn_red_d.jpg", @"data\NetworkEngine\textures\terrain\grass_diffuse.png", -100, 100, 1)));
 
-            //add route (red)
+            //add route
             Route.RouteNode[] routeNodes = new Route.RouteNode[4];
             routeNodes[0] = new Route.RouteNode(0, 0, 0, 5, 0, -5);
             routeNodes[1] = new Route.RouteNode(50, 0, 0, 5, 0, 5);
@@ -76,14 +76,14 @@ namespace Client
             JObject addRoute = Route.Add(92, routeNodes);
             WriteTextMessage(GenerateMessage(addRoute));
             SaveObjects("route", GetResponse(92), VRObjects.ROUTE);
+            WriteTextMessage(GenerateMessage(Route.Show(999, false)));
 
             //adding road over the route
             JObject addRoad = Scene.Road.Add(93, vrObject.getUUID("route"));
             WriteTextMessage(GenerateMessage(addRoad));
 
             //adding a bicycle object
-            //JObject addBike = Scene.Node.Add(94, "bike", new int[] { 0, 0, 0 }, 0.1f, new float[] { 0, 0, 0 }, @"data\NetworkEngine\models\Bike_FBX\Sepeda_Facific_Invert.fbx", true, true, "Armature_sepeda|jalan");
-            JObject addBike = Scene.Node.Add(94, "bike", new int[] { 0, 0, 0 }, 0.01f, new float[] { 0, 0, 0 }, @"data\NetworkEngine\models\bike\bike_anim.fbx", true, true, "Armature|Fietsen");
+            JObject addBike = Scene.Node.Add(94, "bike", new int[] { 0, 0, 0 }, 0.01f, new float[] { 0, 0, 0 }, @"data\NetworkEngine\models\bike\bike_anim.fbx", false, true, "Armature|Fietsen");
             WriteTextMessage(GenerateMessage(addBike));
             SaveObjects("", GetResponse(94), VRObjects.NODE);
 
@@ -91,10 +91,15 @@ namespace Client
 
             WriteTextMessage(GenerateMessage(Route.Follow(96, vrObject.getUUID("route"), vrObject.getUUID("bike"), 2, 0, Route.Rotation.XZ, 1, false, new float[] { 0, 0, 0 }, new int[] { 0, 0, 0 })));
 
-            //speed panel
-            WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "BikePanel", vrObject.getUUID("bike"), new float[] { -35, 120, 0 }, 25f, new float[] { -50, 90, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, true)));
+            //bike panel
+            WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "BikePanel", vrObject.getUUID("bike"), new float[] { -35, 120, 0 }, 25f, new float[] { -50, 90, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, false)));
             SaveObjects("", GetResponse(3), VRObjects.PANEL);
-            UpdateBikePanel(5.5f, 5.5f, 5.5f);
+            UpdateBikePanel(0, 0, 0);
+
+            //chat panel
+            WriteTextMessage(GenerateMessage(Scene.Node.Add(110, "ChatPanel", vrObject.getUUID("bike"), new float[] { -20, 120, -40 }, 25f, new float[] { -40, 45, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, false)));
+            SaveObjects("", GetResponse(110), VRObjects.PANEL);
+            UpdateChatPanel(null);
         }
 
         private void Init()
@@ -128,6 +133,7 @@ namespace Client
             this.ServerResponses[0] = null;
 
             WriteTextMessage(GenerateMessage(Scene.Reset(2)));
+            WriteTextMessage(GenerateMessage(Scene.Skybox.SetTime(999, 12f)));
         }
 
        
@@ -222,6 +228,63 @@ namespace Client
             WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{resistance:#0.00} %", new float[] { 100, 360 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
             WriteTextMessage(GenerateMessage(Scene.Panel.Swap(11, panelUUID)));
             WriteTextMessage(GenerateMessage(Route.SetFollowSpeed(97, vrObject.getUUID("bike"), speed)));
+        }
+
+        private void UpdateChatPanel(string[] messages)
+        {
+            string panelUUID = vrObject.getUUID("ChatPanel");
+            WriteTextMessage(GenerateMessage(Scene.Panel.Clear(111, panelUUID)));
+            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(112, panelUUID, $"Chat", new float[] { 20, 70 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
+
+            int offset = 0;
+            foreach (var message in messages)
+            {
+                if (offset >= 12)
+                {
+                    break;
+                }
+
+                if (message.Length > 30)
+                {
+                    var stringWrapped = WordWrap(message, 30);
+                    if (stringWrapped.Count + offset > 12)
+                    {
+                        break;
+                    }
+                    foreach (var item in stringWrapped)
+                    {
+                        WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(112, panelUUID, item, new float[] { 20, 140 + (offset * 30) }, 30, new float[] { 1, 1, 1, 1 }, "Calibri")));
+                        offset++;
+                    }
+                }
+                else
+                {
+                    WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(112, panelUUID, message, new float[] { 20, 140 + (offset * 30) }, 30, new float[] { 1, 1, 1, 1 }, "Calibri")));
+                    offset++;
+                }
+            }
+            WriteTextMessage(GenerateMessage(Scene.Panel.Swap(113, panelUUID)));
+        }
+
+        public static List<string> WordWrap(string text, int maxLineLength)
+        {
+            var list = new List<string>();
+
+            int currentIndex;
+            var lastWrap = 0;
+            var whitespace = new[] { ' ', '\r', '\n', '\t' };
+            do
+            {
+                currentIndex = lastWrap + maxLineLength > text.Length ? text.Length : (
+                    text.LastIndexOfAny(new[] { ' ', ',', '.', '?', '!', ':', ';', '-', '\n', '\r', '\t' }, 
+                    Math.Min(text.Length - 1, lastWrap + maxLineLength)) + 1);
+                if (currentIndex <= lastWrap)
+                    currentIndex = Math.Min(lastWrap + maxLineLength, text.Length);
+                list.Add(text.Substring(lastWrap, currentIndex - lastWrap).Trim(whitespace));
+                lastWrap = currentIndex;
+            } while (currentIndex < text.Length);
+
+            return list;
         }
 
         public void SaveObjects(string name, JObject json, VRObjects objectType)
