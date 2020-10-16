@@ -174,7 +174,7 @@ namespace Client
                     }
                     this.ServerResponses[serial] = messageJson;
                     Console.WriteLine($"Added ServerResponse with serial: {serial}");
-                    Console.WriteLine($"Response \n: {messageJson}");
+                    //Console.WriteLine($"Response \n: {messageJson}");
                 } else
                 {
                     break;

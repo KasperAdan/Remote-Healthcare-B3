@@ -24,6 +24,18 @@ namespace DokterApplicatie
 
         private void LoginButton_Click(object sender, EventArgs e)
         {
+            if (username == "" || username == null)
+            {
+                ErrorMessageTextBox.Text = "Enter username";
+                ErrorMessageTextBox.Visible = true;
+                return;
+            }
+            if (password == "" || password == null)
+            {
+                ErrorMessageTextBox.Text = "Enter password";
+                ErrorMessageTextBox.Visible = true;
+                return;
+            }
             DialogResult = DialogResult.Yes;
         }
 

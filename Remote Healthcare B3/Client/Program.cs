@@ -250,6 +250,7 @@ namespace Client
                 case "StopTraining":
                     runningTraining = false;
                     Console.WriteLine("Stopped Training");
+                    vrController.UpdateBikePanel(0, 0, 0);
                     break;
 
                 case "SetResistance":

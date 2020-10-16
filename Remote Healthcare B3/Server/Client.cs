@@ -109,7 +109,7 @@ namespace Server
                             Client clientData;
                             AllClients.totalClients.TryGetValue(this.UserName, out clientData);
                             this.clientData = clientData.clientData;
-                            //AllClients.Remove(this.UserName);
+                            AllClients.Remove(this.UserName);
                             Write("login\r\nok");
                             AllClients.Add(UserName, this);
 

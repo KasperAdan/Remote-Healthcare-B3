@@ -113,6 +113,7 @@
             this.ErrorMessageTextBox.ForeColor = System.Drawing.Color.Red;
             this.ErrorMessageTextBox.Location = new System.Drawing.Point(109, 469);
             this.ErrorMessageTextBox.Name = "ErrorMessageTextBox";
+            this.ErrorMessageTextBox.ReadOnly = true;
             this.ErrorMessageTextBox.Size = new System.Drawing.Size(349, 15);
             this.ErrorMessageTextBox.TabIndex = 6;
             this.ErrorMessageTextBox.Text = "Error Message";
@@ -132,7 +133,10 @@
             this.Controls.Add(this.LoginButton);
             this.Controls.Add(this.PasswordBoxImage);
             this.Controls.Add(this.UsernameBoxImage);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FormLogin";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.UsernameBoxImage)).EndInit();
