@@ -269,6 +269,17 @@ namespace Client_VR
             return update;
         }
 
+        public JObject Update(int serial, string id)
+        {
+            JObject update =
+                new JObject(
+                    new JProperty("id", "scene/node/update"),
+                    new JProperty("serial", serial),
+                    new JProperty("data",
+                    new JObject(
+                        new JProperty("id", id))));
+            return update;
+        }
         public JObject Update(int serial, string id, string parent, int[] position, float scale, int[] rotation)
         {
             JObject update =
