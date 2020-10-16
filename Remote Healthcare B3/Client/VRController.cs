@@ -52,14 +52,7 @@ namespace Client
             JObject delNode = Scene.Node.Delete(5, planeUUID);
             WriteTextMessage(GenerateMessage(delNode));
 
-            while (vrObject.getUUID("RightHand") == string.Empty) { }
-            
-
-
             InitVR();
-
-            
-
         }
 
         private void InitVR()
@@ -99,12 +92,8 @@ namespace Client
             WriteTextMessage(GenerateMessage(Route.Follow(96, vrObject.getUUID("route"), vrObject.getUUID("bike"), 2, 0, Route.Rotation.XZ, 1, false, new float[] { 0, 0, 0 }, new int[] { 0, 0, 0 })));
 
             //speed panel
-
-            
             WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "BikePanel", vrObject.getUUID("bike"), new float[] { -35, 120, 0 }, 25f, new float[] { -50, 90, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, true)));
-            
             SaveObjects("", GetResponse(3), VRObjects.PANEL);
-
             UpdateBikePanel(5.5f, 5.5f, 5.5f);
         }
 

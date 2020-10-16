@@ -37,9 +37,6 @@
     <None Update="Resources\Height_Map5.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Mountain_Bike.obj">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Resources\reset.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
