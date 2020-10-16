@@ -17,7 +17,6 @@ namespace Client
 {
     class Program
     {
-        private static string password;
         private static TcpClient client;
         private static NetworkStream stream;
         private static byte[] buffer = new byte[1024];
@@ -29,6 +28,8 @@ namespace Client
         private static bool runningTraining = false;
         private static bool useRealBike = true;
         private static BikeData data;
+        private static VRController vrController;
+        private static List<string> messages = new List<string>();
 
         private static BLE bleBike;
         private static BLE bleHeart;
@@ -44,7 +45,7 @@ namespace Client
             username = Console.ReadLine();
             //username = "jkb";
 
-
+            vrController = new VRController();
             IBike bike;
             if (useRealBike)
             {
@@ -69,7 +70,6 @@ namespace Client
             client = new TcpClient();
             client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
-            //VRController vrController = new VRController();
             while (true)
             {
                 if (runningTraining)
@@ -235,7 +235,9 @@ namespace Client
                     if (packetData[1].Equals("message"))
                     {
                         string message = packetData[2];
+                        messages.Add(message);
                         Console.WriteLine(message);
+                        vrController.UpdateChatPanel(messages.ToArray());
                     }
                     break;
 
@@ -337,8 +339,10 @@ namespace Client
 
         public static void SendData(float speed, float heartRate, float resistance)
         {
+
             if (loggedIn)
             {
+                vrController.UpdateBikePanel(speed, heartRate, resistance);   
                 DateTime now = DateTime.Now;
                 int hour = now.Hour;
                 int minute = now.Minute;

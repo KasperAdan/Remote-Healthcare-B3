@@ -48,9 +48,6 @@ namespace FietsDemo
             // Heart rate
             errorCode = await bleHeart.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
 
-
-            Console.WriteLine("Zien we dit nog???? ");
-
             await bleHeart.SetService("HeartRate");
 
             bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;

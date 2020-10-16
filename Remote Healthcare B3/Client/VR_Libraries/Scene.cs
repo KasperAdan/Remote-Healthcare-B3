@@ -73,7 +73,7 @@ namespace Client_VR
     class Node
     {
         public JObject Add(int serial, string name, string guid,
-            int[] position, float scale, int[] rotation,
+            int[] position, float scale, float[] rotation,
             string filename, bool cullbackfaces, bool animated, string animationname,
             bool smoothnormals, int[] panelSize, int[] panelResolution, int[] background, bool castshadow,
             int[] waterSize, float waterResolution)
@@ -115,7 +115,7 @@ namespace Client_VR
             return add;
         }
 
-        public JObject Add(int serial, string name, string guid, float[] position, float scale, int[] rotation, int[] panelSize, int[] panelResolution, float[] background, bool castshadow)
+        public JObject Add(int serial, string name, string guid, float[] position, float scale, float[] rotation, int[] panelSize, int[] panelResolution, float[] background, bool castshadow)
         {
             JObject add =
                 new JObject(
@@ -142,7 +142,7 @@ namespace Client_VR
         }
 
         public JObject Add(int serial, string name,
-            int[] position, float scale, int[] rotation,
+            int[] position, float scale, float[] rotation,
              string filename, bool cullbackfaces, bool animated, string animationname)
         {
             JObject add =
@@ -186,7 +186,7 @@ namespace Client_VR
             return add;
         }
 
-        public JObject Add(int serial, string name, int[] position, float scale, int[] rotation, bool smoothnormals)
+        public JObject Add(int serial, string name, int[] position, float scale, float[] rotation, bool smoothnormals)
         {
             JObject add =
                 new JObject(
@@ -247,7 +247,7 @@ namespace Client_VR
             return add;
         }
 
-        public JObject Update(int serial, string id, string parent, int[] position, float scale, int[] rotation, string name, float speed)
+        public JObject Update(int serial, string id, string parent, int[] position, float scale, float[] rotation, string name, float speed)
         {
             JObject update =
                 new JObject(
@@ -266,6 +266,35 @@ namespace Client_VR
                         new JObject(
                             new JProperty("name", name),
                             new JProperty("speed", speed)))))));
+            return update;
+        }
+
+        public JObject Update(int serial, string id)
+        {
+            JObject update =
+                new JObject(
+                    new JProperty("id", "scene/node/update"),
+                    new JProperty("serial", serial),
+                    new JProperty("data",
+                    new JObject(
+                        new JProperty("id", id))));
+            return update;
+        }
+        public JObject Update(int serial, string id, string parent, int[] position, float scale, int[] rotation)
+        {
+            JObject update =
+                new JObject(
+                    new JProperty("id", "scene/node/update"),
+                    new JProperty("serial", serial),
+                    new JProperty("data",
+                    new JObject(
+                        new JProperty("id", id),
+                        new JProperty("parent", parent),
+                        new JProperty("transform",
+                        new JObject(
+                            new JProperty("posotion", position),
+                            new JProperty("scale", scale),
+                            new JProperty("rotation", rotation))))));
             return update;
         }
 
@@ -394,7 +423,7 @@ namespace Client_VR
             {
                 for (int y = 0; y < bitMap.Height; y++)
                 {
-                    float redValue = (bitMap.GetPixel(x, y).R) / 16 - 8f;
+                    float redValue = (bitMap.GetPixel(x, y).R) / 16.0f;
                     heights[(x * bitMap.Height) + y] = redValue;
                 }
             }
