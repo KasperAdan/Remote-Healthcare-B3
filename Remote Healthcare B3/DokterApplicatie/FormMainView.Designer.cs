@@ -61,7 +61,6 @@
             this.cbUsername = new System.Windows.Forms.ComboBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.Chat = new System.Windows.Forms.TabPage();
-            this.lblAllMessages = new System.Windows.Forms.Label();
             this.cbMessageClient = new System.Windows.Forms.ComboBox();
             this.tbMessage = new System.Windows.Forms.TextBox();
             this.btnSendMessage = new System.Windows.Forms.Button();
@@ -70,6 +69,7 @@
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.Settings = new System.Windows.Forms.TabPage();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
+            this.lvAllMessages = new System.Windows.Forms.ListView();
             this.tabControl1.SuspendLayout();
             this.Monitoring.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cRealtimeData)).BeginInit();
@@ -400,7 +400,7 @@
             // Chat
             // 
             this.Chat.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("Chat.BackgroundImage")));
-            this.Chat.Controls.Add(this.lblAllMessages);
+            this.Chat.Controls.Add(this.lvAllMessages);
             this.Chat.Controls.Add(this.cbMessageClient);
             this.Chat.Controls.Add(this.tbMessage);
             this.Chat.Controls.Add(this.btnSendMessage);
@@ -412,15 +412,6 @@
             this.Chat.TabIndex = 2;
             this.Chat.Text = "Chat";
             this.Chat.UseVisualStyleBackColor = true;
-            // 
-            // lblAllMessages
-            // 
-            this.lblAllMessages.AutoSize = true;
-            this.lblAllMessages.BackColor = System.Drawing.Color.White;
-            this.lblAllMessages.Location = new System.Drawing.Point(166, 59);
-            this.lblAllMessages.Name = "lblAllMessages";
-            this.lblAllMessages.Size = new System.Drawing.Size(0, 13);
-            this.lblAllMessages.TabIndex = 6;
             // 
             // cbMessageClient
             // 
@@ -497,6 +488,15 @@
             this.pictureBox6.TabIndex = 1;
             this.pictureBox6.TabStop = false;
             // 
+            // lvAllMessages
+            // 
+            this.lvAllMessages.HideSelection = false;
+            this.lvAllMessages.Location = new System.Drawing.Point(166, 68);
+            this.lvAllMessages.Name = "lvAllMessages";
+            this.lvAllMessages.Size = new System.Drawing.Size(517, 368);
+            this.lvAllMessages.TabIndex = 6;
+            this.lvAllMessages.UseCompatibleStateImageBehavior = false;
+            // 
             // FormMainView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -556,7 +556,6 @@
         private System.Windows.Forms.TrackBar ResistaneSlider;
         private System.Windows.Forms.Label labelSelectedResistance;
         private System.Windows.Forms.Label labelMaxResistance;
-        private System.Windows.Forms.Label lblAllMessages;
         private System.Windows.Forms.DataVisualization.Charting.Chart cHistoricData;
         private System.Windows.Forms.RadioButton rbResistance;
         private System.Windows.Forms.RadioButton rbHeartRate;
@@ -566,5 +565,6 @@
         private System.Windows.Forms.RadioButton rbRealtimeHeartrate;
         private System.Windows.Forms.RadioButton rbRealtimeSpeed;
         private System.Windows.Forms.Label labelMinResistance;
+        private System.Windows.Forms.ListView lvAllMessages;
     }
 }

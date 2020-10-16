@@ -21,7 +21,7 @@ namespace DokterApplicatie
         private byte[] buffer = new byte[1024];
         //private string totalBuffer;
         private byte[] totalBuffer = new byte[0];
-        private List<string> AllMessages;
+        private List<string[]> AllMessages;
 
 
         private string username;
@@ -45,10 +45,11 @@ namespace DokterApplicatie
             InitializeComponent();
             ListViewRecentDataInit();
             ListViewHistoricDataInit();
+            ListViewAllMessagesInit();
             GetClients();
             ResistaneSlider.ValueChanged += ResistaneSlider_ValueChanged;
             HistoricData = new List<List<float?[]>>();
-            AllMessages = new List<string>();
+            AllMessages = new List<string[]>();
             tabControl1.DrawItem += new DrawItemEventHandler(TabControl1_DrawItem);
         }
 
@@ -337,6 +338,13 @@ namespace DokterApplicatie
             LVHistoricData.Columns.Add("Resistance", 100);
         }
 
+        private void ListViewAllMessagesInit()
+        {
+            lvAllMessages.View = View.Details;
+            lvAllMessages.Columns.Add("Receiver", 150);
+            lvAllMessages.Columns.Add("Message", 300);
+        }
+
         private void updateDateCombobox()
         {
             cbTime.Items.Clear();
@@ -466,14 +474,14 @@ namespace DokterApplicatie
         public void DirectMessage(string username, string message)
         {
             Write($"directMessage\r\n{username}\r\n{message}");
-            AllMessages.Add($"> {username} : {message}");
+            AllMessages.Add(new string[] { username, message });
             UpdateSendText();
         }
 
         public void ChatToAll(string message)
         {
             Write($"chatToAll\r\n{message}");
-            AllMessages.Add($"> All clients : {message}");
+            AllMessages.Add(new string[] { "All clients", message});
             UpdateSendText();
         }
 
@@ -499,15 +507,18 @@ namespace DokterApplicatie
         private void BtnSendMessage_Click(object sender, EventArgs e)
         {
             Object selectedItem = cbMessageClient.SelectedItem;
-            if (selectedItem.ToString().Equals("All clients"))
+            if (!tbMessage.Text.Equals(""))
             {
-                ChatToAll(tbMessage.Text);
+                if (selectedItem.ToString().Equals("All clients"))
+                {
+                    ChatToAll(tbMessage.Text);
+                }
+                else
+                {
+                    DirectMessage(selectedItem.ToString(), tbMessage.Text);
+                }
+                tbMessage.Text = "";
             }
-            else
-            {
-                DirectMessage(selectedItem.ToString(), tbMessage.Text);
-            }
-            tbMessage.Text = "";
         }
 
         private void btnGetHistoricData_Click(object sender, EventArgs e)
@@ -564,11 +575,16 @@ namespace DokterApplicatie
 
         private void UpdateSendText()
         {
-            lblAllMessages.Text = "";
-            foreach (String text in AllMessages)
+            lvAllMessages.Items.Clear();
+            foreach (String[] text in AllMessages)
             {
-                lblAllMessages.Text += text + "\r\n";
+                lvAllMessages.Items.Add(new ListViewItem(text));
             }
+            if (lvAllMessages.Items.Count > 1)
+            {
+                lvAllMessages.Items[lvAllMessages.Items.Count - 1].EnsureVisible();
+            }
+            
         }
 
         private void tabControl1_Click(object sender, EventArgs e)
