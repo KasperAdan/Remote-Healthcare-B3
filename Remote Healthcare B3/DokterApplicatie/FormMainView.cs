@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace DokterApplicatie
 {
@@ -529,6 +530,7 @@ namespace DokterApplicatie
 
             List<float?[]> selectedGraph = HistoricData[selectedIndex];
             UpdateHistoricData(selectedGraph);
+            loadResistanceChart(selectedGraph);
         }
 
         private void UpdateSendText()
@@ -564,6 +566,108 @@ namespace DokterApplicatie
         private void ResistaneSlider_ValueChanged(object sender, EventArgs e)
         {
             labelSelectedResistance.Text = (ResistaneSlider.Value).ToString();
+
+        }
+
+        private void loadSpeedChart(List<float?[]> graph)
+        {
+            cHistoricData.Series.Clear();
+            var resistanceSeries = cHistoricData.ChartAreas[0];
+
+            resistanceSeries.AxisX.IntervalType = DateTimeIntervalType.Number;
+            resistanceSeries.AxisX.Minimum = 0;
+            resistanceSeries.AxisY.Minimum = 0;
+            resistanceSeries.AxisX.Interval = 1;
+            resistanceSeries.AxisY.Interval = 5;
+
+            
+
+            cHistoricData.Series.Add("Speed");
+            cHistoricData.Series["Speed"].ChartType = SeriesChartType.Line;
+            cHistoricData.Series["Speed"].Color = Color.Green;
+            cHistoricData.Series[0].IsVisibleInLegend = false;
+
+            float? beginSeconds = graph[1][3];
+
+            foreach(float?[] dataPoint in graph)
+            {
+                float? totalSeconds = dataPoint[3] - beginSeconds+1;
+                int seconds = (int)totalSeconds % 60;
+                float? speed = dataPoint[0];
+                if(speed != null)
+                {
+                    cHistoricData.Series["Speed"].Points.AddXY(seconds, speed);
+                }
+
+            }
+
+        }
+
+        private void loadHeartRateChart(List<float?[]> graph)
+        {
+            cHistoricData.Series.Clear();
+            var resistanceSeries = cHistoricData.ChartAreas[0];
+
+            resistanceSeries.AxisX.IntervalType = DateTimeIntervalType.Number;
+            resistanceSeries.AxisX.Minimum = 0;
+            resistanceSeries.AxisY.Minimum = 70;
+            resistanceSeries.AxisX.Interval = 1;
+            resistanceSeries.AxisY.Interval = 10;
+
+
+
+            cHistoricData.Series.Add("HeartRate");
+            cHistoricData.Series["HeartRate"].ChartType = SeriesChartType.Line;
+            cHistoricData.Series["HeartRate"].Color = Color.Red;
+            cHistoricData.Series[0].IsVisibleInLegend = false;
+
+            float? beginSeconds = graph[1][3];
+
+            foreach (float?[] dataPoint in graph)
+            {
+                float? totalSeconds = dataPoint[3] - beginSeconds + 1;
+                int seconds = (int)totalSeconds % 60;
+                float? heartRate = dataPoint[1];
+                if (heartRate != null)
+                {
+                    cHistoricData.Series["HeartRate"].Points.AddXY(seconds, heartRate);
+                }
+
+            }
+
+        }
+
+        private void loadResistanceChart(List<float?[]> graph)
+        {
+            cHistoricData.Series.Clear();
+            var resistanceSeries = cHistoricData.ChartAreas[0];
+
+            resistanceSeries.AxisX.IntervalType = DateTimeIntervalType.Number;
+            resistanceSeries.AxisX.Minimum = 0;
+            resistanceSeries.AxisY.Minimum = 0;
+            resistanceSeries.AxisX.Interval = 1;
+            resistanceSeries.AxisY.Interval = 10;
+
+
+
+            cHistoricData.Series.Add("Resistance");
+            cHistoricData.Series["Resistance"].ChartType = SeriesChartType.Line;
+            cHistoricData.Series["Resistance"].Color = Color.Blue;
+            cHistoricData.Series[0].IsVisibleInLegend = false;
+
+            float? beginSeconds = graph[1][3];
+
+            foreach (float?[] dataPoint in graph)
+            {
+                float? totalSeconds = dataPoint[3] - beginSeconds + 1;
+                int seconds = (int)totalSeconds % 60;
+                float? resistance = dataPoint[2];
+                if (resistance != null)
+                {
+                    cHistoricData.Series["Resistance"].Points.AddXY(seconds, resistance);
+                }
+
+            }
 
         }
     }
