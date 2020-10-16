@@ -100,7 +100,7 @@ namespace Client
                 await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
                 Console.WriteLine("subscribed to heart");
 
-                Program.SendResistance(0);
+                //Program.SendResistance(0);
 
                 //Console.Read();
 

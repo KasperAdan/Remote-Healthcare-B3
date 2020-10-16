@@ -326,6 +326,20 @@ namespace Server
                     message = $"GetClients\r\nok\r\n{userAmount}{allUsernames}";
                     Write(message);
                     break;
+                case "SetResistance":
+                    if (!assertPacketData(packetData, 3)) { return; }
+                    Client clientResistance;
+                    AllClients.totalClients.TryGetValue(packetData[1], out clientResistance);
+                    if(clientResistance == null)
+                    {
+                        Write("SetResistance\r\nerror\r\nDid not find user");
+                    }
+                    else
+                    {
+                        clientResistance.Write($"SetResistance\r\n{packetData[2]}");
+                    }
+                    
+                    break;
                 default:
                     Console.WriteLine("Did not understand: " + packetData[0]);
                     break;

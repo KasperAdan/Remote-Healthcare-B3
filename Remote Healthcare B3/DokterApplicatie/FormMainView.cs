@@ -41,6 +41,7 @@ namespace DokterApplicatie
             ListViewRecentDataInit();
             ListViewHistoricDataInit();
             GetClients();
+            ResistaneSlider.ValueChanged += ResistaneSlider_ValueChanged;
             HistoricData = new List<List<float?[]>>();
             AllMessages = new List<string>();
             tabControl1.DrawItem += new DrawItemEventHandler(TabControl1_DrawItem);
@@ -546,6 +547,29 @@ namespace DokterApplicatie
         private void tabControl1_Click(object sender, EventArgs e)
         {
             UpdateSendText();
+        }
+
+        private void buttonSetRestance_Click(object sender, EventArgs e)
+        {
+            int selectedResistance = ResistaneSlider.Value;
+
+            if(selectedResistance <= 100 && selectedResistance >= 0)
+            {
+                selectedResistance *= 2;
+                if(cbSessionClients.SelectedItem == null) { return; }
+                string selectedUser = cbSessionClients.SelectedItem.ToString();
+
+                if(selectedUser != null)
+                {
+                    Write($"SetResistance\r\n{selectedUser}\r\n{selectedResistance}");
+                }
+            }
+        }
+
+        private void ResistaneSlider_ValueChanged(object sender, EventArgs e)
+        {
+            labelSelectedResistance.Text = (ResistaneSlider.Value).ToString();
+
         }
     }
 }

@@ -37,6 +37,8 @@
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Monitoring = new System.Windows.Forms.TabPage();
+            this.buttonSetRestance = new System.Windows.Forms.Button();
+            this.ResistaneSlider = new System.Windows.Forms.TrackBar();
             this.chRealtimeData = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.LVRecentData = new System.Windows.Forms.ListView();
             this.btnStopSession = new System.Windows.Forms.Button();
@@ -61,9 +63,13 @@
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.Settings = new System.Windows.Forms.TabPage();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
+            this.labelMinResistance = new System.Windows.Forms.Label();
+            this.labelMaxResistance = new System.Windows.Forms.Label();
+            this.labelSelectedResistance = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.Monitoring.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chRealtimeData)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ResistaneSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.History.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cHistoricData)).BeginInit();
@@ -98,6 +104,11 @@
             // Monitoring
             // 
             this.Monitoring.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("Monitoring.BackgroundImage")));
+            this.Monitoring.Controls.Add(this.labelSelectedResistance);
+            this.Monitoring.Controls.Add(this.labelMaxResistance);
+            this.Monitoring.Controls.Add(this.labelMinResistance);
+            this.Monitoring.Controls.Add(this.buttonSetRestance);
+            this.Monitoring.Controls.Add(this.ResistaneSlider);
             this.Monitoring.Controls.Add(this.chRealtimeData);
             this.Monitoring.Controls.Add(this.LVRecentData);
             this.Monitoring.Controls.Add(this.btnStopSession);
@@ -111,6 +122,24 @@
             this.Monitoring.TabIndex = 0;
             this.Monitoring.Text = "Monitoring";
             this.Monitoring.UseVisualStyleBackColor = true;
+            // 
+            // buttonSetRestance
+            // 
+            this.buttonSetRestance.Location = new System.Drawing.Point(325, 58);
+            this.buttonSetRestance.Name = "buttonSetRestance";
+            this.buttonSetRestance.Size = new System.Drawing.Size(102, 23);
+            this.buttonSetRestance.TabIndex = 11;
+            this.buttonSetRestance.Text = "Set resistance";
+            this.buttonSetRestance.UseVisualStyleBackColor = true;
+            this.buttonSetRestance.Click += new System.EventHandler(this.buttonSetRestance_Click);
+            // 
+            // ResistaneSlider
+            // 
+            this.ResistaneSlider.Location = new System.Drawing.Point(112, 46);
+            this.ResistaneSlider.Maximum = 100;
+            this.ResistaneSlider.Name = "ResistaneSlider";
+            this.ResistaneSlider.Size = new System.Drawing.Size(207, 45);
+            this.ResistaneSlider.TabIndex = 10;
             // 
             // chRealtimeData
             // 
@@ -131,7 +160,7 @@
             // LVRecentData
             // 
             this.LVRecentData.HideSelection = false;
-            this.LVRecentData.Location = new System.Drawing.Point(166, 35);
+            this.LVRecentData.Location = new System.Drawing.Point(112, 151);
             this.LVRecentData.Name = "LVRecentData";
             this.LVRecentData.Size = new System.Drawing.Size(517, 130);
             this.LVRecentData.TabIndex = 9;
@@ -141,7 +170,7 @@
             // 
             this.btnStopSession.Location = new System.Drawing.Point(379, 6);
             this.btnStopSession.Name = "btnStopSession";
-            this.btnStopSession.Size = new System.Drawing.Size(80, 23);
+            this.btnStopSession.Size = new System.Drawing.Size(102, 23);
             this.btnStopSession.TabIndex = 8;
             this.btnStopSession.Text = "Stop session";
             this.btnStopSession.UseVisualStyleBackColor = true;
@@ -367,6 +396,33 @@
             this.pictureBox6.TabIndex = 1;
             this.pictureBox6.TabStop = false;
             // 
+            // labelMinResistance
+            // 
+            this.labelMinResistance.AutoSize = true;
+            this.labelMinResistance.Location = new System.Drawing.Point(111, 94);
+            this.labelMinResistance.Name = "labelMinResistance";
+            this.labelMinResistance.Size = new System.Drawing.Size(13, 13);
+            this.labelMinResistance.TabIndex = 12;
+            this.labelMinResistance.Text = "0";
+            // 
+            // labelMaxResistance
+            // 
+            this.labelMaxResistance.AutoSize = true;
+            this.labelMaxResistance.Location = new System.Drawing.Point(284, 94);
+            this.labelMaxResistance.Name = "labelMaxResistance";
+            this.labelMaxResistance.Size = new System.Drawing.Size(25, 13);
+            this.labelMaxResistance.TabIndex = 13;
+            this.labelMaxResistance.Text = "100";
+            // 
+            // labelSelectedResistance
+            // 
+            this.labelSelectedResistance.AutoSize = true;
+            this.labelSelectedResistance.Location = new System.Drawing.Point(197, 94);
+            this.labelSelectedResistance.Name = "labelSelectedResistance";
+            this.labelSelectedResistance.Size = new System.Drawing.Size(13, 13);
+            this.labelSelectedResistance.TabIndex = 14;
+            this.labelSelectedResistance.Text = "0";
+            // 
             // FormMainView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -378,6 +434,8 @@
             this.Text = "Form2";
             this.tabControl1.ResumeLayout(false);
             this.Monitoring.ResumeLayout(false);
+            this.Monitoring.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ResistaneSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chRealtimeData)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.History.ResumeLayout(false);
@@ -419,6 +477,11 @@
         private System.Windows.Forms.Button btnGetHistoricData;
         private System.Windows.Forms.ListView LVHistoricData;
         private System.Windows.Forms.Button LoadTableButton;
+        private System.Windows.Forms.Button buttonSetRestance;
+        private System.Windows.Forms.TrackBar ResistaneSlider;
+        private System.Windows.Forms.Label labelSelectedResistance;
+        private System.Windows.Forms.Label labelMaxResistance;
+        private System.Windows.Forms.Label labelMinResistance;
         private System.Windows.Forms.Label lblAllMessages;
         private System.Windows.Forms.DataVisualization.Charting.Chart chRealtimeData;
         private System.Windows.Forms.DataVisualization.Charting.Chart cHistoricData;

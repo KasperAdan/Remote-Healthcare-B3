@@ -74,24 +74,13 @@ namespace Client
             {
                 if (runningTraining)
                 {
-                    if (useRealBike)
-                    {
-                        if (Console.ReadLine() == "")
-                        {
-                            Console.WriteLine("Input resistance: (First type a 0, after that the resistance)");
-
-                            int resistance = int.Parse(Console.ReadLine());
-                            lastResistance = resistance;
-                            SendResistance((int)lastResistance);
-                        }
-
-                    }
-                    else
+     
+                    if(!useRealBike)
                     {
                         if (Console.ReadLine() == "")
                         {
 
-                            Console.WriteLine("Input Command(Speed/HeartRate/Resistance): ");
+                            Console.WriteLine("Input Command(Speed/HeartRate): ");
                             string command = Console.ReadLine();
                             switch (command)
                             {
@@ -105,11 +94,6 @@ namespace Client
                                     Console.WriteLine("Input HeartRAte: ");
                                     int heartRate = int.Parse(Console.ReadLine());
                                     data.HeartRate = heartRate;
-                                    break;
-                                case "Resistance":
-                                    Console.WriteLine("Input Resistance: ");
-                                    float resistance = float.Parse(Console.ReadLine());
-                                    lastResistance = resistance;
                                     break;
                                 default:
                                     Console.WriteLine($"{command} is not a valid input!");
@@ -263,6 +247,10 @@ namespace Client
                 case "StopTraining":
                     runningTraining = false;
                     Console.WriteLine("Stopped Training");
+                    break;
+
+                case "SetResistance":
+                    SendResistance(int.Parse(packetData[1]));
                     break;
 
                 default:
