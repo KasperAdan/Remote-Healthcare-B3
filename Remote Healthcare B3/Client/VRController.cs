@@ -99,7 +99,7 @@ namespace Client
             //chat panel
             WriteTextMessage(GenerateMessage(Scene.Node.Add(110, "ChatPanel", vrObject.getUUID("bike"), new float[] { -20, 120, -40 }, 25f, new float[] { -40, 45, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, false)));
             SaveObjects("", GetResponse(110), VRObjects.PANEL);
-            UpdateChatPanel(null);
+            UpdateChatPanel(new string[] { });
         }
 
         private void Init()
@@ -237,8 +237,9 @@ namespace Client
             WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(112, panelUUID, $"Chat", new float[] { 20, 70 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
 
             int offset = 0;
-            foreach (var message in messages)
+            for (int i = 0; i < messages.Length; i++)
             {
+                string message = messages[messages.Length - 1 - i];
                 if (offset >= 12)
                 {
                     break;
@@ -251,15 +252,16 @@ namespace Client
                     {
                         break;
                     }
+                    stringWrapped.Reverse();
                     foreach (var item in stringWrapped)
                     {
-                        WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(112, panelUUID, item, new float[] { 20, 140 + (offset * 30) }, 30, new float[] { 1, 1, 1, 1 }, "Calibri")));
+                        WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(112, panelUUID, item, new float[] { 20, 500 - (offset * 30) }, 30, new float[] { 1, 1, 1, 1 }, "Calibri")));
                         offset++;
                     }
                 }
                 else
                 {
-                    WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(112, panelUUID, message, new float[] { 20, 140 + (offset * 30) }, 30, new float[] { 1, 1, 1, 1 }, "Calibri")));
+                    WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(112, panelUUID, message, new float[] { 20, 500 - (offset * 30) }, 30, new float[] { 1, 1, 1, 1 }, "Calibri")));
                     offset++;
                 }
             }
