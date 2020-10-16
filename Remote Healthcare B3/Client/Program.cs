@@ -158,38 +158,6 @@ namespace Client
 
         }
 
-        /*private static void OnRead(IAsyncResult ar)
-        {
-            int receivedBytes = stream.EndRead(ar);
-
-            byte[] totalBufferArray = new byte[0];
-
-            totalBufferArray = concat(totalBufferArray, buffer, receivedBytes);
-
-            while (totalBuffer.Length > 8)
-            {
-                int encryptedLength = BitConverter.ToInt32(totalBufferArray, 0);
-                int decryptedLength = BitConverter.ToInt32(totalBufferArray, 4);
-
-                if (totalBufferArray.Length >= 8 + encryptedLength)
-                {
-                    //string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-                    byte[] PartialBuffer = totalBufferArray.Skip(8).Take(encryptedLength).ToArray();
-                    String Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
-
-
-                    string[] packetData = Regex.Split(Decrypted, "\r\n");
-                    HandleData(packetData);
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-        }*/
-
         private static void OnRead(IAsyncResult ar)
         {
             int receivedBytes = stream.EndRead(ar);

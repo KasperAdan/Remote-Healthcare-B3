@@ -20,6 +20,7 @@ namespace DokterApplicatie
         private byte[] buffer = new byte[1024];
         //private string totalBuffer;
         private byte[] totalBuffer = new byte[0];
+        private List<string> AllMessages;
 
 
         private string username;
@@ -41,6 +42,7 @@ namespace DokterApplicatie
             ListViewHistoricDataInit();
             GetClients();
             HistoricData = new List<List<float?[]>>();
+            AllMessages = new List<string>();
             tabControl1.DrawItem += new DrawItemEventHandler(TabControl1_DrawItem);
         }
 
@@ -82,38 +84,6 @@ namespace DokterApplicatie
             stream = client.GetStream();
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
-
-        /*private void OnRead(IAsyncResult ar)
-        {
-            int receivedBytes = stream.EndRead(ar);
-
-            byte[] totalBufferArray = new byte[0];
-
-            totalBufferArray = concat(totalBufferArray, buffer, receivedBytes);
-
-            while (totalBuffer.Length > 8)
-            {
-                int encryptedLength = BitConverter.ToInt32(totalBufferArray, 0);
-                int decryptedLength = BitConverter.ToInt32(totalBufferArray, 4);
-
-                if (totalBufferArray.Length >= 8 + encryptedLength)
-                {
-                    //string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-                    byte[] PartialBuffer = totalBufferArray.Skip(8).Take(encryptedLength).ToArray();
-                    String Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
-
-
-                    string[] packetData = Regex.Split(Decrypted, "\r\n");
-                    HandleData(packetData);
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-        }*/
 
         private void OnRead(IAsyncResult ar)
         {
@@ -294,11 +264,16 @@ namespace DokterApplicatie
         private void ListViewRecentDataInit()
         {
             LVRecentData.View = View.Details;
-            LVRecentData.Columns.Add("Date");
-            LVRecentData.Columns.Add("Time");
-            LVRecentData.Columns.Add("Speed");
-            LVRecentData.Columns.Add("Heartrate");
-            LVRecentData.Columns.Add("Resistance");
+            LVRecentData.Columns.Add("Date", 100);
+            LVRecentData.Columns.Add("Time", 100);
+            LVRecentData.Columns.Add("Speed", 100);
+            LVRecentData.Columns.Add("Heartrate", 100);
+            LVRecentData.Columns.Add("Resistance", 100);
+        }
+
+        private void GraphHistoricDataInit()
+        {
+
         }
 
         private void UpdateRecentData(List<float?[]> data)
@@ -341,11 +316,11 @@ namespace DokterApplicatie
         private void ListViewHistoricDataInit()
         {
             LVHistoricData.View = View.Details;
-            LVHistoricData.Columns.Add("Date");
-            LVHistoricData.Columns.Add("Time");
-            LVHistoricData.Columns.Add("Speed");
-            LVHistoricData.Columns.Add("Heartrate");
-            LVHistoricData.Columns.Add("Resistance");
+            LVHistoricData.Columns.Add("Date", 100);
+            LVHistoricData.Columns.Add("Time", 100);
+            LVHistoricData.Columns.Add("Speed", 100);
+            LVHistoricData.Columns.Add("Heartrate", 100);
+            LVHistoricData.Columns.Add("Resistance", 100);
         }
 
         private void updateDateCombobox()
@@ -477,11 +452,15 @@ namespace DokterApplicatie
         public void DirectMessage(string username, string message)
         {
             Write($"directMessage\r\n{username}\r\n{message}");
+            AllMessages.Add($"> {username} : {message}");
+            UpdateSendText();
         }
 
         public void ChatToAll(string message)
         {
             Write($"chatToAll\r\n{message}");
+            AllMessages.Add($"> All clients : {message}");
+            UpdateSendText();
         }
 
         private void BtnStartSession_Click(object sender, EventArgs e)
@@ -514,6 +493,7 @@ namespace DokterApplicatie
             {
                 DirectMessage(selectedItem.ToString(), tbMessage.Text);
             }
+            tbMessage.Text = "";
         }
 
         private void btnGetHistoricData_Click(object sender, EventArgs e)
@@ -552,6 +532,20 @@ namespace DokterApplicatie
 
             List<float?[]> selectedGraph = HistoricData[selectedIndex];
             UpdateHistoricData(selectedGraph);
+        }
+
+        private void UpdateSendText()
+        {
+            lblAllMessages.Text = "";
+            foreach (String text in AllMessages)
+            {
+                lblAllMessages.Text += text + "\r\n";
+            }
+        }
+
+        private void tabControl1_Click(object sender, EventArgs e)
+        {
+            UpdateSendText();
         }
     }
 }
