@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -77,8 +78,8 @@ namespace Client
             {
                 int errorCode;
 
-                Console.WriteLine(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
-                errorCode = await bleBike.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
+                Debug.WriteLine(System.IO.File.ReadAllText(@"Resources/BikeBluetoothName.txt"));
+                errorCode = await bleBike.OpenDevice(System.IO.File.ReadAllText(@"Resources/BikeBluetoothName.txt"));
 
                 // Set service
                 errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
@@ -93,7 +94,7 @@ namespace Client
 
 
                 // Heart rate
-                errorCode = await bleHeart.OpenDevice(System.IO.File.ReadAllText(@"BikeBluetoothName.txt"));
+                errorCode = await bleHeart.OpenDevice(System.IO.File.ReadAllText(@"Resources/BikeBluetoothName.txt"));
                 await bleHeart.SetService("HeartRate");
 
                 bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;

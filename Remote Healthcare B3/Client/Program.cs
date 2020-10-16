@@ -26,7 +26,7 @@ namespace Client
 
         private static bool loggedIn = false;
         private static bool runningTraining = false;
-        private static bool useRealBike = false;
+        private static bool useRealBike = true;
         private static BikeData data;
         private static VRController vrController;
         private static List<string> messages = new List<string>();
@@ -68,7 +68,7 @@ namespace Client
             bike.OnSend += Bike_OnSend;
 
             client = new TcpClient();
-            client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
+            client.BeginConnect("192.168.112.6", 15243, new AsyncCallback(OnConnect), null);
 
             while (true)
             {
