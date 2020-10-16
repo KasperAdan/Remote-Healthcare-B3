@@ -53,16 +53,12 @@ namespace Client
             WriteTextMessage(GenerateMessage(delNode));
 
             while (vrObject.getUUID("RightHand") == string.Empty) { }
-            string parentPanel = vrObject.getUUID("RightHand");
-            WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "SpeedPanel", parentPanel, new float[] { 0, 0.1f, -0.1f }, 0.25f, new float[] { -35, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, true)));
+            
 
 
             InitVR();
 
-            response = GetResponse(3);
-            SaveObjects("", response, VRObjects.PANEL);
-
-            SetSpeed(5.5f);
+            
 
         }
 
@@ -100,7 +96,16 @@ namespace Client
 
             WriteTextMessage(GenerateMessage(Scene.Node.Update(95, vrObject.getUUID("Camera"), vrObject.getUUID("bike"), new int[] { 0, 50, 0 }, 100, new int[] { 0, 90, 0 })));
 
-            WriteTextMessage(GenerateMessage(Route.Follow(96, vrObject.getUUID("empty"), vrObject.getUUID("bike"), 2, 0, Route.Rotation.XZ, 1, false, new float[] { 0, 0, 0 }, new int[] { 0, 0, 0 })));
+            WriteTextMessage(GenerateMessage(Route.Follow(96, vrObject.getUUID("route"), vrObject.getUUID("bike"), 2, 0, Route.Rotation.XZ, 1, false, new float[] { 0, 0, 0 }, new int[] { 0, 0, 0 })));
+
+            //speed panel
+
+            
+            WriteTextMessage(GenerateMessage(Scene.Node.Add(3, "BikePanel", vrObject.getUUID("bike"), new float[] { -35, 120, 0 }, 25f, new float[] { -50, 90, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new float[] { 0, 0, 0, 1 }, true)));
+            
+            SaveObjects("", GetResponse(3), VRObjects.PANEL);
+
+            UpdateBikePanel(5.5f, 5.5f, 5.5f);
         }
 
         private void Init()
@@ -136,11 +141,7 @@ namespace Client
             WriteTextMessage(GenerateMessage(Scene.Reset(2)));
         }
 
-        public void SetBikeSpeed(float speed)
-        {
-            WriteTextMessage(GenerateMessage(Route.SetFollowSpeed(97, vrObject.getUUID("bike"), speed)));
-        }
-
+       
         private void OnConnect(IAsyncResult ar)
         {
             Client.EndConnect(ar);
@@ -223,11 +224,15 @@ namespace Client
             return totalMessage.ToString();
         }
 
-        public void SetSpeed(float speed)
+        public void UpdateBikePanel(float speed, float heartrate, float resistance)
         {
-            string panelUUID = vrObject.getUUID("SpeedPanel");
-            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{speed:#0.00} m/s", new float[] { 100, 280 }, 100, new float[] { 1, 1, 1, 1 }, "Calibri")));
+            string panelUUID = vrObject.getUUID("BikePanel");
+            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{speed:#0.00} m/s", new float[] { 100, 200 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
+            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{heartrate:#0.00} bpm", new float[] { 100, 300 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
+            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{resistance:#0.00} %", new float[] { 100, 400 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
+
             WriteTextMessage(GenerateMessage(Scene.Panel.Swap(11, panelUUID)));
+            WriteTextMessage(GenerateMessage(Route.SetFollowSpeed(97, vrObject.getUUID("bike"), speed)));
         }
 
         public void SaveObjects(string name, JObject json, VRObjects objectType)

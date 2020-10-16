@@ -328,7 +328,7 @@ namespace Client
 
             if (loggedIn)
             {
-                vrController.SetBikeSpeed(speed);   
+                vrController.UpdateBikePanel(speed, heartRate, resistance);   
                 DateTime now = DateTime.Now;
                 int hour = now.Hour;
                 int minute = now.Minute;
