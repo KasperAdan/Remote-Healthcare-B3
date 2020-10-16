@@ -50,6 +50,7 @@ namespace DokterApplicatie
             HistoricData = new List<List<float?[]>>();
             AllMessages = new List<string>();
             tabControl1.DrawItem += new DrawItemEventHandler(TabControl1_DrawItem);
+            cHistoricData.Series.Clear();
         }
 
         public void Connect()
@@ -611,6 +612,10 @@ namespace DokterApplicatie
             resistanceSeries.AxisY.Interval = 5;
 
 
+            cHistoricData.Series.Add("Speed");
+            cHistoricData.Series["Speed"].ChartType = SeriesChartType.Line;
+            cHistoricData.Series["Speed"].Color = Color.Green;
+            cHistoricData.Series[0].IsVisibleInLegend = true;
 
             chart.Series.Add("Speed");
             chart.Series["Speed"].ChartType = SeriesChartType.Line;
@@ -647,10 +652,10 @@ namespace DokterApplicatie
 
 
 
-            chart.Series.Add("HeartRate");
-            chart.Series["HeartRate"].ChartType = SeriesChartType.Line;
-            chart.Series["HeartRate"].Color = Color.Red;
-            chart.Series[0].IsVisibleInLegend = true;
+            cHistoricData.Series.Add("HeartRate");
+            cHistoricData.Series["HeartRate"].ChartType = SeriesChartType.Line;
+            cHistoricData.Series["HeartRate"].Color = Color.Red;
+            cHistoricData.Series[0].IsVisibleInLegend = true;
 
             float? beginSeconds = graph[0][3];
 
@@ -682,10 +687,10 @@ namespace DokterApplicatie
 
 
 
-            chart.Series.Add("Resistance");
-            chart.Series["Resistance"].ChartType = SeriesChartType.Line;
-            chart.Series["Resistance"].Color = Color.Blue;
-            chart.Series[0].IsVisibleInLegend = true;
+            cHistoricData.Series.Add("Resistance");
+            cHistoricData.Series["Resistance"].ChartType = SeriesChartType.Line;
+            cHistoricData.Series["Resistance"].Color = Color.Blue;
+            cHistoricData.Series[0].IsVisibleInLegend = true;
 
             float? beginSeconds = graph[0][3];
 
