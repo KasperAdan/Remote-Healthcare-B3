@@ -272,11 +272,6 @@ namespace DokterApplicatie
             LVRecentData.Columns.Add("Resistance", 100);
         }
 
-        private void GraphHistoricDataInit()
-        {
-
-        }
-
         private void UpdateRecentData(List<float?[]> data)
         {
             LVRecentData.Items.Clear();
@@ -511,6 +506,7 @@ namespace DokterApplicatie
         private void StartTraining(string username)
         {
             Write($"StartTraining\r\n{username}");
+            Write($"SetResistance\r\n{username}\r\n{0}");
         }
 
         private void StopTraining(string username)
@@ -555,7 +551,6 @@ namespace DokterApplicatie
 
             if(selectedResistance <= 100 && selectedResistance >= 0)
             {
-                selectedResistance *= 2;
                 if(cbSessionClients.SelectedItem == null) { return; }
                 string selectedUser = cbSessionClients.SelectedItem.ToString();
 
