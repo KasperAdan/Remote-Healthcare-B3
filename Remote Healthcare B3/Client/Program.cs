@@ -20,7 +20,6 @@ namespace Client
         private static TcpClient client;
         private static NetworkStream stream;
         private static byte[] buffer = new byte[1024];
-        //private static string totalBuffer;
         private static byte[] totalBuffer = new byte[0];
         private static string username;
 

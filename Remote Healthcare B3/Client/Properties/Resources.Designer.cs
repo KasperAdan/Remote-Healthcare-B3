@@ -61,6 +61,15 @@ namespace Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Avans Bike 57E4.
+        /// </summary>
+        internal static string BikeBluetoothName {
+            get {
+                return ResourceManager.GetString("BikeBluetoothName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Height_Map4 {
