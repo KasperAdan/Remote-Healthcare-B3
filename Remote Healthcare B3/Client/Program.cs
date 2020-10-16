@@ -28,6 +28,7 @@ namespace Client
         private static bool useRealBike = false;
         private static BikeData data;
         private static VRController vrController;
+        private static List<string> messages = new List<string>();
 
         private static BLE bleBike;
         private static BLE bleHeart;
@@ -227,7 +228,9 @@ namespace Client
                     if (packetData[1].Equals("message"))
                     {
                         string message = packetData[2];
+                        messages.Add(message);
                         Console.WriteLine(message);
+                        vrController.UpdateChatPanel(messages.ToArray());
                     }
                     break;
 

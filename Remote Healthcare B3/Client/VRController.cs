@@ -230,7 +230,7 @@ namespace Client
             WriteTextMessage(GenerateMessage(Route.SetFollowSpeed(97, vrObject.getUUID("bike"), speed)));
         }
 
-        private void UpdateChatPanel(string[] messages)
+        public void UpdateChatPanel(string[] messages)
         {
             string panelUUID = vrObject.getUUID("ChatPanel");
             WriteTextMessage(GenerateMessage(Scene.Panel.Clear(111, panelUUID)));
