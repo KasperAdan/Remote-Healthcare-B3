@@ -31,12 +31,15 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMainView));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Monitoring = new System.Windows.Forms.TabPage();
+            this.buttonSetRestance = new System.Windows.Forms.Button();
+            this.ResistaneSlider = new System.Windows.Forms.TrackBar();
             this.LVRecentData = new System.Windows.Forms.ListView();
             this.btnStopSession = new System.Windows.Forms.Button();
             this.cbSessionClients = new System.Windows.Forms.ComboBox();
             this.btnStartSession = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.History = new System.Windows.Forms.TabPage();
+            this.LoadTableButton = new System.Windows.Forms.Button();
             this.LVHistoricData = new System.Windows.Forms.ListView();
             this.btnGetHistoricData = new System.Windows.Forms.Button();
             this.cbTime = new System.Windows.Forms.ComboBox();
@@ -55,9 +58,12 @@
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.Settings = new System.Windows.Forms.TabPage();
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
-            this.LoadTableButton = new System.Windows.Forms.Button();
+            this.labelMinResistance = new System.Windows.Forms.Label();
+            this.labelMaxResistance = new System.Windows.Forms.Label();
+            this.labelSelectedResistance = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.Monitoring.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ResistaneSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.History.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -93,6 +99,11 @@
             // Monitoring
             // 
             this.Monitoring.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("Monitoring.BackgroundImage")));
+            this.Monitoring.Controls.Add(this.labelSelectedResistance);
+            this.Monitoring.Controls.Add(this.labelMaxResistance);
+            this.Monitoring.Controls.Add(this.labelMinResistance);
+            this.Monitoring.Controls.Add(this.buttonSetRestance);
+            this.Monitoring.Controls.Add(this.ResistaneSlider);
             this.Monitoring.Controls.Add(this.LVRecentData);
             this.Monitoring.Controls.Add(this.btnStopSession);
             this.Monitoring.Controls.Add(this.cbSessionClients);
@@ -106,10 +117,28 @@
             this.Monitoring.Text = "Monitoring";
             this.Monitoring.UseVisualStyleBackColor = true;
             // 
+            // buttonSetRestance
+            // 
+            this.buttonSetRestance.Location = new System.Drawing.Point(325, 58);
+            this.buttonSetRestance.Name = "buttonSetRestance";
+            this.buttonSetRestance.Size = new System.Drawing.Size(102, 23);
+            this.buttonSetRestance.TabIndex = 11;
+            this.buttonSetRestance.Text = "Set resistance";
+            this.buttonSetRestance.UseVisualStyleBackColor = true;
+            this.buttonSetRestance.Click += new System.EventHandler(this.buttonSetRestance_Click);
+            // 
+            // ResistaneSlider
+            // 
+            this.ResistaneSlider.Location = new System.Drawing.Point(112, 46);
+            this.ResistaneSlider.Maximum = 100;
+            this.ResistaneSlider.Name = "ResistaneSlider";
+            this.ResistaneSlider.Size = new System.Drawing.Size(207, 45);
+            this.ResistaneSlider.TabIndex = 10;
+            // 
             // LVRecentData
             // 
             this.LVRecentData.HideSelection = false;
-            this.LVRecentData.Location = new System.Drawing.Point(111, 108);
+            this.LVRecentData.Location = new System.Drawing.Point(112, 151);
             this.LVRecentData.Name = "LVRecentData";
             this.LVRecentData.Size = new System.Drawing.Size(474, 283);
             this.LVRecentData.TabIndex = 9;
@@ -119,7 +148,7 @@
             // 
             this.btnStopSession.Location = new System.Drawing.Point(325, 6);
             this.btnStopSession.Name = "btnStopSession";
-            this.btnStopSession.Size = new System.Drawing.Size(80, 23);
+            this.btnStopSession.Size = new System.Drawing.Size(102, 23);
             this.btnStopSession.TabIndex = 8;
             this.btnStopSession.Text = "Stop session";
             this.btnStopSession.UseVisualStyleBackColor = true;
@@ -169,6 +198,16 @@
             this.History.TabIndex = 1;
             this.History.Text = "History";
             this.History.UseVisualStyleBackColor = true;
+            // 
+            // LoadTableButton
+            // 
+            this.LoadTableButton.Location = new System.Drawing.Point(454, 8);
+            this.LoadTableButton.Name = "LoadTableButton";
+            this.LoadTableButton.Size = new System.Drawing.Size(75, 23);
+            this.LoadTableButton.TabIndex = 5;
+            this.LoadTableButton.Text = "Load table";
+            this.LoadTableButton.UseVisualStyleBackColor = true;
+            this.LoadTableButton.Click += new System.EventHandler(this.LoadTableButton_Click);
             // 
             // LVHistoricData
             // 
@@ -347,15 +386,32 @@
             this.pictureBox6.TabIndex = 1;
             this.pictureBox6.TabStop = false;
             // 
-            // LoadTableButton
+            // labelMinResistance
             // 
-            this.LoadTableButton.Location = new System.Drawing.Point(454, 8);
-            this.LoadTableButton.Name = "LoadTableButton";
-            this.LoadTableButton.Size = new System.Drawing.Size(75, 23);
-            this.LoadTableButton.TabIndex = 5;
-            this.LoadTableButton.Text = "Load table";
-            this.LoadTableButton.UseVisualStyleBackColor = true;
-            this.LoadTableButton.Click += new System.EventHandler(this.LoadTableButton_Click);
+            this.labelMinResistance.AutoSize = true;
+            this.labelMinResistance.Location = new System.Drawing.Point(111, 94);
+            this.labelMinResistance.Name = "labelMinResistance";
+            this.labelMinResistance.Size = new System.Drawing.Size(13, 13);
+            this.labelMinResistance.TabIndex = 12;
+            this.labelMinResistance.Text = "0";
+            // 
+            // labelMaxResistance
+            // 
+            this.labelMaxResistance.AutoSize = true;
+            this.labelMaxResistance.Location = new System.Drawing.Point(284, 94);
+            this.labelMaxResistance.Name = "labelMaxResistance";
+            this.labelMaxResistance.Size = new System.Drawing.Size(25, 13);
+            this.labelMaxResistance.TabIndex = 13;
+            this.labelMaxResistance.Text = "100";
+            // 
+            // labelSelectedResistance
+            // 
+            this.labelSelectedResistance.AutoSize = true;
+            this.labelSelectedResistance.Location = new System.Drawing.Point(197, 94);
+            this.labelSelectedResistance.Name = "labelSelectedResistance";
+            this.labelSelectedResistance.Size = new System.Drawing.Size(13, 13);
+            this.labelSelectedResistance.TabIndex = 14;
+            this.labelSelectedResistance.Text = "0";
             // 
             // FormMainView
             // 
@@ -368,6 +424,8 @@
             this.Text = "Form2";
             this.tabControl1.ResumeLayout(false);
             this.Monitoring.ResumeLayout(false);
+            this.Monitoring.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ResistaneSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.History.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
@@ -414,5 +472,10 @@
         private System.Windows.Forms.Button btnGetHistoricData;
         private System.Windows.Forms.ListView LVHistoricData;
         private System.Windows.Forms.Button LoadTableButton;
+        private System.Windows.Forms.Button buttonSetRestance;
+        private System.Windows.Forms.TrackBar ResistaneSlider;
+        private System.Windows.Forms.Label labelSelectedResistance;
+        private System.Windows.Forms.Label labelMaxResistance;
+        private System.Windows.Forms.Label labelMinResistance;
     }
 }
