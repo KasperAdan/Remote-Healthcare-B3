@@ -216,10 +216,10 @@ namespace Client
         public void UpdateBikePanel(float speed, float heartrate, float resistance)
         {
             string panelUUID = vrObject.getUUID("BikePanel");
-            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{speed:#0.00} m/s", new float[] { 100, 200 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
-            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{heartrate:#0.00} bpm", new float[] { 100, 300 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
-            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{resistance:#0.00} %", new float[] { 100, 400 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
-
+            WriteTextMessage(GenerateMessage(Scene.Panel.Clear(11, panelUUID)));
+            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{speed:#0.00} m/s", new float[] { 100, 160 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
+            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{heartrate:#0.00} bpm", new float[] { 100, 260 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
+            WriteTextMessage(GenerateMessage(Scene.Panel.DrawText(4, panelUUID, $"{resistance:#0.00} %", new float[] { 100, 360 }, 70, new float[] { 1, 1, 1, 1 }, "Calibri")));
             WriteTextMessage(GenerateMessage(Scene.Panel.Swap(11, panelUUID)));
             WriteTextMessage(GenerateMessage(Route.SetFollowSpeed(97, vrObject.getUUID("bike"), speed)));
         }
