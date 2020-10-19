@@ -187,7 +187,13 @@ namespace Server
                             Console.WriteLine("correct password");
                             this.IsDoctor = true;
                             Write("DoctorLogin\r\nok");
-                            AllClients.Add(username, this);
+                            if (AllClients.TotalClients.ContainsKey(username))
+                            {
+                                AllClients.TotalClients.Remove(username);
+                            }
+                            AllClients.TotalClients.Add(username, this);
+                            this.IsOnline = true;
+
                         }
                         else
                         {
@@ -378,26 +384,54 @@ namespace Server
 
         public void Write(string data)
         {
-            var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n");
+            try
+            {
+                var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n");
 
-            var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
+                var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
 
 
-            Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
+                Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
 
-            Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
+                Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
 
-            Stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
-            Stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
+                Stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
+                Stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
 
-            Stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
+                Stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 
-            Stream.Flush();
+                Stream.Flush();
+            }
+            catch(IOException e)
+            {
+                Disconnect();
+            }
         }
 
         public void Disconnect()
         {
             this.IsOnline = false;
+            this.ClientData.FinishGraph();
+            bool isDoctorOnline = false;
+            foreach(Client client in AllClients.TotalClients.Values)
+            {
+                if(client.IsDoctor && client.IsOnline)
+                {
+                    isDoctorOnline = true;
+                    return;
+                }
+            }
+            if (!isDoctorOnline)
+            {
+                foreach(Client client in AllClients.TotalClients.Values)
+                {
+                    if (!client.IsDoctor)
+                    {
+                        client.ClientData.FinishGraph();
+                        client.Write("StopTraining");
+                    }
+                }
+            }
         }
     }
 }
