@@ -15,52 +15,52 @@ namespace Server
     internal class Client
     {
         #region connection stuff
-        private TcpClient tcpClient;
-        private NetworkStream stream;
-        private byte[] buffer = new byte[1024];
-        private byte[] totalBuffer = new byte[0];
-        public ClientData clientData;
+        private TcpClient TCPClient;
+        private NetworkStream Stream;
+        private byte[] Buffer = new byte[1024];
+        private byte[] TotalBuffer = new byte[0];
+        public ClientData ClientData;
         #endregion
 
         public string UserName { get; set; }
         public bool IsDoctor { get; set; }
-        public bool isOnline { get; set; }
+        public bool IsOnline { get; set; }
 
         public Client(TcpClient tcpClient)
         {
-            this.tcpClient = tcpClient;
-            this.clientData = new ClientData();
+            this.TCPClient = tcpClient;
+            this.ClientData = new ClientData();
 
             this.IsDoctor = false;
-            this.isOnline = true;
-            this.stream = this.tcpClient.GetStream();
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            this.IsOnline = true;
+            this.Stream = this.TCPClient.GetStream();
+            Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnRead), null);
         }
         #region connection stuff
         private void OnRead(IAsyncResult ar)
         {
             try
             {
-                int receivedBytes = stream.EndRead(ar);
-                totalBuffer = concat(totalBuffer, buffer, receivedBytes);
+                int receivedBytes = Stream.EndRead(ar);
+                TotalBuffer = Concat(TotalBuffer, Buffer, receivedBytes);
 
 
-                while(totalBuffer.Length > 8)
+                while(TotalBuffer.Length > 8)
                 {
-                    int encryptedLength = BitConverter.ToInt32(totalBuffer, 0);
-                    int decryptedLength = BitConverter.ToInt32(totalBuffer, 4);
+                    int encryptedLength = BitConverter.ToInt32(TotalBuffer, 0);
+                    int decryptedLength = BitConverter.ToInt32(TotalBuffer, 4);
 
-                    if(totalBuffer.Length >= 8 + encryptedLength)
+                    if(TotalBuffer.Length >= 8 + encryptedLength)
                     {
 
                         //string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-                        byte[] PartialBuffer = totalBuffer.Skip(8).Take(encryptedLength).ToArray();
+                        byte[] PartialBuffer = TotalBuffer.Skip(8).Take(encryptedLength).ToArray();
                         String Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
                         
                         
                         string[] packetData = Regex.Split(Decrypted, "\r\n");
                         HandleData(packetData);
-                        totalBuffer = totalBuffer.Skip(encryptedLength + 8).Take(totalBuffer.Length - encryptedLength - 8).ToArray();
+                        TotalBuffer = TotalBuffer.Skip(encryptedLength + 8).Take(TotalBuffer.Length - encryptedLength - 8).ToArray();
                     } else
                     {
                         break;
@@ -73,14 +73,14 @@ namespace Server
                 return;
             }
 
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private byte[] concat(byte[] b1, byte[] b2, int b2count)
+        private byte[] Concat(byte[] b1, byte[] b2, int b2count)
         {
             byte[] total = new byte[b1.Length + b2count];
-            Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
-            Buffer.BlockCopy(b2, 0, total, b1.Length, b2count);
+            System.Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
+            System.Buffer.BlockCopy(b2, 0, total, b1.Length, b2count);
             return total;
         }
         #endregion
@@ -91,24 +91,24 @@ namespace Server
             switch (packetData[0])
             {
                 case "login":
-                    if (!assertPacketData(packetData, 2))
+                    if (!AssertPacketData(packetData, 2))
                         return;
                     this.UserName = packetData[1];
                     Console.WriteLine($"User {this.UserName} is connected");
 
                     
-                    if (AllClients.totalClients.ContainsKey(UserName))
+                    if (AllClients.TotalClients.ContainsKey(UserName))
                     {
                         Client client;
-                        AllClients.totalClients.TryGetValue(UserName,out client);
-                        if (client.isOnline)
+                        AllClients.TotalClients.TryGetValue(UserName,out client);
+                        if (client.IsOnline)
                         {
                             Write("login\r\nerror\r\nA user with the same name is already online");
                         }
                         else {
                             Client clientData;
-                            AllClients.totalClients.TryGetValue(this.UserName, out clientData);
-                            this.clientData = clientData.clientData;
+                            AllClients.TotalClients.TryGetValue(this.UserName, out clientData);
+                            this.ClientData = clientData.ClientData;
                             AllClients.Remove(this.UserName);
                             Write("login\r\nok");
                             AllClients.Add(UserName, this);
@@ -118,9 +118,9 @@ namespace Server
                     }
                     else
                     {
-                        foreach(Client client in AllClients.totalClients.Values)
+                        foreach(Client client in AllClients.TotalClients.Values)
                         {
-                            if (client.IsDoctor && client.isOnline)
+                            if (client.IsDoctor && client.IsOnline)
                             {
                                 client.Write($"AddClient\r\n{UserName}");
                             }
@@ -131,19 +131,19 @@ namespace Server
                     break;
 
                 case "data":
-                    if (!assertPacketData(packetData, 8))
+                    if (!AssertPacketData(packetData, 8))
                         return;
-                    this.clientData.AddData(packetData[1], packetData[2], packetData[3], packetData[4], packetData[5], packetData[6], packetData[7]);
+                    this.ClientData.AddData(packetData[1], packetData[2], packetData[3], packetData[4], packetData[5], packetData[6], packetData[7]);
                     Write("data\r\nData Recieved");
-                    this.clientData.PrintData();
+                    this.ClientData.PrintData();
 
                     //send real time data to all connected doctors
-                    foreach (Client client in AllClients.totalClients.Values)
+                    foreach (Client client in AllClients.TotalClients.Values)
                     {
-                        if (client.IsDoctor && client.isOnline)
+                        if (client.IsDoctor && client.IsOnline)
                         {
-                            Console.WriteLine("Data size: "+this.clientData.data.Count);
-                            string recentDataJson = JsonConvert.SerializeObject(this.clientData.data);
+                            Console.WriteLine("Data size: "+this.ClientData.Data.Count);
+                            string recentDataJson = JsonConvert.SerializeObject(this.ClientData.Data);
                             Console.WriteLine("Sending realtime: "+ recentDataJson);
                             client.Write($"RealTimeData\r\n{this.UserName}\r\n{recentDataJson}");
                         }
@@ -152,7 +152,7 @@ namespace Server
 
                 case "DoctorLogin":
                     Console.WriteLine("DoctorLogin received");
-                    if (!assertPacketData(packetData, 3))
+                    if (!AssertPacketData(packetData, 3))
                         return;
                     string username = packetData[1];
                     string password = packetData[2];
@@ -184,12 +184,12 @@ namespace Server
                     break;
 
                 case "GetHistoricData": //doctor wants historic data
-                    if (!assertPacketData(packetData, 2) || !this.IsDoctor)
+                    if (!AssertPacketData(packetData, 2) || !this.IsDoctor)
                         return;
                     string dataUsername = packetData[1];
                     Client userClient;
 
-                    bool gotValue = AllClients.totalClients.TryGetValue(dataUsername, out userClient);
+                    bool gotValue = AllClients.TotalClients.TryGetValue(dataUsername, out userClient);
 
                     if (!gotValue)
                     {
@@ -199,7 +199,7 @@ namespace Server
                     {
 
                         //We moeten de graph lijst pakken i.p.v. de getJson!!!
-                        string historicDataJson = JsonConvert.SerializeObject(userClient.clientData.graphs);
+                        string historicDataJson = JsonConvert.SerializeObject(userClient.ClientData.Graphs);
                         Write($"GetHistoricData\r\n{dataUsername}\r\n{historicDataJson}");
                     }
                     break;
@@ -211,11 +211,11 @@ namespace Server
                     break;
                 case "StartTraining":
                     //Server ontvangt dit en moet dit doorsturen naar bijbehorende Client
-                    if (!assertPacketData(packetData, 2) || !this.IsDoctor)
+                    if (!AssertPacketData(packetData, 2) || !this.IsDoctor)
                         return;
 
                     dataUsername = packetData[1];
-                    gotValue = AllClients.totalClients.TryGetValue(dataUsername, out userClient);
+                    gotValue = AllClients.TotalClients.TryGetValue(dataUsername, out userClient);
 
                     if (!gotValue)
                     {
@@ -223,7 +223,7 @@ namespace Server
                     }
                     else
                     {
-                        if (!userClient.isOnline)
+                        if (!userClient.IsOnline)
                         {
                             Write("StartTraining\r\nerror\r\nUser not online");
                         }
@@ -231,18 +231,18 @@ namespace Server
                         {
                             userClient.Write("StartTraining");
                             Write("StartTraining\r\nok");
-                            userClient.clientData.startGraph();
+                            userClient.ClientData.StartGraph();
                         }
                     }
                     break;
 
                 case "StopTraining":
                     //Server ontvangt dit en moet dit doorsturen naar bijbehorende Client
-                    if (!assertPacketData(packetData, 2) || !this.IsDoctor)
+                    if (!AssertPacketData(packetData, 2) || !this.IsDoctor)
                         return;
 
                     dataUsername = packetData[1];
-                    gotValue = AllClients.totalClients.TryGetValue(dataUsername, out userClient);
+                    gotValue = AllClients.TotalClients.TryGetValue(dataUsername, out userClient);
 
                     if (!gotValue)
                     {
@@ -250,7 +250,7 @@ namespace Server
                     }
                     else
                     {
-                        if (!userClient.isOnline)
+                        if (!userClient.IsOnline)
                         {
                             Write("StopTraining\r\nerror\r\nUser not online");
                         }
@@ -258,19 +258,19 @@ namespace Server
                         {
                             userClient.Write("StopTraining");
                             Write("StopTraining\r\nok");
-                            userClient.clientData.finishGraph();
+                            userClient.ClientData.FinishGraph();
                         }
                     }
                     break;
 
                 case "chatToAll":
-                    if (!assertPacketData(packetData, 2))
+                    if (!AssertPacketData(packetData, 2))
                         return;
                     if (this.IsDoctor) { 
                         string messageToAll = packetData[1];
-                        foreach (Client client in AllClients.totalClients.Values)
+                        foreach (Client client in AllClients.TotalClients.Values)
                         {
-                            if (client.isOnline)
+                            if (client.IsOnline)
                             {
                                 client.Write($"chatToAll\r\nmessage\r\n[{this.UserName}]: {messageToAll}");
                             }
@@ -283,16 +283,16 @@ namespace Server
                     }
                     break;
                 case "directMessage":
-                    if (!assertPacketData(packetData, 3))
+                    if (!AssertPacketData(packetData, 3))
                         return;
                     string messageTo = packetData[1];
                     string message = packetData[2];
                     Client messageToClient;
-                    gotValue = AllClients.totalClients.TryGetValue(messageTo, out messageToClient);
+                    gotValue = AllClients.TotalClients.TryGetValue(messageTo, out messageToClient);
                     if (gotValue)
                     {
                         if (this.IsDoctor || messageToClient.IsDoctor) {
-                            if (messageToClient.isOnline)
+                            if (messageToClient.IsOnline)
                             {
                                 messageToClient.Write($"directMessage\r\nmessage\r\n({this.UserName}): {message}");
                                 Write($"directMessage\r\nok");
@@ -309,13 +309,13 @@ namespace Server
                     }
                     break;
                 case "GetClients":
-                    if (!IsDoctor || !assertPacketData(packetData, 1))
+                    if (!IsDoctor || !AssertPacketData(packetData, 1))
                     {
                         return;
                     }
                     string allUsernames = "";
                     int userAmount = 0;
-                    foreach(Client client in AllClients.totalClients.Values)
+                    foreach(Client client in AllClients.TotalClients.Values)
                     {
                         if (!client.IsDoctor)
                         {
@@ -327,9 +327,9 @@ namespace Server
                     Write(message);
                     break;
                 case "SetResistance":
-                    if (!assertPacketData(packetData, 3)) { return; }
+                    if (!AssertPacketData(packetData, 3)) { return; }
                     Client clientResistance;
-                    AllClients.totalClients.TryGetValue(packetData[1], out clientResistance);
+                    AllClients.TotalClients.TryGetValue(packetData[1], out clientResistance);
                     if(clientResistance == null)
                     {
                         Write("SetResistance\r\nerror\r\nDid not find user");
@@ -347,7 +347,7 @@ namespace Server
             }
         }
 
-        private bool assertPacketData(string[] packetData, int requiredLength)
+        private bool AssertPacketData(string[] packetData, int requiredLength)
         {
             if (packetData.Length < requiredLength)
             {
@@ -368,17 +368,17 @@ namespace Server
 
             Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
 
-            stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
-            stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
+            Stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
+            Stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
 
-            stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
+            Stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 
-            stream.Flush();
+            Stream.Flush();
         }
 
         public void Disconnect()
         {
-            this.isOnline = false;
+            this.IsOnline = false;
         }
     }
 }

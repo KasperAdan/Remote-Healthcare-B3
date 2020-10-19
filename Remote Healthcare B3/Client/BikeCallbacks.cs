@@ -25,11 +25,11 @@ namespace Client
         public event EventHandler<float> OnHeartRate;
         public event EventHandler<float> OnSend;
 
-        public BikeData data;
+        public BikeData Data;
 
         public SimBike(BikeData data)
         {
-            this.data = data;
+            this.Data = data;
             System.Threading.Thread thread = new System.Threading.Thread(new ThreadStart(WorkThreadFunction));
             thread.Start();
         }
@@ -38,8 +38,8 @@ namespace Client
         {
             while (true)
             {
-                OnSpeed?.Invoke(this, data.GetSpeed());
-                OnHeartRate?.Invoke(this, data.GetHeartRate());
+                OnSpeed?.Invoke(this, Data.GetSpeed());
+                OnHeartRate?.Invoke(this, Data.GetHeartRate());
                 OnSend?.Invoke(this, 0);
                 Thread.Sleep(1000);
             }

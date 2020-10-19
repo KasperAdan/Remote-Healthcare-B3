@@ -25,7 +25,6 @@ namespace Client
         private VRObject vrObject;
         private List<JObject> ServerResponses;
         private bool Connected = false;
-        private int messageLength = int.MaxValue;
 
         public VRController()
         {

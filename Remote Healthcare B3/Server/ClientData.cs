@@ -8,14 +8,14 @@ namespace Server
 {
     internal class ClientData
     {
-        public List<float?[]> data;
-        public List<List<float?[]>> graphs;
-        private bool acceptData;
+        public List<float?[]> Data;
+        public List<List<float?[]>> Graphs;
+        private bool AcceptData;
         public ClientData()
         {
-            graphs = new List<List<float?[]>>();
-            data = new List<float?[]>();
-            acceptData = false;
+            Graphs = new List<List<float?[]>>();
+            Data = new List<float?[]>();
+            AcceptData = false;
         }
 
         public void AddData(string speed, string heartRate, string resistance, string time, string day, string month, string year)
@@ -27,7 +27,7 @@ namespace Server
                 startGraph();
             }
             */
-            if (!acceptData) { return; }
+            if (!AcceptData) { return; }
             float? speedData = null;
             float? heartRateData = null;
             float? resistanceData = null;
@@ -67,15 +67,15 @@ namespace Server
             }
             #endregion
 
-            this.data.Add(new float?[] { speedData, heartRateData, resistanceData, timeData, dayData, monthData, yearData });
+            this.Data.Add(new float?[] { speedData, heartRateData, resistanceData, timeData, dayData, monthData, yearData });
             Console.WriteLine("Added data!");
         }
 
         public void PrintData()
         {
-            for (int i = 0; i < data.Count; i++)
+            for (int i = 0; i < Data.Count; i++)
             {
-                float? totalSeconds = data[i][3];
+                float? totalSeconds = Data[i][3];
                 int hours = (int)totalSeconds / 3600;
                 int minutes = ((int)totalSeconds % 3600)/60;
                 int seconds = (int)totalSeconds % 60;
@@ -84,25 +84,25 @@ namespace Server
             }
         }
 
-        public void finishGraph()
+        public void FinishGraph()
         {
-            if (!acceptData) { return; }
-            graphs.Add(data);
-            acceptData = false;
+            if (!AcceptData) { return; }
+            Graphs.Add(Data);
+            AcceptData = false;
         }
 
-        public void startGraph()
+        public void StartGraph()
         {
-            if (acceptData) { return; }
-            data = new List<float?[]>();
-            acceptData = true;
+            if (AcceptData) { return; }
+            Data = new List<float?[]>();
+            AcceptData = true;
         }
         
         public JObject GetJson()
         {
             JObject historyJson =
                 new JObject(
-                    new JProperty("data", new JArray(from d in this.data select new JArray(d))));
+                    new JProperty("data", new JArray(from d in this.Data select new JArray(d))));
             return historyJson;
         }
     }

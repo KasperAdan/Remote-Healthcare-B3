@@ -16,20 +16,19 @@ namespace DokterApplicatie
     public partial class FormMainView : Form
     {
         private List<string> Clients;
-        private TcpClient client;
-        private NetworkStream stream;
-        private byte[] buffer = new byte[1024];
-        //private string totalBuffer;
-        private byte[] totalBuffer = new byte[0];
+        private TcpClient Client;
+        private NetworkStream Stream;
+        private byte[] Buffer = new byte[1024];
+        private byte[] TotalBuffer = new byte[0];
         private List<string[]> AllMessages;
 
 
-        private string username;
-        private bool loggedIn;
-        private string selectedHistoricRadiobutton = "Speed";
-        private string selectedRealtimeRadiobutton = "Speed";
-        private List<float?[]> selectedGraph;
-        private List<float?[]> recentData;
+        private string Username;
+        private bool LoggedIn;
+        private string SelectedHistoricRadiobutton = "Speed";
+        private string SelectedRealtimeRadiobutton = "Speed";
+        private List<float?[]> SelectedGraph;
+        private List<float?[]> RecentData;
 
         private List<List<float?[]>> HistoricData;
 
@@ -38,7 +37,7 @@ namespace DokterApplicatie
             Clients = new List<string>();
             Connect();
 
-            while (!loggedIn) //Het programma loopt hier vast. In de ClientHandler komt het bericht niet binnen!
+            while (!LoggedIn) //Het programma loopt hier vast. In de ClientHandler komt het bericht niet binnen!
             {
             }
 
@@ -56,8 +55,8 @@ namespace DokterApplicatie
 
         public void Connect()
         {
-            this.client = new TcpClient();
-            this.client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
+            this.Client = new TcpClient();
+            this.Client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
             ShowLogin();
         }
@@ -70,7 +69,7 @@ namespace DokterApplicatie
             {
             }
 
-            Write($"DoctorLogin\r\n{loginForm.username}\r\n{loginForm.password}");
+            Write($"DoctorLogin\r\n{loginForm.Username}\r\n{loginForm.Password}");
             Debug.WriteLine("Doctorlogin send to server...");
         }
 
@@ -82,49 +81,49 @@ namespace DokterApplicatie
             {
             }
 
-            this.username = loginForm.username;
-            Write($"DoctorLogin\r\n{loginForm.username}\r\n{loginForm.password}");
+            this.Username = loginForm.Username;
+            Write($"DoctorLogin\r\n{loginForm.Username}\r\n{loginForm.Password}");
         }
 
         private void OnConnect(IAsyncResult ar)
         {
-            client.EndConnect(ar);
-            stream = client.GetStream();
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            Client.EndConnect(ar);
+            Stream = Client.GetStream();
+            Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         private void OnRead(IAsyncResult ar)
         {
-            int receivedBytes = stream.EndRead(ar);
-            totalBuffer = concat(totalBuffer, buffer, receivedBytes);
+            int receivedBytes = Stream.EndRead(ar);
+            TotalBuffer = Concat(TotalBuffer, Buffer, receivedBytes);
 
-            while (totalBuffer.Length > 8)
+            while (TotalBuffer.Length > 8)
             {
-                int encryptedLength = BitConverter.ToInt32(totalBuffer, 0); //waarom is deze lengte zo verschrikkelijk groot?
-                int decryptedLength = BitConverter.ToInt32(totalBuffer, 4); //waarom is deze lengte negatief?
+                int encryptedLength = BitConverter.ToInt32(TotalBuffer, 0); //waarom is deze lengte zo verschrikkelijk groot?
+                int decryptedLength = BitConverter.ToInt32(TotalBuffer, 4); //waarom is deze lengte negatief?
 
-                if (totalBuffer.Length >= 8 + encryptedLength)
+                if (TotalBuffer.Length >= 8 + encryptedLength)
                 {
-                    byte[] PartialBuffer = totalBuffer.Skip(8).Take(encryptedLength).ToArray();
+                    byte[] PartialBuffer = TotalBuffer.Skip(8).Take(encryptedLength).ToArray();
                     string Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
 
                     string[] packetData = Regex.Split(Decrypted, "\r\n");
                     HandleData(packetData);
-                    totalBuffer = totalBuffer.Skip(encryptedLength + 8).Take(totalBuffer.Length - encryptedLength - 8).ToArray();
+                    TotalBuffer = TotalBuffer.Skip(encryptedLength + 8).Take(TotalBuffer.Length - encryptedLength - 8).ToArray();
                 }
                 else
                 {
                     break;
                 }
             }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private byte[] concat(byte[] b1, byte[] b2, int b2count)
+        private byte[] Concat(byte[] b1, byte[] b2, int b2count)
         {
             byte[] total = new byte[b1.Length + b2count];
-            Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
-            Buffer.BlockCopy(b2, 0, total, b1.Length, b2count);
+            System.Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
+            System.Buffer.BlockCopy(b2, 0, total, b1.Length, b2count);
             return total;
         }
 
@@ -139,12 +138,12 @@ namespace DokterApplicatie
 
             Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
 
-            stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
-            stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
+            Stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
+            Stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
 
-            stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
+            Stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 
-            stream.Flush();
+            Stream.Flush();
         }
 
 
@@ -158,7 +157,7 @@ namespace DokterApplicatie
                     if (packetData[1] == "ok")
                     {
                         Console.WriteLine("Connected");
-                        loggedIn = true;
+                        LoggedIn = true;
                     }
                     else if (packetData[1] == "error")
                     {
@@ -202,8 +201,8 @@ namespace DokterApplicatie
                     break;
                 case "AddClient":
                     Console.WriteLine("AddClient: " + packetData[1]);
-                    username = packetData[1];
-                    Clients.Add(username);
+                    Username = packetData[1];
+                    Clients.Add(Username);
                     UpdateComboBoxes();
                     break;
                 case "StartTraining":
@@ -232,8 +231,8 @@ namespace DokterApplicatie
                             }
 
                             Debug.WriteLine("Got recent data: " + packetData[2]);
-                            recentData = JsonConvert.DeserializeObject<List<float?[]>>(packetData[2]);
-                            UpdateRecentData(recentData);
+                            RecentData = JsonConvert.DeserializeObject<List<float?[]>>(packetData[2]);
+                            UpdateRecentData(RecentData);
                         });
                     }
                     else
@@ -243,8 +242,8 @@ namespace DokterApplicatie
                             return;
                         }
 
-                        recentData = JsonConvert.DeserializeObject<List<float?[]>>(packetData[2]);
-                        UpdateRecentData(recentData);
+                        RecentData = JsonConvert.DeserializeObject<List<float?[]>>(packetData[2]);
+                        UpdateRecentData(RecentData);
                     }
 
                     break;
@@ -298,16 +297,16 @@ namespace DokterApplicatie
 
             LVRecentData.Items[LVRecentData.Items.Count - 1].EnsureVisible();
 
-            switch (selectedRealtimeRadiobutton)
+            switch (SelectedRealtimeRadiobutton)
             {
                 case "Speed":
-                    loadSpeedChart(recentData, cRealtimeData);
+                    LoadSpeedChart(RecentData, cRealtimeData);
                     break;
                 case "Heartrate":
-                    loadHeartRateChart(recentData, cRealtimeData);
+                    LoadHeartRateChart(RecentData, cRealtimeData);
                     break;
                 case "Resistance":
-                    loadResistanceChart(recentData, cRealtimeData);
+                    LoadResistanceChart(RecentData, cRealtimeData);
                     break;
             }
         }
@@ -522,7 +521,7 @@ namespace DokterApplicatie
             }
         }
 
-        private void btnGetHistoricData_Click(object sender, EventArgs e)
+        private void BtnGetHistoricData_Click(object sender, EventArgs e)
         {
             string username = cbUsername.SelectedItem.ToString();
             GetHistoricData(username);
@@ -557,19 +556,19 @@ namespace DokterApplicatie
                 return;
             }
 
-            selectedGraph = HistoricData[selectedIndex];
-            UpdateHistoricData(selectedGraph);
+            SelectedGraph = HistoricData[selectedIndex];
+            UpdateHistoricData(SelectedGraph);
 
-            switch (selectedHistoricRadiobutton)
+            switch (SelectedHistoricRadiobutton)
             {
                 case "Speed":
-                    loadSpeedChart(selectedGraph, cHistoricData);
+                    LoadSpeedChart(SelectedGraph, cHistoricData);
                     break;
                 case "Heartrate":
-                    loadHeartRateChart(selectedGraph, cHistoricData);
+                    LoadHeartRateChart(SelectedGraph, cHistoricData);
                     break;
                 case "Resistance":
-                    loadResistanceChart(selectedGraph, cHistoricData);
+                    LoadResistanceChart(SelectedGraph, cHistoricData);
                     break;
             }
         }
@@ -588,12 +587,12 @@ namespace DokterApplicatie
             
         }
 
-        private void tabControl1_Click(object sender, EventArgs e)
+        private void TabControl1_Click(object sender, EventArgs e)
         {
             UpdateSendText();
         }
 
-        private void buttonSetRestance_Click(object sender, EventArgs e)
+        private void ButtonSetRestance_Click(object sender, EventArgs e)
         {
             int selectedResistance = ResistaneSlider.Value;
 
@@ -615,7 +614,7 @@ namespace DokterApplicatie
 
         }
 
-        private void loadSpeedChart(List<float?[]> graph, Chart chart)
+        private void LoadSpeedChart(List<float?[]> graph, Chart chart)
         {
             if(graph == null) { return; }
             chart.Series.Clear();
@@ -656,7 +655,7 @@ namespace DokterApplicatie
             }
         }
 
-        private void loadHeartRateChart(List<float?[]> graph, Chart chart)
+        private void LoadHeartRateChart(List<float?[]> graph, Chart chart)
         {
             if (graph == null) { return; }
             chart.Series.Clear();
@@ -698,7 +697,7 @@ namespace DokterApplicatie
             }
         }
 
-        private void loadResistanceChart(List<float?[]> graph, Chart chart)
+        private void LoadResistanceChart(List<float?[]> graph, Chart chart)
         {
             if (graph == null) { return; }
             chart.Series.Clear();
@@ -750,57 +749,57 @@ namespace DokterApplicatie
             resistanceSeries.AxisY.Interval = 10;
         }
 
-        private void rbSpeed_CheckedChanged(object sender, EventArgs e)
+        private void RbSpeed_CheckedChanged(object sender, EventArgs e)
         {
             if (rbSpeed.Checked)
             {
-                selectedHistoricRadiobutton = "Speed";
-                loadSpeedChart(selectedGraph, cHistoricData);
+                SelectedHistoricRadiobutton = "Speed";
+                LoadSpeedChart(SelectedGraph, cHistoricData);
             }
         }
 
-        private void rbHeartRate_CheckedChanged(object sender, EventArgs e)
+        private void RbHeartRate_CheckedChanged(object sender, EventArgs e)
         {
             if (rbHeartRate.Checked)
             {
-                selectedHistoricRadiobutton = "Heartrate";
-                loadHeartRateChart(selectedGraph, cHistoricData);
+                SelectedHistoricRadiobutton = "Heartrate";
+                LoadHeartRateChart(SelectedGraph, cHistoricData);
             }
         }
 
-        private void rbResistance_CheckedChanged(object sender, EventArgs e)
+        private void RbResistance_CheckedChanged(object sender, EventArgs e)
         {
             if (rbResistance.Checked)
             {
-                selectedHistoricRadiobutton = "Resistance";
-                loadResistanceChart(selectedGraph, cHistoricData);
+                SelectedHistoricRadiobutton = "Resistance";
+                LoadResistanceChart(SelectedGraph, cHistoricData);
             }
         }
 
-        private void rbRealtimeSpeed_CheckedChanged(object sender, EventArgs e)
+        private void RbRealtimeSpeed_CheckedChanged(object sender, EventArgs e)
         {
             if (rbRealtimeSpeed.Checked)
             {
-                selectedRealtimeRadiobutton = "Speed";
-                loadSpeedChart(recentData, cRealtimeData);
+                SelectedRealtimeRadiobutton = "Speed";
+                LoadSpeedChart(RecentData, cRealtimeData);
             }
         }
 
-        private void rbRealtimeHeartrate_CheckedChanged(object sender, EventArgs e)
+        private void RbRealtimeHeartrate_CheckedChanged(object sender, EventArgs e)
         {
             if (rbRealtimeHeartrate.Checked)
             {
-                selectedRealtimeRadiobutton = "Heartrate";
-                loadHeartRateChart(recentData, cRealtimeData);
+                SelectedRealtimeRadiobutton = "Heartrate";
+                LoadHeartRateChart(RecentData, cRealtimeData);
             }
         }
 
-        private void rbRealtimeResistance_CheckedChanged(object sender, EventArgs e)
+        private void RbRealtimeResistance_CheckedChanged(object sender, EventArgs e)
         {
             if (rbRealtimeResistance.Checked)
             {
-                selectedRealtimeRadiobutton = "Resistance";
-                loadResistanceChart(recentData, cRealtimeData);
+                SelectedRealtimeRadiobutton = "Resistance";
+                LoadResistanceChart(RecentData, cRealtimeData);
             }
         }
     }

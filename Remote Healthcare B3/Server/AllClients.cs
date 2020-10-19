@@ -7,21 +7,21 @@ namespace Server
 {
     static class AllClients
     {
-        public static Dictionary<string, Client> totalClients;
+        public static Dictionary<string, Client> TotalClients;
 
-        public static void init()
+        public static void Init()
         {
-            totalClients = new Dictionary<string, Client>();
+            TotalClients = new Dictionary<string, Client>();
         }
 
         public static void Add(string userName, Client client)
         {
-            totalClients.Add(userName, client);
+            TotalClients.Add(userName, client);
         }
 
         public static void Remove(string username)
         {
-            totalClients.Remove(username);
+            TotalClients.Remove(username);
         }
     }
 }

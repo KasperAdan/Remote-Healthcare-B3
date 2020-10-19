@@ -21,7 +21,7 @@ namespace Client_VR
         public static Dictionary<string, string> NodeDictionary = new Dictionary<string, string>();
         public static Dictionary<string, string> BaseDictionary = new Dictionary<string, string>();
 
-        public static List<Dictionary<String, string>> dictionaries = new List<Dictionary<string, string>>() { TerrainDictionary, PanelDictionary, RouteDictionary, RoadDictionary, NodeDictionary, BaseDictionary };
+        public static List<Dictionary<String, string>> Dictionaries = new List<Dictionary<string, string>>() { TerrainDictionary, PanelDictionary, RouteDictionary, RoadDictionary, NodeDictionary, BaseDictionary };
 
         public VRObject()
         {
@@ -122,7 +122,7 @@ namespace Client_VR
             bool found = false;
             while (!found)
             {
-                foreach (var item in dictionaries)
+                foreach (var item in Dictionaries)
                 {
                     if (item.TryGetValue(name, out string value))
                     {

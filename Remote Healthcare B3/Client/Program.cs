@@ -17,64 +17,64 @@ namespace Client
 {
     class Program
     {
-        private static TcpClient client;
-        private static NetworkStream stream;
-        private static byte[] buffer = new byte[1024];
-        private static byte[] totalBuffer = new byte[0];
-        private static string username;
+        private static TcpClient Client;
+        private static NetworkStream Stream;
+        private static byte[] Buffer = new byte[1024];
+        private static byte[] TotalBuffer = new byte[0];
+        private static string Username;
 
-        private static bool loggedIn = false;
-        private static bool runningTraining = false;
-        private static bool useRealBike = true;
-        private static BikeData data;
-        private static VRController vrController;
-        private static List<string> messages = new List<string>();
+        private static bool LoggedIn = false;
+        private static bool RunningTraining = false;
+        private static bool UseRealBike = true;
+        private static BikeData Data;
+        private static VRController VrController;
+        private static List<string> Messages = new List<string>();
 
-        private static BLE bleBike;
-        private static BLE bleHeart;
+        private static BLE BleBike;
+        private static BLE BleHeart;
 
-        private static float lastSpeed;
-        private static float lastHeartRate;
-        private static float lastResistance;
+        private static float LastSpeed;
+        private static float LastHeartRate;
+        private static float LastResistance;
 
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome user!");
             Console.WriteLine("Whats your name? ");
-            username = Console.ReadLine();
+            Username = Console.ReadLine();
             //username = "jkb";
 
-            vrController = new VRController();
+            VrController = new VRController();
             IBike bike;
-            if (useRealBike)
+            if (UseRealBike)
             {
                 InitBLEConnection();
-                bike = new RealBike(bleBike,bleHeart);
-                lastResistance = 0;
-                lastSpeed = -1;
-                lastHeartRate = -1;
+                bike = new RealBike(BleBike,BleHeart);
+                LastResistance = 0;
+                LastSpeed = -1;
+                LastHeartRate = -1;
             }
             else
             {
-                data = new BikeData(5, 120, 30, 5);
-                lastSpeed = 5;
-                lastHeartRate = 120;
-                lastResistance = 30;
-                bike = new SimBike(data);
+                Data = new BikeData(5, 120, 30, 5);
+                LastSpeed = 5;
+                LastHeartRate = 120;
+                LastResistance = 30;
+                bike = new SimBike(Data);
             }
             bike.OnSpeed += Bike_OnSpeed;
             bike.OnHeartRate += Bike_OnHeartrate;
             bike.OnSend += Bike_OnSend;
 
-            client = new TcpClient();
-            client.BeginConnect("192.168.112.6", 15243, new AsyncCallback(OnConnect), null);
+            Client = new TcpClient();
+            Client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
             while (true)
             {
-                if (runningTraining)
+                if (RunningTraining)
                 {
      
-                    if(!useRealBike)
+                    if(!UseRealBike)
                     {
                         if (Console.ReadLine() == "")
                         {
@@ -87,12 +87,12 @@ namespace Client
                                     Console.WriteLine("Input Speed: ");
                                     float speed = float.Parse(Console.ReadLine());
                                     Console.WriteLine(speed.ToString());
-                                    data.Speed = speed;
+                                    Data.Speed = speed;
                                     break;
                                 case "HeartRate":
                                     Console.WriteLine("Input HeartRAte: ");
                                     int heartRate = int.Parse(Console.ReadLine());
-                                    data.HeartRate = heartRate;
+                                    Data.HeartRate = heartRate;
                                     break;
                                 default:
                                     Console.WriteLine($"{command} is not a valid input!");
@@ -106,27 +106,27 @@ namespace Client
 
         private static void Bike_OnSend(object sender, float e)
         {
-            if (runningTraining)
+            if (RunningTraining)
             {
-                SendData(lastSpeed, lastHeartRate, lastResistance);
+                SendData(LastSpeed, LastHeartRate, LastResistance);
             }
         }
 
         private static void Bike_OnSpeed(object sender, float e)
         {
-            if (runningTraining)
+            if (RunningTraining)
             {
                 //Console.WriteLine($"Speed: {e}");
-                lastSpeed = e;
+                LastSpeed = e;
             }
         }
 
         private static void Bike_OnHeartrate(object sender, float e)
         {
-            if (runningTraining)
+            if (RunningTraining)
             {
                 //Console.WriteLine($"HeartRate: {e}");
-                lastHeartRate = e;
+                LastHeartRate = e;
             }
         }
 
@@ -134,45 +134,45 @@ namespace Client
 
         private static void OnConnect(IAsyncResult ar)
         {
-            client.EndConnect(ar);
-            stream = client.GetStream();
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-            Write($"login\r\n{username}");
+            Client.EndConnect(ar);
+            Stream = Client.GetStream();
+            Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnRead), null);
+            Write($"login\r\n{Username}");
 
         }
 
         private static void OnRead(IAsyncResult ar)
         {
-            int receivedBytes = stream.EndRead(ar);
-            totalBuffer = concat(totalBuffer, buffer, receivedBytes);
+            int receivedBytes = Stream.EndRead(ar);
+            TotalBuffer = Concat(TotalBuffer, Buffer, receivedBytes);
 
-            while (totalBuffer.Length > 8)
+            while (TotalBuffer.Length > 8)
             {
-                int encryptedLength = BitConverter.ToInt32(totalBuffer, 0);
-                int decryptedLength = BitConverter.ToInt32(totalBuffer, 4);
+                int encryptedLength = BitConverter.ToInt32(TotalBuffer, 0);
+                int decryptedLength = BitConverter.ToInt32(TotalBuffer, 4);
 
-                if (totalBuffer.Length >= 8 + encryptedLength)
+                if (TotalBuffer.Length >= 8 + encryptedLength)
                 {
-                    byte[] PartialBuffer = totalBuffer.Skip(8).Take(encryptedLength).ToArray();
+                    byte[] PartialBuffer = TotalBuffer.Skip(8).Take(encryptedLength).ToArray();
                     string Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
 
                     string[] packetData = Regex.Split(Decrypted, "\r\n");
                     HandleData(packetData);
-                    totalBuffer = totalBuffer.Skip(encryptedLength + 8).Take(totalBuffer.Length - encryptedLength - 8).ToArray();
+                    TotalBuffer = TotalBuffer.Skip(encryptedLength + 8).Take(TotalBuffer.Length - encryptedLength - 8).ToArray();
                 }
                 else
                 {
                     break;
                 }
             }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            Stream.BeginRead(Buffer, 0, Buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private static byte[] concat(byte[] b1, byte[] b2, int b2count)
+        private static byte[] Concat(byte[] b1, byte[] b2, int b2count)
         {
             byte[] total = new byte[b1.Length + b2count];
-            Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
-            Buffer.BlockCopy(b2, 0, total, b1.Length, b2count);
+            System.Buffer.BlockCopy(b1, 0, total, 0, b1.Length);
+            System.Buffer.BlockCopy(b2, 0, total, b1.Length, b2count);
             return total;
         }
 
@@ -187,12 +187,12 @@ namespace Client
 
             Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
 
-            stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
-            stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
+            Stream.Write(BitConverter.GetBytes(dataStringEncrypted.Length), 0, 4);
+            Stream.Write(BitConverter.GetBytes(dataAsBytes.Length), 0, 4);
 
-            stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
+            Stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 
-            stream.Flush();
+            Stream.Flush();
         }
 
         private static void HandleData(string[] packetData)
@@ -205,14 +205,14 @@ namespace Client
                     if (packetData[1] == "ok")
                     {
                         Console.WriteLine("Connected");
-                        loggedIn = true;
+                        LoggedIn = true;
                     }
                     else if (packetData[1] == "error")
                     {
                         Console.WriteLine(packetData[2]);
                         Console.WriteLine("Whats your name? ");
-                        username = Console.ReadLine();
-                        Write($"login\r\n{username}");
+                        Username = Console.ReadLine();
+                        Write($"login\r\n{Username}");
                     }
                     else
                         Console.WriteLine(packetData[1]);
@@ -226,9 +226,9 @@ namespace Client
                     if (packetData[1].Equals("message"))
                     {
                         string message = packetData[2];
-                        messages.Add(message);
+                        Messages.Add(message);
                         Console.WriteLine(message);
-                        vrController.UpdateChatPanel(messages.ToArray());
+                        VrController.UpdateChatPanel(Messages.ToArray());
                     }
                     break;
 
@@ -236,21 +236,21 @@ namespace Client
                     if (packetData[1].Equals("message"))
                     {
                         string message = packetData[2];
-                        messages.Add(message);
+                        Messages.Add(message);
                         Console.WriteLine(message);
-                        vrController.UpdateChatPanel(messages.ToArray());
+                        VrController.UpdateChatPanel(Messages.ToArray());
                     }
                     break;
 
                 case "StartTraining":
-                    runningTraining = true;
+                    RunningTraining = true;
                     Console.WriteLine("Started Training");
                     break;
 
                 case "StopTraining":
-                    runningTraining = false;
+                    RunningTraining = false;
                     Console.WriteLine("Stopped Training");
-                    vrController.UpdateBikePanel(0, 0, 0);
+                    VrController.UpdateBikePanel(0, 0, 0);
                     break;
 
                 case "SetResistance":
@@ -267,9 +267,9 @@ namespace Client
         public static async void SendResistance(int resistance)
         {
             Console.WriteLine($"Send resistance {resistance}");
-            Console.WriteLine($"lastResistance {lastResistance}");
-            lastResistance = resistance;
-            if (useRealBike)
+            Console.WriteLine($"lastResistance {LastResistance}");
+            LastResistance = resistance;
+            if (UseRealBike)
             {
                 //Console.WriteLine($"Resistance: {lastResistance}");
 
@@ -286,7 +286,7 @@ namespace Client
                 data[8] = 0xff; // Not in use
                 data[9] = 0xff; // Not in use
                 data[10] = 0xff; // Not in use
-                data[11] = (byte)(lastResistance * 2); // Resistance percentage /2
+                data[11] = (byte)(LastResistance * 2); // Resistance percentage /2
                 data[12] = 0; // Checksum
 
                 byte previous = (byte)(data[0] ^ data[1]);
@@ -299,14 +299,14 @@ namespace Client
                 //Console.WriteLine($"\n\n{previous}\n\n");
                 data[12] = previous;
 
-                await bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);
+                await BleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);
             }
         }
 
         public async static void InitBLEConnection()
         {
-            bleBike = new BLE();
-            bleHeart = new BLE();
+            BleBike = new BLE();
+            BleHeart = new BLE();
             bool AlreadySubscribed = false;
             if (!AlreadySubscribed)
             {
@@ -318,7 +318,7 @@ namespace Client
                 Thread.Sleep(1000); // We need some time to list available devices
 
                 // List available devices
-                List<String> bleBikeList = bleBike.ListDevices();
+                List<String> bleBikeList = BleBike.ListDevices();
                 Console.WriteLine("Devices found: ");
                 foreach (var name in bleBikeList)
                 {
@@ -329,7 +329,7 @@ namespace Client
     
                 // __TODO__ Error check
 
-                var services = bleBike.GetServices;
+                var services = BleBike.GetServices;
                 foreach (var service in services)
                 {
                     Console.WriteLine($"Service: {service}");
@@ -342,9 +342,9 @@ namespace Client
         public static void SendData(float speed, float heartRate, float resistance)
         {
 
-            if (loggedIn)
+            if (LoggedIn)
             {
-                vrController.UpdateBikePanel(speed, heartRate, resistance);   
+                VrController.UpdateBikePanel(speed, heartRate, resistance);   
                 DateTime now = DateTime.Now;
                 int hour = now.Hour;
                 int minute = now.Minute;

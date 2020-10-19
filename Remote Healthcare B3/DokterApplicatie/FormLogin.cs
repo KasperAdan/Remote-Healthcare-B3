@@ -5,10 +5,10 @@ namespace DokterApplicatie
 {
     public partial class FormLogin : Form
     {
-        public string username { get; set; }
-        public string password { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
 
-        public string error { get; set; }
+        public string Error { get; set; }
         public FormLogin()
         {
             InitializeComponent();
@@ -24,13 +24,13 @@ namespace DokterApplicatie
 
         private void LoginButton_Click(object sender, EventArgs e)
         {
-            if (username == "" || username == null)
+            if (Username == "" || Username == null)
             {
                 ErrorMessageTextBox.Text = "Enter username";
                 ErrorMessageTextBox.Visible = true;
                 return;
             }
-            if (password == "" || password == null)
+            if (Password == "" || Password == null)
             {
                 ErrorMessageTextBox.Text = "Enter password";
                 ErrorMessageTextBox.Visible = true;
@@ -41,12 +41,12 @@ namespace DokterApplicatie
 
         private void UsernameTextBox_TextChanged(object sender, EventArgs e)
         {
-            this.username = UsernameTextBox.Text;
+            this.Username = UsernameTextBox.Text;
         }
 
         private void PasswordTextBox_TextChanged(object sender, EventArgs e)
         {
-            this.password = PasswordTextBox.Text;
+            this.Password = PasswordTextBox.Text;
         }
     }
 }

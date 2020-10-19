@@ -104,7 +104,7 @@
             this.tabControl1.Size = new System.Drawing.Size(1065, 554);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl1.TabIndex = 0;
-            this.tabControl1.Click += new System.EventHandler(this.tabControl1_Click);
+            this.tabControl1.Click += new System.EventHandler(this.TabControl1_Click);
             // 
             // Monitoring
             // 
@@ -155,7 +155,7 @@
             this.rbRealtimeResistance.TabIndex = 17;
             this.rbRealtimeResistance.Text = "Resistance";
             this.rbRealtimeResistance.UseVisualStyleBackColor = true;
-            this.rbRealtimeResistance.CheckedChanged += new System.EventHandler(this.rbRealtimeResistance_CheckedChanged);
+            this.rbRealtimeResistance.CheckedChanged += new System.EventHandler(this.RbRealtimeResistance_CheckedChanged);
             // 
             // rbRealtimeHeartrate
             // 
@@ -167,7 +167,7 @@
             this.rbRealtimeHeartrate.TabIndex = 16;
             this.rbRealtimeHeartrate.Text = "Heartrate";
             this.rbRealtimeHeartrate.UseVisualStyleBackColor = true;
-            this.rbRealtimeHeartrate.CheckedChanged += new System.EventHandler(this.rbRealtimeHeartrate_CheckedChanged);
+            this.rbRealtimeHeartrate.CheckedChanged += new System.EventHandler(this.RbRealtimeHeartrate_CheckedChanged);
             // 
             // rbRealtimeSpeed
             // 
@@ -181,7 +181,7 @@
             this.rbRealtimeSpeed.TabStop = true;
             this.rbRealtimeSpeed.Text = "Speed";
             this.rbRealtimeSpeed.UseVisualStyleBackColor = true;
-            this.rbRealtimeSpeed.CheckedChanged += new System.EventHandler(this.rbRealtimeSpeed_CheckedChanged);
+            this.rbRealtimeSpeed.CheckedChanged += new System.EventHandler(this.RbRealtimeSpeed_CheckedChanged);
             // 
             // labelSelectedResistance
             // 
@@ -222,7 +222,7 @@
             this.buttonSetRestance.TabIndex = 11;
             this.buttonSetRestance.Text = "Set resistance";
             this.buttonSetRestance.UseVisualStyleBackColor = true;
-            this.buttonSetRestance.Click += new System.EventHandler(this.buttonSetRestance_Click);
+            this.buttonSetRestance.Click += new System.EventHandler(this.ButtonSetRestance_Click);
             // 
             // ResistaneSlider
             // 
@@ -320,7 +320,7 @@
             this.rbResistance.TabIndex = 9;
             this.rbResistance.Text = "Resistance";
             this.rbResistance.UseVisualStyleBackColor = true;
-            this.rbResistance.CheckedChanged += new System.EventHandler(this.rbResistance_CheckedChanged);
+            this.rbResistance.CheckedChanged += new System.EventHandler(this.RbResistance_CheckedChanged);
             // 
             // rbHeartRate
             // 
@@ -332,7 +332,7 @@
             this.rbHeartRate.TabIndex = 8;
             this.rbHeartRate.Text = "Heartrate";
             this.rbHeartRate.UseVisualStyleBackColor = true;
-            this.rbHeartRate.CheckedChanged += new System.EventHandler(this.rbHeartRate_CheckedChanged);
+            this.rbHeartRate.CheckedChanged += new System.EventHandler(this.RbHeartRate_CheckedChanged);
             // 
             // rbSpeed
             // 
@@ -346,7 +346,7 @@
             this.rbSpeed.TabStop = true;
             this.rbSpeed.Text = "Speed";
             this.rbSpeed.UseVisualStyleBackColor = true;
-            this.rbSpeed.CheckedChanged += new System.EventHandler(this.rbSpeed_CheckedChanged);
+            this.rbSpeed.CheckedChanged += new System.EventHandler(this.RbSpeed_CheckedChanged);
             // 
             // cHistoricData
             // 
@@ -391,7 +391,7 @@
             this.btnGetHistoricData.TabIndex = 3;
             this.btnGetHistoricData.Text = "Get";
             this.btnGetHistoricData.UseVisualStyleBackColor = true;
-            this.btnGetHistoricData.Click += new System.EventHandler(this.btnGetHistoricData_Click);
+            this.btnGetHistoricData.Click += new System.EventHandler(this.BtnGetHistoricData_Click);
             // 
             // cbTime
             // 
