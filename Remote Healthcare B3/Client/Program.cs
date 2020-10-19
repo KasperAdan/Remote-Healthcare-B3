@@ -25,7 +25,7 @@ namespace Client
 
         private static bool LoggedIn = false;
         private static bool RunningTraining = false;
-        private static bool UseRealBike = true;
+        private static bool UseRealBike = false;
         private static BikeData Data;
         private static VRController VrController;
         private static List<string> Messages = new List<string>();

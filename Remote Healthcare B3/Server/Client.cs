@@ -96,11 +96,19 @@ namespace Server
                     this.UserName = packetData[1];
                     Console.WriteLine($"User {this.UserName} is connected");
 
-                    
+                    if (DoctorPasswordData.DoctorPassWords.ContainsKey(this.UserName))
+                    {
+                        Console.WriteLine("Username is in use by doctor");
+                        Write("login\r\nerror\r\nThe username is in use");
+                        return;
+                    }
+
+
                     if (AllClients.TotalClients.ContainsKey(UserName))
                     {
                         Client client;
                         AllClients.TotalClients.TryGetValue(UserName,out client);
+
                         if (client.IsOnline)
                         {
                             Write("login\r\nerror\r\nA user with the same name is already online");
@@ -159,8 +167,19 @@ namespace Server
                     //check password
                     Dictionary<string, string> passwords = DoctorPasswordData.DoctorPassWords;
                     string dictionaryPassword;
+                    if (AllClients.TotalClients.ContainsKey(username))
+                    {
+                        Client client;
+                        AllClients.TotalClients.TryGetValue(username, out client);
+                        if (client.IsOnline)
+                        {
+                            Write("DoctorLogin\r\nerror\r\nYou are already logged in somewhere else!");
+                            return;
+                        }
+                    }
                     if (passwords.ContainsKey(username))
                     {
+
                         passwords.TryGetValue(username, out dictionaryPassword);
                         if (dictionaryPassword.Equals(password))
                         {
