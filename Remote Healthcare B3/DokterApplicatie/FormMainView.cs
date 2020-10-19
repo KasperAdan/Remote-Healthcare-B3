@@ -336,6 +336,8 @@ namespace DokterApplicatie
             LVHistoricData.Columns.Add("Speed", 100);
             LVHistoricData.Columns.Add("Heartrate", 100);
             LVHistoricData.Columns.Add("Resistance", 100);
+            btnGetHistoricData.Enabled = false;
+            LoadTableButton.Enabled = false;
         }
 
         private void ListViewAllMessagesInit()
@@ -499,7 +501,6 @@ namespace DokterApplicatie
 
         private void BtnStopSession_Click(object sender, EventArgs e)
         {
-            //dictionary to connect user with tab
             string username = cbSessionClients.SelectedItem.ToString();
             StopTraining(username);
         }
@@ -800,6 +801,22 @@ namespace DokterApplicatie
             {
                 SelectedRealtimeRadiobutton = "Resistance";
                 LoadResistanceChart(RecentData, cRealtimeData);
+            }
+        }
+
+        private void cbUsername_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if(cbUsername.SelectedItem != null)
+            {
+                btnGetHistoricData.Enabled = true;
+            }
+        }
+
+        private void cbTime_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (cbTime.SelectedItem != null)
+            {
+                LoadTableButton.Enabled = true;
             }
         }
     }
