@@ -92,8 +92,8 @@
             this.tabControl1.Controls.Add(this.Monitoring);
             this.tabControl1.Controls.Add(this.History);
             this.tabControl1.Controls.Add(this.Chat);
-            this.tabControl1.Controls.Add(this.Session);
-            this.tabControl1.Controls.Add(this.Settings);
+          //  this.tabControl1.Controls.Add(this.Session);
+           // this.tabControl1.Controls.Add(this.Settings);
             this.tabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabControl1.ItemSize = new System.Drawing.Size(30, 100);
             this.tabControl1.Location = new System.Drawing.Point(1, 0);
@@ -546,7 +546,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormMainView";
-            this.Text = "Form2";
+            this.Text = "Doctor Application";
             this.tabControl1.ResumeLayout(false);
             this.Monitoring.ResumeLayout(false);
             this.Monitoring.PerformLayout();

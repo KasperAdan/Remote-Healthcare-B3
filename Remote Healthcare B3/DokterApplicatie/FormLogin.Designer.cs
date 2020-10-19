@@ -138,7 +138,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormLogin";
-            this.Text = "Form1";
+            this.Text = "Doctor Login";
             ((System.ComponentModel.ISupportInitialize)(this.UsernameBoxImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PasswordBoxImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LoginLogo)).EndInit();
